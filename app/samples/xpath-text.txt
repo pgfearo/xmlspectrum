@@ -1,0 +1,6 @@
+ if (empty($exclude))
+    then ()
+ else if ($exclude/@end)
+    then
+    $exclude/@end cast as xs:integer + 1
+ else ()
