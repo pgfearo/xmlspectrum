@@ -1009,7 +1009,7 @@ select="loc:createTokens($chunk, $omitPairs, 1, 1)"/>
 <xsl:variable name="token" select="$tokens[$index]" as="element()?"/>
 <xsl:variable name="isQuantifier" select="$quantifierExpected and $token/@value = ('?','*','+')"/>
 <xsl:variable name="currentIsClosed" as="xs:boolean"
-select="$isQuantifier or not($token/@type) or ($token/@value = (')',']') or ($token/@type = ('literal','numeric','variable')))"/>
+select="$isQuantifier or not($token/@type) or ($token/@value = (')',']') or ($token/@type = ('literal','numeric','variable', 'context')))"/>
 <xsl:element name="token">
 <xsl:attribute name="start" select="$token/@start"/>
 <xsl:attribute name="end" select="$token/@end"/>
