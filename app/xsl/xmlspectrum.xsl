@@ -8,17 +8,43 @@ Purpose: Syntax highlighter for XPath (text), XML, XSLT and XSD 1.1 file formats
 
 Usage:
 
-initial-template: 'main'
-source-xml: (not used)
-xsl parameters:
-    sourcepath:  (path or URI for source file)
-    light-theme: (yes|no) [Default:'no']
-    css-path:    (path for output CSS)
+The 3 Entry point functions:
 
-Sample transform using Saxon-HE/Java on command-line (unbroken line):
+1. f:render(xml-content, is-xml, root-prefix)
 
-java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
--xsl:xsl/xmlspectrum.xsl sourcepath=../samples/xpathcolorer-x.xsl
+description:
+
+    Converts the xml content string to a sequence of span elements. with each
+    containing a class attribute used for coloring with CSS. 
+
+params:
+    xml-content: string containing well-balanced XML extract - namespace and prefix
+                 declarations not required in the string itself
+    is-xsl:      boolean specifying whether coloring is for XSLT, if this is false
+                 then XSD 1.1 coloring scheme is used instead
+    root-prefix: string prefix used for elements requiring special coloring for XSLT
+                 or XSD 1.1 - often 'xsl' and 'xs'      
+
+2. loc:showXPath(text-content)
+
+description:
+
+    Converts the xpath content string to a sequence of span elements. with each
+    containing a class attribute used for coloring with CSS. 
+
+params:
+   text-content: string containing a single XPath expression
+
+3. f:get-css(is-light-theme)
+
+description:
+
+    Generates a CSS file used to colorise span elements generates by the previous 2 functions
+    The colors generated depend on whether a light or dark them is specified with the is-light-theme
+    parameter. The color theme uses the 'Solarized' color points specified at: http://ethanschoonover.com/solarized 
+
+params:
+    is-light-theme: boolean indicating whether to generate colors for a light or dark background. 
 
 -->
 
@@ -32,97 +58,59 @@ xmlns=""
 xmlns:f="internal">
 
 
-<xsl:param name="sourcepath" as="xs:string" required="yes"/>
+<xsl:param name="sourcepath" as="xs:string"/>
 
-<xsl:param name="light-theme" select="'no'"/>
+<xsl:param name="light-theme" select="'yes'"/>
 <xsl:param name="css-path" select="''"/>
 
-<xsl:variable name="xsl-xmlns" select="'http://www.w3.org/1999/XSL/Transform'"/>
-<xsl:variable name="xsd-xmlns" select="'http://www.w3.org/2001/XMLSchema'"/>
-
-<!-- if windows OS, convert path to URI -->
-<xsl:variable name="sourceuri" select="if (matches($sourcepath, '^[A-Za-z]:'))
-then concat('file:/', $sourcepath)
-else $sourcepath"/>
-<xsl:variable name="text-path2" select="replace($sourceuri,'\\','/')"/>
-
-
-<xsl:param name="is-xml" select="doc-available($text-path2)" as="xs:boolean"/>
-
-<xsl:variable name="input-file" select="tokenize($text-path2, '/|\\')[last()]"/>
-
-
-
-<xsl:variable name="root-element" select="if ($is-xml) then doc($text-path2)/* else ()"/>
-<xsl:variable name="root-qname" select="if ($is-xml) then node-name($root-element) else ()" as="xs:QName?"/>
-
-<xsl:variable name="root-prefix" select="if ($is-xml) 
-then concat(prefix-from-QName($root-qname),':') 
-else ()"/>
-<xsl:variable name="root-namespace" select="if ($is-xml) then namespace-uri-from-QName($root-qname) else ()"/>
-
-<xsl:variable name="xpath-names"
-select="for $a in ('variable','param') return concat($root-prefix, $a)" as="xs:string*"/>
-<xsl:variable name="xpath-fnames"
-select="for $a in ('template','function', 'call-template') return concat($root-prefix, $a)" as="xs:string*"/>
-<xsl:variable name="xsd-names"
-select="for $a in ('assert') return concat($root-prefix, $a)" as="xs:string*"/>
-<xsl:variable name="xsd-fnames"
-select="for $a in ('element','attribute') return concat($root-prefix, $a)" as="xs:string*"/>
-
-
-
-
-<xsl:variable name="is-xsl" as="xs:boolean" select="$root-namespace eq $xsl-xmlns"/>
-<xsl:variable name="is-xsd" as="xs:boolean" select="$root-namespace eq $xsd-xmlns"/>
-
-
-<xsl:template name="main" match="/">
-<xsl:message>text-path2: <xsl:value-of select="$text-path2"/></xsl:message>
-<xsl:result-document href="{concat('output/', $input-file, '.html')}" method="html" indent="no">
-<html>
-<head>
-<title><xsl:value-of select="$input-file"/></title>
-<link rel="stylesheet" type="text/css" href="{if ($css-path ne '')
-then $css-path else 'theme.css'}"/>
-</head>
-<body>
-<div>
-<p class="spectrum">
-<xsl:choose>
-<xsl:when test="$is-xml">
-<xsl:sequence select="f:render($text-path2)"/>
-</xsl:when>
-<xsl:otherwise>
-<xsl:sequence select="loc:showXPath(unparsed-text($text-path2))"/>
-</xsl:otherwise>
-</xsl:choose>
-</p>
-</div>
-</body>
-</html>
-</xsl:result-document>
-
-<xsl:if test="$css-path eq ''">
-<xsl:result-document href="{concat('output/', 'theme.css')}" method="text" indent="no">
-<xsl:apply-templates select="document('')/xsl:stylesheet/css:theme"/>
-</xsl:result-document>
-</xsl:if>
-
-</xsl:template>
-
-<xsl:template match="css:background">
-<xsl:value-of select="if ($light-theme eq 'yes') then @light else @dark"/>
-</xsl:template>
-
+<!-- Entry point for rendering an XML file with embedded XPath -->
 <xsl:function name="f:render">
-<xsl:param name="filepath"/>
-<xsl:variable name="xmlText" select="unparsed-text($filepath)"/>
+<xsl:param name="xmlText" as="xs:string"/>
+<xsl:param name="is-xsl" as="xs:boolean"/>
+<xsl:param name="root-prefix" as="xs:string"/>
+
 <xsl:variable name="tokens" as="xs:string*" select="tokenize($xmlText, '&lt;')"/>
-<xsl:variable name="spans" select="f:iterateTokens(0, $tokens,1,'n',0, 0)" as="element()*"/>
+<xsl:variable name="spans" select="f:iterateTokens(0, $tokens,1,'n',0, 0, $is-xsl, $root-prefix)" as="element()*"/>
 
 <xsl:sequence select="$spans"/>
 </xsl:function>
+
+
+<xsl:function name="f:get-css">
+<xsl:param name="is-light-theme" as="xs:boolean"/>
+<xsl:apply-templates select="document('')/xsl:stylesheet/css:theme">
+<xsl:with-param name="is-light-theme" select="$is-light-theme" tunnel="yes"/>
+</xsl:apply-templates>
+</xsl:function>
+
+<xsl:function name="f:get-xslt-names" as="xs:string*">
+<xsl:param name="prefix" as="xs:string"/>
+<xsl:sequence
+select="for $a in ('variable','param') return concat($prefix, $a)"/>
+</xsl:function>
+
+<xsl:function name="f:get-xslt-fnames" as="xs:string*">
+<xsl:param name="prefix" as="xs:string"/>
+<xsl:sequence
+select="for $a in ('template','function') return concat($prefix, $a)"/>
+</xsl:function>
+
+<xsl:function name="f:get-xsd-names" as="xs:string*">
+<xsl:param name="prefix" as="xs:string"/>
+<xsl:sequence
+select="for $a in ('assert') return concat($prefix, $a)"/>
+</xsl:function>
+
+<xsl:function name="f:get-xsd-fnames" as="xs:string*">
+<xsl:param name="prefix" as="xs:string"/>
+<xsl:sequence
+select="for $a in ('element','attribute') return concat($prefix, $a)"/>
+</xsl:function>
+
+<xsl:template match="css:background">
+<xsl:param name="is-light-theme" tunnel="yes"/>
+<xsl:value-of select="if ($is-light-theme) then @light else @dark"/>
+</xsl:template>
 
 <xsl:function name="f:getTagType">
 <xsl:param name="token" as="xs:string?"/>
@@ -158,6 +146,11 @@ else 1"/>
 <xsl:param name="expected" as="xs:string"/>
 <xsl:param name="beganAt" as="xs:integer"/>
 <xsl:param name="level" as="xs:integer"/>
+<xsl:param name="is-xsl" as="xs:boolean"/>
+<xsl:param name="root-prefix" as="xs:string"/>
+
+<xsl:variable name="is-xsd" select="not($is-xsl)"/>
+
 <xsl:variable name="token" select="$tokens[$index]" as="xs:string?"/>
 <xsl:variable name="prevToken" select="$tokens[$index + 1]" as="xs:string?"/>
 <xsl:variable name="nextToken" select="$tokens[$index - 1]" as="xs:string?"/>
@@ -258,7 +251,7 @@ as="xs:boolean"/>
 <xsl:when test="$isElementClose">
 <span class="{if ($is-xsl and starts-with($tagContent, $root-prefix))
 then 'clxsl'
-else if ($is-xsd and $tagContent = $xsd-fnames) then 'clxsl'
+else if ($is-xsd and $tagContent = f:get-xsd-fnames($root-prefix)) then 'clxsl'
 else 'cl'}">
 <xsl:value-of select="$tagContent"/>
 </span>
@@ -311,7 +304,7 @@ else 'cl'}">
 <span>[parts]<xsl:value-of select="string-join($parts,'/')"/></span>
 -->
 
-<xsl:sequence select="f:getAttributes($token, 0, $parts, 1)"/>
+<xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $is-xsl, $root-prefix)"/>
 
 <!-- must be an open tag, so check for attributes -->
 
@@ -345,7 +338,7 @@ else 'n'"/>
 select="if ($stillAwaiting) then $beganAt else $index"/>
 
 <xsl:if test="$index le count($tokens)">
-<xsl:sequence select="f:iterateTokens($counter + 1, $tokens, $index + 1, $newExpected, $newBeganAt, $newLevel)"/>
+<xsl:sequence select="f:iterateTokens($counter + 1, $tokens, $index + 1, $newExpected, $newBeganAt, $newLevel, $is-xsl, $root-prefix)"/>
 </xsl:if>
 </xsl:function>
 
@@ -354,6 +347,11 @@ select="if ($stillAwaiting) then $beganAt else $index"/>
 <xsl:param name="offset" as="xs:integer"/>
 <xsl:param name="parts" as="xs:string*"/>
 <xsl:param name="index" as="xs:integer"/>
+<xsl:param name="is-xsl" as="xs:boolean"/>
+<xsl:param name="root-prefix" as="xs:string"/>
+
+<xsl:variable name="is-xsd" select="not($is-xsl)"/>
+
 <xsl:variable name="part1" as="xs:string?"
 select="$parts[$index]"/>
 <xsl:variable name="part2" as="xs:string?"
@@ -371,7 +369,7 @@ select="$parts[$index + 1]"/>
 <span class="es">&lt;</span>
 <span class="{if ($is-xsl-element)
 then 'enxsl'
-else if ($is-xsd and $elementName = $xsd-fnames) then 'enxsl' 
+else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'enxsl' 
 else 'en'}">
 <!--
 id="{js:stackPush($elementName)}">
@@ -433,17 +431,17 @@ else 'z'"/>
 <xsl:variable name="isXPath"
 select="if ($is-xsl-element)
 then $attSpans[@class = 'atn'] = ('select','test', 'match')
-else if ($is-xsd and $xsd-names = $elementName and $attSpans[@class = 'atn'] = 'test') 
+else if ($is-xsd and f:get-xsd-names($root-prefix) = $elementName and $attSpans[@class = 'atn'] = 'test') 
 then true()
 else false()"/>
 
 <!-- for coloring attribute values that are referenced from XPath -->
 <xsl:variable name="metaXPathName" as="xs:string"
 select="if ($is-xsl-element) then
-if ($elementName = $xpath-names) then 'vname'
-else if ($elementName = $xpath-fnames) then 'fname'
+if ($elementName = f:get-xslt-names($root-prefix)) then 'vname'
+else if ($elementName = f:get-xslt-fnames($root-prefix)) then 'fname'
 else 'av'
-else if ($is-xsd and $elementName = $xsd-fnames) then 'fname' else 'av'"/>
+else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'fname' else 'av'"/>
 
 
 <span class="z"><xsl:value-of select="substring($left,string-length($pre) + 1)"/></span>
@@ -474,7 +472,7 @@ else if ($is-xsd and $elementName = $xsd-fnames) then 'fname' else 'av'"/>
 <xsl:variable name="newOffset" select="string-length($part1) + string-length($part2) + $offset"/>
 
 <xsl:if test="not($isFinalPart)">
-<xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2)"/>
+<xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2, $is-xsl, $root-prefix)"/>
 </xsl:if>
 
 </xsl:function>
@@ -638,6 +636,7 @@ span.green, span.cm, span.comment {
 <xsl:variable name="bgColor" select="'black'" as="xs:string"/>
 
 
+<!-- Entry point for rendering an XML file with embedded XPath -->
 <xsl:function name="loc:showXPath">
 <xsl:param name="chunk"/>
 

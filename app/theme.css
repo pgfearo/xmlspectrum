@@ -1,4 +1,4 @@
-samp.xslt, samp.xpath, 
+
 p.spectrum {
     margin:0px;
     font-family: monospace;
@@ -6,7 +6,7 @@ p.spectrum {
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color:;
+    background-color:#002b36;
 padding: 2px;
 margin-bottom:5px;
 }
@@ -50,7 +50,7 @@ span.base0, span.txt, span.cd {
 color: #839496;
 }
 span.base1, span.literal, span.av {
-color:;
+color:#93a1a1;
 }
 span.base2 {
     color: #eee8d5;
