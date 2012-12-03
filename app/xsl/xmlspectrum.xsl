@@ -69,7 +69,8 @@ xmlns:f="internal">
 <xsl:param name="is-xsl" as="xs:boolean"/>
 <xsl:param name="root-prefix" as="xs:string"/>
 
-<xsl:variable name="tokens" as="xs:string*" select="tokenize($xmlText, '&lt;')"/>
+<xsl:variable name="tokens-a" as="xs:string*" select="tokenize($xmlText, '&lt;')"/>
+<xsl:variable name="tokens" select="if (normalize-space($tokens-a[1]) eq '') then subsequence($tokens-a, 2) else $tokens-a"/>
 <xsl:variable name="spans" select="f:iterateTokens(0, $tokens,1,'n',0, 0, $is-xsl, $root-prefix)" as="element()*"/>
 
 <xsl:sequence select="$spans"/>
