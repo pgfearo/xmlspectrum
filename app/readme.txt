@@ -14,12 +14,18 @@ Themes
 For the CSS generated, there are 2 color themes a light theme and a dark theme, the default is dark.
 To set the light theme, set the 'light-theme' value to 'yes'
 
+Example implementations of XMLSpectrum:
+
+1. highlight-file.xsl    - highlights any source file with URL provided as an XSLT parameter
+2. highlight-inline.xsl  - highlights <samp> elements within an HTML file that is the input to the stylesheet
+
 Example running from the command-line using the Saxon-HE XSLT 2.0 processor:
 
 Sample 1.Colorise XSLT and embedded XPath
 Sample 2 Colorise non-XML XPath text file "xpath-text.txt"
 Sample 3 Colorise XSD 1.1 and embedded XPath
-
+Sample 4 Colorise XSLT, XSD and XPath embedded within <samp> elements in an HTML file - use default dark theme
+Sample 5 Colorise XSLT, XSD and XPath embedded within <samp> elements in an HTML file - use light-theme
 
 java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/xpathcolorer-x.xsl
 
@@ -27,4 +33,7 @@ java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -
 
 java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/schema-assert.xsd
 
-java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples/html-inline-sample.xml
+
+java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples html-inline-sample.xml -o:output/highlighted-inline.html
+
+java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples html-inline-sample.xml -o:output/highlighted-inline.html light-theme=yes

@@ -83,7 +83,7 @@ else concat($root-prefix-a, ':')"/>
 
 <xsl:function name="f:get-css">
 <xsl:param name="is-light-theme" as="xs:boolean"/>
-<xsl:apply-templates select="document('')/xsl:stylesheet/css:theme">
+<xsl:apply-templates select="document('')/xsl:stylesheet/css:theme" mode="css">
 <xsl:with-param name="is-light-theme" select="$is-light-theme" tunnel="yes"/>
 </xsl:apply-templates>
 </xsl:function>
@@ -112,8 +112,8 @@ select="for $a in ('assert') return concat($prefix, $a)"/>
 select="for $a in ('element','attribute') return concat($prefix, $a)"/>
 </xsl:function>
 
-<xsl:template match="css:background">
-<xsl:param name="is-light-theme" tunnel="yes"/>
+<xsl:template match="css:background" mode="css">
+<xsl:param name="is-light-theme" tunnel="yes" as="xs:boolean"/>
 <xsl:value-of select="if ($is-light-theme) then @light else @dark"/>
 </xsl:template>
 
@@ -554,6 +554,8 @@ margin-bottom:5px;
     white-space: pre-wrap;
 }
 /*
+chosen theme background: <css:background dark="dark" light="light"/>;
+
 $base03:    #002b36; //background
 $base02:    #073642; //highlighted-background
 $base01:    #586e75;

@@ -91,7 +91,8 @@ xmlns:f="internal">
 
 <xsl:result-document href="theme.css" method="text" indent="no">
 <xsl:variable name="classes" select="'samp.xslt, samp.xsd, samp.xpath, '"/>
-<xsl:value-of select="concat($classes, f:get-css($light-theme eq 'yes'))"/>
+<xsl:variable name="is-light-theme" as="xs:boolean" select="$light-theme eq 'yes'"/>
+<xsl:sequence select="$classes, f:get-css($is-light-theme)"/>
 </xsl:result-document>
 
 </xsl:template>
