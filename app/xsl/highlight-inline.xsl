@@ -90,7 +90,7 @@ xmlns:f="internal">
 <xsl:template name="create-css">
 
 <xsl:result-document href="theme.css" method="text" indent="no">
-<xsl:variable name="classes" select="'samp.xslt, samp.xpath, '"/>
+<xsl:variable name="classes" select="'samp.xslt, samp.xsd, samp.xpath, '"/>
 <xsl:value-of select="concat($classes, f:get-css($light-theme eq 'yes'))"/>
 </xsl:result-document>
 
