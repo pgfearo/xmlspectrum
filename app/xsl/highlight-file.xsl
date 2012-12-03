@@ -78,7 +78,7 @@ else $sourcepath"/>
 <xsl:variable name="root-qname" select="if ($is-xml) then node-name($root-element) else ()" as="xs:QName?"/>
 
 <xsl:variable name="root-prefix" select="if ($is-xml) 
-then concat(prefix-from-QName($root-qname),':') 
+then prefix-from-QName($root-qname) 
 else ()"/>
 <xsl:variable name="root-namespace" select="if ($is-xml) then namespace-uri-from-QName($root-qname) else ()"/>
 

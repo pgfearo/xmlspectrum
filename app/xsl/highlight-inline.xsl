@@ -70,8 +70,8 @@ xmlns:f="internal">
 </xsl:template>
 
 <xsl:template match="samp[exists(@lang) and @lang ne 'xpath']">
-<xsl:variable name="is-xsl" select="@lang eq 'xslt'"/>
-<xsl:variable name="prefix" select="if($is-xsl) then 'xsl' else 'xsd'"/>
+<xsl:variable name="is-xsl" select="@lang eq 'xslt'" as="xs:boolean"/>
+<xsl:variable name="prefix" select="if($is-xsl) then 'xsl' else 'xs'"/>
 <xsl:copy>
 <xsl:attribute name="class" select="@lang"/>
 <xsl:apply-templates select="@* except @class"/>

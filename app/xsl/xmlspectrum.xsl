@@ -60,14 +60,18 @@ xmlns:f="internal">
 
 <xsl:param name="sourcepath" as="xs:string"/>
 
-<xsl:param name="light-theme" select="'yes'"/>
+<xsl:param name="light-theme" select="'no'"/>
 <xsl:param name="css-path" select="''"/>
 
 <!-- Entry point for rendering an XML file with embedded XPath -->
 <xsl:function name="f:render">
 <xsl:param name="xmlText" as="xs:string"/>
 <xsl:param name="is-xsl" as="xs:boolean"/>
-<xsl:param name="root-prefix" as="xs:string"/>
+<xsl:param name="root-prefix-a" as="xs:string"/>
+<xsl:variable name="root-prefix" as="xs:string"
+select="if ($root-prefix-a eq '') 
+then ''
+else concat($root-prefix-a, ':')"/>
 
 <xsl:variable name="tokens-a" as="xs:string*" select="tokenize($xmlText, '&lt;')"/>
 <xsl:variable name="tokens" select="if (normalize-space($tokens-a[1]) eq '') then subsequence($tokens-a, 2) else $tokens-a"/>
@@ -150,7 +154,7 @@ else 1"/>
 <xsl:param name="is-xsl" as="xs:boolean"/>
 <xsl:param name="root-prefix" as="xs:string"/>
 
-<xsl:variable name="is-xsd" select="not($is-xsl)"/>
+<xsl:variable name="is-xsd" select="not($is-xsl)" as="xs:boolean"/>
 
 <xsl:variable name="token" select="$tokens[$index]" as="xs:string?"/>
 <xsl:variable name="prevToken" select="$tokens[$index + 1]" as="xs:string?"/>
@@ -351,7 +355,7 @@ select="if ($stillAwaiting) then $beganAt else $index"/>
 <xsl:param name="is-xsl" as="xs:boolean"/>
 <xsl:param name="root-prefix" as="xs:string"/>
 
-<xsl:variable name="is-xsd" select="not($is-xsl)"/>
+<xsl:variable name="is-xsd" select="not($is-xsl)" as="xs:boolean"/>
 
 <xsl:variable name="part1" as="xs:string?"
 select="$parts[$index]"/>
@@ -443,7 +447,6 @@ if ($elementName = f:get-xslt-names($root-prefix)) then 'vname'
 else if ($elementName = f:get-xslt-fnames($root-prefix)) then 'fname'
 else 'av'
 else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'fname' else 'av'"/>
-
 
 <span class="z"><xsl:value-of select="substring($left,string-length($pre) + 1)"/></span>
 
