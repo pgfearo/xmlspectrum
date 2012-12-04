@@ -24,16 +24,15 @@ Example running from the command-line using the Saxon-HE XSLT 2.0 processor:
 Sample 1.Colorise XSLT and embedded XPath
 Sample 2 Colorise non-XML XPath text file "xpath-text.txt"
 Sample 3 Colorise XSD 1.1 and embedded XPath
-Sample 4 Colorise XSLT, XSD and XPath embedded within <samp> elements in an HTML file - use default dark theme
-Sample 5 Colorise XSLT, XSD and XPath embedded within <samp> elements in an HTML file - use light-theme
+Sample 4 Colorise XSLT, XSD and XPath embedded within <pre lang="x"> elements in an HTML file - use default dark theme
+Sample 5 Colorise XSLT, XSD and XPath embedded within <pre lang="x"> elements in an HTML file - use light-theme
 
-java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/xpathcolorer-x.xsl
+1. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/xpathcolorer-x.xsl
 
-java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/xpath-text.txt light-theme=no
+2. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/xpath-text.txt light-theme=no
 
-java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/schema-assert.xsd
+3. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/schema-assert.xsd
 
+4. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples html-inline-sample.html -o:output/highlighted-inline.html
 
-java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples html-inline-sample.xml -o:output/highlighted-inline.html
-
-java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples html-inline-sample.xml -o:output/highlighted-inline.html light-theme=yes
+5. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples html-inline-sample.html -o:output/highlighted-inline.html light-theme=yes

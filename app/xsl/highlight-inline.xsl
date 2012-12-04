@@ -69,7 +69,7 @@ xmlns:f="internal">
 </xsl:copy>
 </xsl:template>
 
-<xsl:template match="samp[exists(@lang) and @lang ne 'xpath']">
+<xsl:template match="pre[exists(@lang) and @lang ne 'xpath']">
 <xsl:variable name="is-xsl" select="@lang eq 'xslt'" as="xs:boolean"/>
 <xsl:variable name="prefix" select="if($is-xsl) then 'xsl' else 'xs'"/>
 <xsl:copy>
@@ -79,7 +79,7 @@ xmlns:f="internal">
 </xsl:copy>
 </xsl:template>
 
-<xsl:template match="samp[@lang eq 'xpath']">
+<xsl:template match="pre[@lang eq 'xpath']">
 <xsl:copy>
 <xsl:attribute name="class" select="@lang"/>
 <xsl:apply-templates select="@* except @class"/>
@@ -90,7 +90,7 @@ xmlns:f="internal">
 <xsl:template name="create-css">
 
 <xsl:result-document href="theme.css" method="text" indent="no">
-<xsl:variable name="classes" select="'samp.xslt, samp.xsd, samp.xpath, '"/>
+<xsl:variable name="classes" select="'pre.xslt, pre.xsd, pre.xpath, '"/>
 <xsl:variable name="is-light-theme" as="xs:boolean" select="$light-theme eq 'yes'"/>
 <xsl:sequence select="$classes, f:get-css($is-light-theme)"/>
 </xsl:result-document>

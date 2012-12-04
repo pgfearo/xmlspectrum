@@ -1,0 +1,89 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Test XMLSpectrum</title>
+</head>
+<body>
+<h1><code>Sample output from xmlspectrum.xsl</code></h1>
+<p>The <code><a href="https://github.com/pgfearo/xmlspectrum">xmlspectrum.xsl</a></code> project is hosted on GitHub. See the <a href="html-inline-sample.html">input file</a> for a comparison.</p>
+<h2>XSLT Code Sample</h2>
+<p> The following XSLT is colorised  as XSLT because the <code>samp</code> element
+has a <code>lang</code> attribute with value 'xslt'.</p>
+<pre lang="xslt">
+&lt;xsl:variable name="className"&gt;
+    &lt;xsl:choose&gt;
+        &lt;xsl:when test="exists(@type)"&gt;
+            &lt;xsl:value-of
+                            select="if (@type eq 'literal' and
+                            matches(@value ,
+                            'select[\n\p{Zs}]*=[\n\p{Zs}]*[&amp;quot;&amp;apos;&amp;apos;]')
+                            )
+                            then 'select' else @type"
+                            /&gt;
+        &lt;/xsl:when&gt;
+        &lt;xsl:otherwise&gt;
+            &lt;xsl:variable name="p" select="$para[$index - 1] "/&gt;
+            &lt;xsl:value-of
+                            select="if ($p/@type eq 'literal' and                           
+                            matches(
+                            $p/@value ,
+                            'name[\n\p{Zs}]*=[\n\p{Zs}]*[&amp;quot;&amp;apos;&amp;apos;]')
+                            )
+                            then 'external'
+                            else 'qname'"
+            /&gt;
+        &lt;/xsl:otherwise&gt;
+    &lt;/xsl:choose&gt;
+&lt;/xsl:variable&gt;
+</pre>
+<p>Some more text.</p>
+<h2>XSD Code Sample</h2>
+<pre> The following XSD is colorised  as XSLT because the <code>samp</code> element
+has a <code>lang</code> attribute with value 'xsd'.</pre>
+<pre lang="xsd">
+&lt;xs:element name="price"&gt;
+ &lt;xs:complexType&gt;
+   &lt;xs:sequence&gt;
+     &lt;xs:element name="value" maxOccurs="unbounded"&gt;
+        &lt;xs:complexType&gt;
+          &lt;xs:simpleContent&gt;
+            &lt;xs:extension base="xs:double"&gt;
+              &lt;xs:attribute name="effective" type="xs:date" use="required"/&gt;
+              &lt;xs:attribute name="freeware" type="xs:boolean"/&gt;
+              &lt;xs:attribute name="format" use="required"&gt;
+                &lt;xs:simpleType&gt;
+                  &lt;xs:restriction base="xs:string"&gt;
+                    &lt;xs:enumeration value="hard cover"/&gt;
+                    &lt;xs:enumeration value="pdf"/&gt;
+                  &lt;/xs:restriction&gt;
+                &lt;/xs:simpleType&gt;
+              &lt;/xs:attribute&gt;
+              &lt;xs:assert test="@effective lt current-date()" /&gt;
+              &lt;xs:assert test="if (@freeware eq true()) then (@format eq 'pdf' and . eq 0)
+                               else true()" /&gt;                    
+            &lt;/xs:extension&gt;
+          &lt;/xs:simpleContent&gt;
+        &lt;/xs:complexType&gt;
+     &lt;/xs:element&gt;
+   &lt;/xs:sequence&gt;
+   &lt;xs:assert test="every $vl in value[position() lt last()] satisfies
+                    ($vl gt $vl/following-sibling::value[1]) and 
+                    ($vl/@effective lt $vl/following-sibling::value[1]/@effective)" /&gt;
+ &lt;/xs:complexType&gt;
+&lt;/xs:element&gt;
+</pre>
+<p>Some more text.</p>
+
+<h2>XPathCode Sample</h2>
+<p> The following XSLT is colorised as XPath because the <code>samp</code> element
+in the source has a <code>lang</code> attribute of  'xpath'.</p>
+<pre lang="xpath">
+if (@type eq 'literal' and
+    matches(
+            @value ,
+            'select[\n\p{Zs}]*=[\n\p{Zs}]*[&amp;quot;&amp;apos;&amp;apos;]')
+           )
+then 'select' else @type
+</pre>
+<p>Some more text.</p>
+</body>
+</html>
