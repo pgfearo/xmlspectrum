@@ -1,13 +1,21 @@
 XMLSpectrum
 -----------
 
-XSLT 2.0 stylesheet adds syntax-highlighting for plain-text XPath, XSLT 2.0 and XSD 1.1 files
+XSLT 2.0 stylesheet that adds syntax-highlighting to plain-text XPath, XSLT 2.0 and XSD 1.1 files
+An indentation option is available for XSLT, XSD or other XML vocabularies (line feeds not added)
+
+Command line options required when using the Saxon Processor
 
    1. Use -s:[stylesheet] to set the stylesheet path
    2. Use -it:main to set the inital template to 'main'
-   3. Use XSLT parameter 'sourcepath' to set the path to the file URL to be highlighted
-   3. [optional] Use light-theme='yes' XSLT parameter for CSS with white-background theme
-   4. [optional] Use css-path='[path]' to set CSS link path and inhibit creation of CSS file
+
+XSLT parameters when using highlight-file.xsl implementation
+Syntax: [param-name]=[param-value]
+
+   3. 'sourcepath' sets the path to the file URL to be highlighted
+   4. 'light-theme' [yes|no] Sets generated CSS background color theme - default:no
+   5. 'indent'      [yes|no] Adds indentation - default:no
+   5. 'css-path'  set URL for external CSS link element in output HTML
 
 Themes
 
@@ -19,13 +27,14 @@ Example implementations of XMLSpectrum:
 1. highlight-file.xsl    - highlights any source file with URL provided as an XSLT parameter
 2. highlight-inline.xsl  - highlights <samp> elements within an HTML file that is the input to the stylesheet
 
-Example running from the command-line using the Saxon-HE XSLT 2.0 processor:
+Examples running from the command-line using the Saxon-HE XSLT 2.0 processor:
 
 Sample 1.Colorise XSLT and embedded XPath
 Sample 2 Colorise non-XML XPath text file "xpath-text.txt"
 Sample 3 Colorise XSD 1.1 and embedded XPath
 Sample 4 Colorise XSLT, XSD and XPath embedded within <pre lang="x"> elements in an HTML file - use default dark theme
 Sample 5 Colorise XSLT, XSD and XPath embedded within <pre lang="x"> elements in an HTML file - use light-theme
+Sample 6 Colorise XSLT file (the xmlspectrum source code) and adds indentation - use light-theme
 
 1. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/xpathcolorer-x.xsl
 
@@ -33,6 +42,8 @@ Sample 5 Colorise XSLT, XSD and XPath embedded within <pre lang="x"> elements in
 
 3. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/schema-assert.xsd
 
-4. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples html-inline-sample.html -o:output/highlighted-inline.html
+4. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples/html-inline-sample.html -o:output/highlighted-inline.html
 
-5. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples html-inline-sample.html -o:output/highlighted-inline.html light-theme=yes
+5. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples/html-inline-sample.html -o:output/highlighted-inline.html light-theme=yes
+
+6. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../xsl/xmlspectrum.xsl indent=yes

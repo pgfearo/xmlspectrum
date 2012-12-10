@@ -8,10 +8,7 @@ Purpose: Syntax highlighter for XPath (text), XML, XSLT and XSD 1.1 file formats
 
 Usage:
 
-Stylesheet contains 4 'top-level' functions: 
-   f:render, loc:showXPath, f:get-css and f:indent
-
-Described below:
+The 3 Entry point functions:
 
 1. f:render(xml-content, is-xml, root-prefix)
 
@@ -22,11 +19,11 @@ description:
 
 params:
     xml-content: string containing well-balanced XML extract - namespace and prefix
-                 declarations not required
+                 declarations not required in the string itself
     is-xsl:      boolean specifying whether coloring is for XSLT, if this is false
                  then XSD 1.1 coloring scheme is used instead
     root-prefix: string prefix used for elements requiring special coloring for XSLT
-                 or XSD 1.1 - often 'xsl' and 'xs' respectively      
+                 or XSD 1.1 - often 'xsl' and 'xs'      
 
 2. loc:showXPath(text-content)
 
@@ -48,14 +45,6 @@ description:
 
 params:
     is-light-theme: boolean indicating whether to generate colors for a light or dark background. 
-
-4. f:indent(spans)
-
-description
-
-    Adds space characters for indentation to spans from XML-text processed with f:render. 
-    XML contents is indented in the conventional way, multi-line attribute names and values
-    are aligned vertically
 
 -->
 
@@ -81,7 +70,7 @@ xmlns:f="internal">
 <xsl:param name="root-prefix-a" as="xs:string"/>
 
 <xsl:variable name="root-prefix" as="xs:string"
-select="if ($root-prefix-a eq '') 
+select = "if ($root-prefix-a eq '') 
 then ''
 else concat($root-prefix-a, ':')"/>
 
@@ -94,197 +83,39 @@ else concat($root-prefix-a, ':')"/>
 
 <xsl:function name="f:indent">
 <xsl:param name="spans" as="element()*"/>
-<xsl:call-template name="indentSpans">
-<xsl:with-param name="spans" select="$spans" as="element()*" tunnel="yes"/>
-<xsl:with-param name="index" as="xs:integer" select="1"/>
-<xsl:with-param name="level" as="xs:integer" select="0"/>
-<xsl:with-param name="margin" as="xs:integer" select="3"/>
-<xsl:with-param name="an-offset" as="xs:integer" select="0"/>
-<xsl:with-param name="av-offset" as="xs:integer" select="0"/>
-<xsl:with-param name="multi-line" as="xs:boolean" select="false()"/>
-</xsl:call-template>
+<xsl:sequence
+select="f:indentSpans(
+$spans, 0, 0, 3, 0)"/>
 </xsl:function>
 
-<xsl:template name="indentSpans">
-<xsl:param name="spans" as="element()*" tunnel="yes"/>
+<xsl:function name="f:indentSpans">
+<xsl:param name="spans" as="element()*"/>
 <xsl:param name="index" as="xs:integer"/>
 <xsl:param name="level" as="xs:integer"/>
 <xsl:param name="margin" as="xs:integer"/>
-<xsl:param name="an-offset" as="xs:integer"/>
-<xsl:param name="av-offset" as="xs:integer"/>
-<xsl:param name="multi-line" as="xs:boolean"/>
+<xsl:param name="offset" as="xs:integer"/>
 
-<xsl:variable name="span" select="$spans[$index]"/>
+<xsl:variable name="i" select="$index + 1"/>
+<xsl:variable name="span" select="$spans[$i]"/>
 <xsl:variable name="class" select="$span/@class"/>
-<xsl:variable name="nextClass" select="$spans[$index + 1]/@class" as="xs:string?"/>
-<xsl:variable name="prevClass" select="$spans[$index - 1]/@class" as="xs:string?"/>
 
 <xsl:variable name="level2" select="if ($class eq 'scx') then $level + 1
 else if ($class eq 'ez') then $level - 1
 else $level"/>
-<xsl:variable name="outdent" as="xs:boolean"
-select="if ($index lt count($spans)) then
-$spans[$index + 1]/@class eq 'ez'
-else false()"/>
+<xsl:variable name="outdent" as="xs:boolean" select="$spans[$i + 1]/@class eq 'ez'"/>
+<xsl:variable name="offset2" select="0"/>
 
-<xsl:variable name="indentOutput" select="f:indentTextSpan(
-$span, $level, $margin, $an-offset, $av-offset, $outdent, $nextClass, $prevClass, $multi-line
-)"/>
+<xsl:choose>
+<xsl:when test="$class eq 'txt'">
 
-<xsl:sequence select="$indentOutput/span"/>
+</xsl:when>
+<xsl:otherwise>
+<xsl:copy-of select="."/>
+</xsl:otherwise>
+</xsl:choose>
 
-<xsl:if test="$index lt count($spans)">
-<!--
-<xsl:sequence select="f:indentSpans($spans, $index + 1, $level2, $margin, $offset2)"/>
--->
-<xsl:call-template name="indentSpans">
-<xsl:with-param name="index" as="xs:integer" select="$index + 1"/>
-<xsl:with-param name="level" as="xs:integer" select="$level2"/>
-<xsl:with-param name="margin" as="xs:integer" select="$margin"/>
-<xsl:with-param name="an-offset" as="xs:integer" select="$indentOutput/an-offset"/>
-<xsl:with-param name="av-offset" as="xs:integer" select="$indentOutput/av-offset"/>
-<xsl:with-param name="multi-line" as="xs:boolean" select="$indentOutput/multi-line"/>
-</xsl:call-template>
-</xsl:if>
-</xsl:template>
-
-<xsl:function name="f:indentTextSpan">
-<xsl:param name="span" as="element()"/>
-<xsl:param name="level" as="xs:integer"/>
-<xsl:param name="margin" as="xs:integer"/>
-<xsl:param name="an-offset" as="xs:integer"/>
-<xsl:param name="av-offset" as="xs:integer"/>
-<xsl:param name="outdent" as="xs:boolean"/>
-<xsl:param name="nextClass" as="xs:string?"/>
-<xsl:param name="prevClass" as="xs:string?"/>
-<xsl:param name="multi-line" as="xs:boolean"/>
-
-<xsl:variable name="class" select="$span/@class"/>
-
-
-<xsl:variable name="line-parts" as="element()*">
-<xsl:analyze-string select="$span" regex="\n.*">
-<xsl:matching-substring>
-<nl>
-<xsl:value-of select="substring(., 2)"/>
-</nl>
-</xsl:matching-substring>
-<xsl:non-matching-substring>
-<tt>
-<xsl:value-of select="."/>
-</tt>
-</xsl:non-matching-substring>
-</xsl:analyze-string>
-</xsl:variable>
-
-<xsl:variable name="firstLine" as="element()?"
-select="$line-parts[1]"/>
-
-<xsl:variable name="indented-lines" as="xs:string*">
-<xsl:sequence select="for $a in $line-parts[name(.) eq 'nl'] return
-string($a)"/>
-</xsl:variable>
-
-<xsl:variable name="flat-part" as="element()?"
-select="$line-parts[name(.) eq 'tt']"/>
-
-
-<!-- should be max of 1 -->
-<xsl:variable name="flat-line" as="xs:string"
-select="if ($flat-part) then $flat-part else ''"/>
-
-
-
-<!-- constant indent when first attribute is on a new line -->
-<xsl:variable name="compact" select="4" as="xs:integer"/>
-
-
-<xsl:variable name="lineOffset" as="xs:integer"
-select="if (exists($firstLine))
-then string-length($firstLine)
-else 0"/>
-
-<xsl:variable name="an-outOffset" as="xs:integer"
-select="if ($class = ('en','enxsl'))
-then $lineOffset + 1
-else if ($prevClass = ('en','enxsl'))
-then if (exists($indented-lines)) then 
-$compact
-else $an-offset + $lineOffset
-else $an-offset"/>
-
-<xsl:variable name="av-outOffset" as="xs:integer"
-select="if ($prevClass = ('en','enxsl'))
-then 0
-else if ($class eq 'atn' and $multi-line)
-then $lineOffset 
-else if ($prevClass eq 'atneq' or $class = ('atneq','atn','vname','av')
-or ($class eq 'z' and $nextClass = ('atneq','atn','vname','av'))
-or ($class eq 'z' and $prevClass = ('vname','av')))
-then $av-offset + $lineOffset
-else $av-offset"/>
-
-<xsl:variable name="offset" as="xs:integer"
-select="if ($prevClass = ('en','enxsl'))
-then $compact
-else if ($nextClass eq 'atn') 
-then $an-outOffset
-else if ($nextClass = 'av' or $class eq 'whitespace')
-then $an-outOffset + $av-outOffset
-else 0"/>
-
-<xsl:variable name="indent" select="f:createIndent(($level * $margin) + $offset)"/>
-<xsl:variable name="last-level" select="if ($outdent) then $level - 1 else $level" as="xs:integer"/>
-<xsl:variable name="last-indent" select="f:createIndent(($last-level * $margin) + $offset)"/>
-
-
-<xsl:variable name="line-count" select="count($indented-lines)" as="xs:integer"/>
-
-<xsl:variable name="span-text" as="xs:string"
-select="if (exists($indented-lines))
-then string-join(
-($flat-line,
-for $num in 1 to $line-count - 1 return
-concat('&#10;', $indent, $indented-lines[$num]),
-concat('&#10;', $last-indent, $indented-lines[$line-count]) 
-),
-'')
-else if ($multi-line and $offset gt 0) then
-concat($indent, string($line-parts[1]))
-else string($line-parts[1])"/>
-<output>
-<!--
-<xsl:if test="$nextClass eq 'atn'">
-<span class="function">
-<xsl:text>off: </xsl:text><xsl:value-of select="$offset"/>
-</span>
-</xsl:if>
-
--->
-<span>
-<xsl:copy-of select="$span/@*"/>
-<xsl:value-of select="$span-text"/>
-</span>
-<an-offset>
-<xsl:value-of select="$an-outOffset"/>
-</an-offset>
-<av-offset>
-<xsl:value-of select="$av-outOffset"/>
-</av-offset>
-<multi-line>
-<xsl:value-of select="exists($indented-lines)"/>
-</multi-line>
-
-</output>
-
-
-</xsl:function>
-
-<xsl:function name="f:createIndent" as="xs:string?">
-<xsl:param name="padCount" as="xs:integer"/>
-<xsl:if test="$padCount ge 0">
-<xsl:sequence select="string-join(for $i in 1 to $padCount 
-return ' ','')"/>
+<xsl:if test="$i le count($spans)">
+<xsl:sequence select="f:indentSpans($spans, $i, $level2, $margin, $offset2)"/>
 </xsl:if>
 </xsl:function>
 
@@ -970,7 +801,7 @@ else 'qname'"/>
 <xsl:attribute name="select" select="'quick'"/>
 </xsl:if>
 
-<!--
+
 <xsl:choose>
 <xsl:when test="@type = ('literal','comment')">
 <xsl:analyze-string 
@@ -983,17 +814,6 @@ else @value" regex="\n">
 <xsl:value-of select="."/>
 </xsl:non-matching-substring>
 </xsl:analyze-string>
-</xsl:when>
-<xsl:otherwise>
-<xsl:value-of select="if ($isJoined) then substring(@value, 1, string-length(@value) - 1) else @value"/>
-</xsl:otherwise>
-</xsl:choose>
--->
-
-<xsl:choose>
-<xsl:when test="@type = ('literal','comment')">
-<xsl:value-of select="if ($isLiteral) then substring(@value, 2, string-length(@value) - 2)
-else @value"/>
 </xsl:when>
 <xsl:otherwise>
 <xsl:value-of select="if ($isJoined) then substring(@value, 1, string-length(@value) - 1) else @value"/>

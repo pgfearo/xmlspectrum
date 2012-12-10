@@ -53,7 +53,9 @@ xmlns:f="internal">
 
 <xsl:import href="xmlspectrum.xsl"/>
 
-<xsl:param name="sourcepath" as="xs:string" select="'../samples/xpathcolorer-x.xsl'"/>
+<xsl:param name="sourcepath" as="xs:string" select="''"/>
+<!--  by default - rely on original indentation -->
+<xsl:param name="indent" as="xs:string" select="'no'"/>
 
 <xsl:param name="light-theme" select="'no'"/>
 <xsl:param name="css-path" select="''"/>
@@ -100,9 +102,14 @@ then $css-path else 'theme.css'}"/>
      with class attribute values used to colorise with CSS
 -->
 <xsl:choose>
-<xsl:when test="$is-xml">
+<xsl:when test="$is-xml and $indent = 'no'">
 <!-- for case where XPath is embedded in XML text -->
 <xsl:sequence select="f:render($file-content, $is-xsl, $root-prefix)"/>
+</xsl:when>
+<xsl:when test="$is-xml and $indent = 'yes'">
+<!-- for case where XPath is embedded in XML text and indentation required -->
+<xsl:variable name="spans" select="f:render($file-content, $is-xsl, $root-prefix)"/>
+<xsl:sequence select="f:indent($spans)"/>
 </xsl:when>
 <xsl:otherwise>
 <!-- for case where XPath is standalone -->
