@@ -84,14 +84,17 @@ xmlns:f="internal">
 <xsl:template match="pre[exists(@lang) and @lang ne 'xpath']">
 <xsl:variable name="is-xsl" select="@lang eq 'xslt'" as="xs:boolean"/>
 <xsl:variable name="prefix" select="if($is-xsl) then 'xsl' else 'xs'"/>
+<xsl:variable name="context-indent" select="if (exists(@data-indent))
+then xs:integer(@data-indent)
+else $indent-size"/>
 <xsl:copy>
 <xsl:attribute name="class" select="@lang"/>
 <xsl:apply-templates select="@* except @class"/>
 <xsl:choose>
-<xsl:when test="$do-trim or $indent-size gt 0">
+<xsl:when test="$do-trim or $context-indent gt 0">
 <xsl:variable name="renderedXML" select="f:render(., $is-xsl, $prefix)"
 as="element()*"/>
-<xsl:sequence select="f:indent($renderedXML, $indent-size, $do-trim)"/>
+<xsl:sequence select="f:indent($renderedXML, $context-indent, $do-trim)"/>
 </xsl:when>
 <xsl:otherwise>
 <xsl:sequence select="f:render(., $is-xsl, $prefix)"/>

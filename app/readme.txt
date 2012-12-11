@@ -36,6 +36,7 @@ Sample 4 Colorise XSLT, XSD and XPath embedded within <pre lang="x"> elements in
 Sample 5 Colorise XSLT, XSD and XPath embedded within <pre lang="x"> elements in an HTML file - use light-theme
 Sample 6 Colorise and indent XSLT file (the xmlspectrum source code) - use default dark theme
 Sample 7 Colorise and reformat XSLT file (the xmlspectrum source code) - use default dark theme
+Sample 8 Colorise and reformat a blog entry containing XSLT, XSD and XPath - use default dark theme
 
 1. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/xpathcolorer-x.xsl
 
@@ -50,3 +51,5 @@ Sample 7 Colorise and reformat XSLT file (the xmlspectrum source code) - use def
 6. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../xsl/xmlspectrum.xsl indent=2
 
 7. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples/badly-formatted-extract.html indent=2 auto-trim=yes -o:output/reformatted-extract.html
+
+8. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples/blog-sample.html indent=2 -o:output/blog-sample.html

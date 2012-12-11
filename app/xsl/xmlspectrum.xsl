@@ -112,13 +112,14 @@ select="if ($index lt count($spans)) then
 $spans[$index + 1]/@class eq 'ez'
 else false()"/>
 
+<xsl:if test="exists($span)">
+
 <xsl:variable name="indentOutput" select="f:indentTextSpan(
 $span, $level, $margin, $an-offset, $av-offset, $outdent,
 $nextClass, $prevClass, $multi-line, $auto-trim
 )"/>
 
 <xsl:sequence select="$indentOutput/span"/>
-
 <xsl:if test="$index lt count($spans)">
 <xsl:call-template name="indentSpans">
 <xsl:with-param name="index" as="xs:integer" select="$index + 1"/>
@@ -129,6 +130,8 @@ $nextClass, $prevClass, $multi-line, $auto-trim
 <xsl:with-param name="multi-line" as="xs:boolean" select="$indentOutput/multi-line"/>
 <xsl:with-param name="auto-trim" as="xs:boolean" select="$auto-trim"/>
 </xsl:call-template>
+</xsl:if>
+
 </xsl:if>
 </xsl:template>
 
