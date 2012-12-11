@@ -50,6 +50,11 @@ xmlns:f="internal">
 <xsl:output indent="no" method="xhtml"/>
 
 <xsl:param name="light-theme" select="'no'" as="xs:string"/>
+<xsl:param name="indent" select="'0'" as="xs:string"/>
+<xsl:param name="auto-trim" select="'no'" as="xs:string"/>
+
+<xsl:variable name="indent-size" select="xs:integer($indent)" as="xs:integer"/>
+<xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/>
 
 <xsl:template match="/">
 <xsl:apply-templates/>
@@ -75,7 +80,16 @@ xmlns:f="internal">
 <xsl:copy>
 <xsl:attribute name="class" select="@lang"/>
 <xsl:apply-templates select="@* except @class"/>
+<xsl:choose>
+<xsl:when test="$do-trim or $indent-size gt 0">
+<xsl:variable name="renderedXML" select="f:render(., $is-xsl, $prefix)"
+as="element()*"/>
+<xsl:sequence select="f:indent($renderedXML, $indent-size, $do-trim)"/>
+</xsl:when>
+<xsl:otherwise>
 <xsl:sequence select="f:render(., $is-xsl, $prefix)"/>
+</xsl:otherwise>
+</xsl:choose>
 </xsl:copy>
 </xsl:template>
 

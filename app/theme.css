@@ -1,4 +1,4 @@
-
+pre.xslt, pre.xsd, pre.xpath, 
 p.spectrum {
     margin:0px;
     font-family: monospace;
@@ -15,6 +15,8 @@ margin-bottom:5px;
     white-space: pre-wrap;
 }
 /*
+chosen theme background: dark;
+
 $base03:    #002b36; //background
 $base02:    #073642; //highlighted-background
 $base01:    #586e75;
@@ -40,7 +42,7 @@ color: #002b36;
 span.base02 {
 color: #073642;
 }
-span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es {
+span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq {
 color: #586e75;
 }
 span.base00 {

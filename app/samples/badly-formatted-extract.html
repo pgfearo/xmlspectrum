@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <title>Transform Bad whitespace formatting</title>
+   </head>
+   <body>
+        <h1>The code</h1>
+  <p>Transform poorly formatted original</p>
+        <pre lang="xslt"><![CDATA[
+
+<xsl:variable name="numbers" as="xs:integer"
+select="for $a in 1 to 10
+   return 
+   if $a gt 0 then
+   ($a * 2) + 2
+         else $a"/>
+         
+         <book>
+         <title>War and Peace
+         <xsl:value-of select="$numbers"/>
+         </title>
+         </book>
+         
+           <xsl:function name="f:get-xslt-names" as="xs:string*">
+                     <xsl:param name="prefix" as="xs:string"/>
+                            <xsl:sequence
+                  select="for $a in ('variable','param')
+            return 
+               concat($prefix, $a)"/>
+           </xsl:function>
+        ]]>
+        </pre>
+ </body>
+</html>

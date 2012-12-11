@@ -55,10 +55,15 @@ xmlns:f="internal">
 
 <xsl:param name="sourcepath" as="xs:string" select="''"/>
 <!--  by default - rely on original indentation -->
-<xsl:param name="indent" as="xs:string" select="'no'"/>
+<xsl:param name="indent" as="xs:string" select="'-1'"/>
 
 <xsl:param name="light-theme" select="'no'"/>
 <xsl:param name="css-path" select="''"/>
+<xsl:param name="auto-trim" select="'no'"/>
+
+<xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/>
+
+<xsl:variable name="indent-size" select="xs:integer($indent)"/>
 
 <xsl:template name="main" match="/">
 
@@ -102,14 +107,16 @@ then $css-path else 'theme.css'}"/>
      with class attribute values used to colorise with CSS
 -->
 <xsl:choose>
-<xsl:when test="$is-xml and $indent = 'no'">
+<xsl:when test="$is-xml and $indent-size lt 0 and not($do-trim)">
 <!-- for case where XPath is embedded in XML text -->
 <xsl:sequence select="f:render($file-content, $is-xsl, $root-prefix)"/>
 </xsl:when>
-<xsl:when test="$is-xml and $indent = 'yes'">
+<xsl:when test="$is-xml">
 <!-- for case where XPath is embedded in XML text and indentation required -->
 <xsl:variable name="spans" select="f:render($file-content, $is-xsl, $root-prefix)"/>
-<xsl:sequence select="f:indent($spans)"/>
+<xsl:variable name="real-indent" select="if ($indent-size lt 0) then 0 else $indent-size"
+as="xs:integer"/>
+<xsl:sequence select="f:indent($spans, $real-indent, $do-trim)"/>
 </xsl:when>
 <xsl:otherwise>
 <!-- for case where XPath is standalone -->

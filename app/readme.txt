@@ -34,7 +34,8 @@ Sample 2 Colorise non-XML XPath text file "xpath-text.txt"
 Sample 3 Colorise XSD 1.1 and embedded XPath
 Sample 4 Colorise XSLT, XSD and XPath embedded within <pre lang="x"> elements in an HTML file - use default dark theme
 Sample 5 Colorise XSLT, XSD and XPath embedded within <pre lang="x"> elements in an HTML file - use light-theme
-Sample 6 Colorise XSLT file (the xmlspectrum source code) and adds indentation - use light-theme
+Sample 6 Colorise and indent XSLT file (the xmlspectrum source code) - use default dark theme
+Sample 7 Colorise and reformat XSLT file (the xmlspectrum source code) - use default dark theme
 
 1. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../samples/xpathcolorer-x.xsl
 
@@ -46,4 +47,6 @@ Sample 6 Colorise XSLT file (the xmlspectrum source code) and adds indentation -
 
 5. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples/html-inline-sample.html -o:output/highlighted-inline.html light-theme=yes
 
-6. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../xsl/xmlspectrum.xsl indent=yes
+6. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../xsl/xmlspectrum.xsl indent=2
+
+7. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples/badly-formatted-extract.html indent=2 auto-trim=yes -o:output/reformatted-extract.html

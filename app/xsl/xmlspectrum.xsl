@@ -6,56 +6,12 @@ License: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.html
 
 Purpose: Syntax highlighter for XPath (text), XML, XSLT and XSD 1.1 file formats
 
-Usage:
-
-Stylesheet contains 4 'top-level' functions: 
-   f:render, loc:showXPath, f:get-css and f:indent
-
-Described below:
-
-1. f:render(xml-content, is-xml, root-prefix)
-
-description:
-
-    Converts the xml content string to a sequence of span elements. with each
-    containing a class attribute used for coloring with CSS. 
-
-params:
-    xml-content: string containing well-balanced XML extract - namespace and prefix
-                 declarations not required
-    is-xsl:      boolean specifying whether coloring is for XSLT, if this is false
-                 then XSD 1.1 coloring scheme is used instead
-    root-prefix: string prefix used for elements requiring special coloring for XSLT
-                 or XSD 1.1 - often 'xsl' and 'xs' respectively      
-
-2. loc:showXPath(text-content)
-
-description:
-
-    Converts the xpath content string to a sequence of span elements. with each
-    containing a class attribute used for coloring with CSS. 
-
-params:
-   text-content: string containing a single XPath expression
-
-3. f:get-css(is-light-theme)
-
-description:
-
-    Generates a CSS file used to colorise span elements generates by the previous 2 functions
-    The colors generated depend on whether a light or dark them is specified with the is-light-theme
-    parameter. The color theme uses the 'Solarized' color points specified at: http://ethanschoonover.com/solarized 
-
-params:
-    is-light-theme: boolean indicating whether to generate colors for a light or dark background. 
-
-4. f:indent(spans)
-
-description
-
-    Adds space characters for indentation to spans from XML-text processed with f:render. 
-    XML contents is indented in the conventional way, multi-line attribute names and values
-    are aligned vertically
+Interface Functions:
+====================
+f:render(xml-content, is-xml, root-prefix)
+loc:showXPath(text-content)
+f:get-css(is-light-theme)
+f:indent(spans, char-width)
 
 -->
 
@@ -67,14 +23,22 @@ xmlns:css="css-defs.com"
 exclude-result-prefixes="loc f xs css"
 xmlns=""
 xmlns:f="internal">
+<!--
+signature:
+    f:render(xml-content, is-xml, root-prefix)
 
+description:
+    Converts the xml content string to a sequence of span elements. with each
+    containing a class attribute used for coloring with CSS. 
 
-<xsl:param name="sourcepath" as="xs:string"/>
-
-<xsl:param name="light-theme" select="'no'"/>
-<xsl:param name="css-path" select="''"/>
-
-<!-- Entry point for rendering an XML string with embedded XPath -->
+params:
+    xml-content: string containing well-balanced XML extract - namespace and prefix
+                 declarations not required
+    is-xsl:      boolean specifying whether coloring is for XSLT, if this is false
+                 then XSD 1.1 coloring scheme is used instead
+    root-prefix: string prefix used for elements requiring special coloring for XSLT
+                 or XSD 1.1 - often 'xsl' and 'xs' respectively
+-->
 <xsl:function name="f:render">
 <xsl:param name="xmlText" as="xs:string"/>
 <xsl:param name="is-xsl" as="xs:boolean"/>
@@ -92,16 +56,36 @@ else concat($root-prefix-a, ':')"/>
 <xsl:sequence select="$spans"/>
 </xsl:function>
 
+<!-- 
+signature:
+    f:indent(spans, char-width)
+
+description
+    
+    Adds space characters for indentation to spans from XML-text processed with f:render. 
+    XML contents is indented in the conventional way, multi-line attribute names and values
+    are aligned vertically
+
+parameters:
+    spans:          Sequence of 'span' element nodes created by f:render
+    char-width:     integer: Number of characters for each indent level
+    auto-trim:      boolean: Trims any leading whitespace before indentation
+
+
+ -->
 <xsl:function name="f:indent">
 <xsl:param name="spans" as="element()*"/>
+<xsl:param name="char-width" as="xs:integer"/>
+<xsl:param name="auto-trim" as="xs:boolean"/>
 <xsl:call-template name="indentSpans">
 <xsl:with-param name="spans" select="$spans" as="element()*" tunnel="yes"/>
 <xsl:with-param name="index" as="xs:integer" select="1"/>
 <xsl:with-param name="level" as="xs:integer" select="0"/>
-<xsl:with-param name="margin" as="xs:integer" select="3"/>
+<xsl:with-param name="margin" as="xs:integer" select="$char-width"/>
 <xsl:with-param name="an-offset" as="xs:integer" select="0"/>
 <xsl:with-param name="av-offset" as="xs:integer" select="0"/>
 <xsl:with-param name="multi-line" as="xs:boolean" select="false()"/>
+<xsl:with-param name="auto-trim" as="xs:boolean" select="$auto-trim"/>
 </xsl:call-template>
 </xsl:function>
 
@@ -113,6 +97,7 @@ else concat($root-prefix-a, ':')"/>
 <xsl:param name="an-offset" as="xs:integer"/>
 <xsl:param name="av-offset" as="xs:integer"/>
 <xsl:param name="multi-line" as="xs:boolean"/>
+<xsl:param name="auto-trim" as="xs:boolean"/>
 
 <xsl:variable name="span" select="$spans[$index]"/>
 <xsl:variable name="class" select="$span/@class"/>
@@ -128,15 +113,13 @@ $spans[$index + 1]/@class eq 'ez'
 else false()"/>
 
 <xsl:variable name="indentOutput" select="f:indentTextSpan(
-$span, $level, $margin, $an-offset, $av-offset, $outdent, $nextClass, $prevClass, $multi-line
+$span, $level, $margin, $an-offset, $av-offset, $outdent,
+$nextClass, $prevClass, $multi-line, $auto-trim
 )"/>
 
 <xsl:sequence select="$indentOutput/span"/>
 
 <xsl:if test="$index lt count($spans)">
-<!--
-<xsl:sequence select="f:indentSpans($spans, $index + 1, $level2, $margin, $offset2)"/>
--->
 <xsl:call-template name="indentSpans">
 <xsl:with-param name="index" as="xs:integer" select="$index + 1"/>
 <xsl:with-param name="level" as="xs:integer" select="$level2"/>
@@ -144,11 +127,12 @@ $span, $level, $margin, $an-offset, $av-offset, $outdent, $nextClass, $prevClass
 <xsl:with-param name="an-offset" as="xs:integer" select="$indentOutput/an-offset"/>
 <xsl:with-param name="av-offset" as="xs:integer" select="$indentOutput/av-offset"/>
 <xsl:with-param name="multi-line" as="xs:boolean" select="$indentOutput/multi-line"/>
+<xsl:with-param name="auto-trim" as="xs:boolean" select="$auto-trim"/>
 </xsl:call-template>
 </xsl:if>
 </xsl:template>
 
-<xsl:function name="f:indentTextSpan">
+<xsl:function name="f:indentTextSpan" as="element()">
 <xsl:param name="span" as="element()"/>
 <xsl:param name="level" as="xs:integer"/>
 <xsl:param name="margin" as="xs:integer"/>
@@ -158,6 +142,7 @@ $span, $level, $margin, $an-offset, $av-offset, $outdent, $nextClass, $prevClass
 <xsl:param name="nextClass" as="xs:string?"/>
 <xsl:param name="prevClass" as="xs:string?"/>
 <xsl:param name="multi-line" as="xs:boolean"/>
+<xsl:param name="auto-trim" as="xs:boolean"/>
 
 <xsl:variable name="class" select="$span/@class"/>
 
@@ -166,7 +151,10 @@ $span, $level, $margin, $an-offset, $av-offset, $outdent, $nextClass, $prevClass
 <xsl:analyze-string select="$span" regex="\n.*">
 <xsl:matching-substring>
 <nl>
-<xsl:value-of select="substring(., 2)"/>
+<xsl:variable name="text" select="substring(., 2)"/>
+<xsl:value-of select="if ($auto-trim)
+then f:left-trim($text)
+else $text"/>
 </nl>
 </xsl:matching-substring>
 <xsl:non-matching-substring>
@@ -206,11 +194,12 @@ else 0"/>
 
 <xsl:variable name="an-outOffset" as="xs:integer"
 select="if ($class = ('en','enxsl'))
-then $lineOffset + 1
+    then $lineOffset + 1
 else if ($prevClass = ('en','enxsl'))
-then if (exists($indented-lines)) then 
-$compact
-else $an-offset + $lineOffset
+    then
+if (exists($indented-lines)) then 
+    $compact
+    else $an-offset + $lineOffset
 else $an-offset"/>
 
 <xsl:variable name="av-outOffset" as="xs:integer"
@@ -253,14 +242,6 @@ else if ($multi-line and $offset gt 0) then
 concat($indent, string($line-parts[1]))
 else string($line-parts[1])"/>
 <output>
-<!--
-<xsl:if test="$nextClass eq 'atn'">
-<span class="function">
-<xsl:text>off: </xsl:text><xsl:value-of select="$offset"/>
-</span>
-</xsl:if>
-
--->
 <span>
 <xsl:copy-of select="$span/@*"/>
 <xsl:value-of select="$span-text"/>
@@ -274,10 +255,13 @@ else string($line-parts[1])"/>
 <multi-line>
 <xsl:value-of select="exists($indented-lines)"/>
 </multi-line>
-
 </output>
 
+</xsl:function>
 
+<xsl:function name="f:left-trim" as="xs:string">
+<xsl:param name="text"/>
+<xsl:value-of select="replace($text, '^\s+', '')"/>
 </xsl:function>
 
 <xsl:function name="f:createIndent" as="xs:string?">
@@ -288,7 +272,20 @@ return ' ','')"/>
 </xsl:if>
 </xsl:function>
 
+<!--
+signature: 
+    f:get-css(is-light-theme)
 
+description:
+
+    Generates a CSS file used to colorise span elements generates by the previous 2 functions
+    The colors generated depend on whether a light or dark them is specified with the is-light-theme
+    parameter. The color theme uses the 'Solarized' color points specified at: http://ethanschoonover.com/solarized
+
+params:
+    is-light-theme: boolean indicating whether to generate colors for a light or dark background. 
+
+-->
 <xsl:function name="f:get-css">
 <xsl:param name="is-light-theme" as="xs:boolean"/>
 <xsl:apply-templates select="document('')/xsl:stylesheet/css:theme" mode="css">
@@ -851,7 +848,18 @@ span.green, span.cm, span.comment {
 <xsl:variable name="bgColor" select="'black'" as="xs:string"/>
 
 
-<!-- Entry point for rendering an XML file with embedded XPath -->
+<!--
+signature:
+    loc:showXPath(text-content)
+
+description:
+
+    Converts the xpath content string to a sequence of span elements. with each
+    containing a class attribute used for coloring with CSS. 
+
+params:
+   text-content: string containing a single XPath expression
+-->
 <xsl:function name="loc:showXPath">
 <xsl:param name="chunk"/>
 
@@ -889,6 +897,7 @@ select="($blocks[name() = ('literal','comment')])"/>
 <comment start="76"/> // if not closed
  -->
 
+<!-- diagnostic formatting function - not used -->
 <xsl:function name="loc:pad" as="xs:string">
 <xsl:param name="padStringIn" as="xs:string?"/>
 <xsl:param name="fixedWidth" as="xs:integer"/>
