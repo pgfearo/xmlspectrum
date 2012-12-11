@@ -94,6 +94,7 @@ else ()"/>
 <xsl:variable name="file-content" as="xs:string" select="unparsed-text($corrected-uri)"/>
 
 <xsl:result-document href="{concat('output/', $input-file, '.html')}" method="html" indent="no">
+<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
 <html>
 <head>
 <title><xsl:value-of select="$input-file"/></title>

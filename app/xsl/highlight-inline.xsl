@@ -47,7 +47,7 @@ xmlns:f="internal">
 
 <xsl:import href="xmlspectrum.xsl"/>
 
-<xsl:output indent="no" method="xhtml"/>
+<xsl:output indent="no" method="html"/>
 
 <xsl:param name="light-theme" select="'no'" as="xs:string"/>
 <xsl:param name="indent" select="'0'" as="xs:string"/>
@@ -59,6 +59,13 @@ xmlns:f="internal">
 <xsl:template match="/">
 <xsl:apply-templates/>
 <xsl:call-template name="create-css"/>
+</xsl:template>
+
+<xsl:template match="html">
+<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
+<xsl:copy>
+<xsl:apply-templates select="node()|@*"/>
+</xsl:copy>
 </xsl:template>
 
 <xsl:template match="head">

@@ -151,7 +151,7 @@ $nextClass, $prevClass, $multi-line, $auto-trim
 <xsl:analyze-string select="$span" regex="\n.*">
 <xsl:matching-substring>
 <nl>
-<xsl:variable name="text" select="substring(., 2)"/>
+<xsl:variable name="text" select="substring(., 2)" as="xs:string"/>
 <xsl:value-of select="if ($auto-trim)
 then f:left-trim($text)
 else $text"/>
@@ -189,7 +189,7 @@ select="if ($flat-part) then $flat-part else ''"/>
 
 <xsl:variable name="lineOffset" as="xs:integer"
 select="if (exists($firstLine))
-then string-length($firstLine)
+    then string-length($firstLine)
 else 0"/>
 
 <xsl:variable name="an-outOffset" as="xs:integer"
@@ -204,22 +204,22 @@ else $an-offset"/>
 
 <xsl:variable name="av-outOffset" as="xs:integer"
 select="if ($prevClass = ('en','enxsl'))
-then 0
+    then 0
 else if ($class eq 'atn' and $multi-line)
-then $lineOffset 
+    then $lineOffset 
 else if ($prevClass eq 'atneq' or $class = ('atneq','atn','vname','av')
-or ($class eq 'z' and $nextClass = ('atneq','atn','vname','av'))
+    or ($class eq 'z' and $nextClass = ('atneq','atn','vname','av'))
 or ($class eq 'z' and $prevClass = ('vname','av')))
-then $av-offset + $lineOffset
+    then $av-offset + $lineOffset
 else $av-offset"/>
 
 <xsl:variable name="offset" as="xs:integer"
 select="if ($prevClass = ('en','enxsl'))
-then $compact
+    then $compact
 else if ($nextClass eq 'atn') 
-then $an-outOffset
+    then $an-outOffset
 else if ($nextClass = 'av' or $class eq 'whitespace')
-then $an-outOffset + $av-outOffset
+    then $an-outOffset + $av-outOffset
 else 0"/>
 
 <xsl:variable name="indent" select="f:createIndent(($level * $margin) + $offset)"/>
@@ -246,6 +246,16 @@ else string($line-parts[1])"/>
 <xsl:copy-of select="$span/@*"/>
 <xsl:value-of select="$span-text"/>
 </span>
+<!--
+<span class="literal">
+<xsl:text>[il: </xsl:text><xsl:value-of select="$line-count"/><xsl:text>]</xsl:text>
+<xsl:for-each select="$line-parts">
+<xsl:value-of select="name(.)"/>
+<xsl:text> </xsl:text>
+</xsl:for-each>
+<xsl:text>]]</xsl:text>
+</span>
+-->
 <an-offset>
 <xsl:value-of select="$an-outOffset"/>
 </an-offset>
