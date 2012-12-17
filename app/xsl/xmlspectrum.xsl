@@ -12,6 +12,8 @@ f:render(xml-content, is-xml, root-prefix)
 loc:showXPath(text-content)
 f:get-css(is-light-theme)
 f:indent(spans, char-width)
+f:target(spans)
+f:link(spans, paths, location)
 
 -->
 
@@ -134,6 +136,161 @@ $nextClass, $prevClass, $multi-line, $auto-trim
 
 </xsl:if>
 </xsl:template>
+
+<!--
+signature:
+    f:link(spans, paths, location)
+
+description:
+    For XPath functions and variables, wraps their <span> elements with <a>
+    elements and href attribute with #id values
+
+    Calls this function after f:target() has been called on each XSLT in the
+    module collection that adds the corresponding id attribute and produces
+    the paths data
+
+params:
+    spans:     element sequence containing span elements output from f:render()
+    paths:     element sequence with one element for each function or variable defined
+               members of each element identify the function/variable name and
+               its path relative to the top-level folder
+    location:  the path of the current file relative to the top-level
+-->
+
+<xsl:function name="f:link">
+<xsl:param name="spans" as="element()*"/>
+<xsl:param name="paths" as="xs:string*"/>
+</xsl:function>
+
+<!--
+signature:
+    f:target(spans, xmlns)
+
+description:
+    For each span in the input parameter, adds id attribute for function qnames
+    declared in module uses the form id="f-{xmlns}name" or v-{xmlns}name
+    Call this function after f:render() has been called on the module to
+    produce the span elements that are effectively tokens
+
+params:
+    spans:     element sequence containing span elements output from f:render()
+    xmlns:     sequence of 'ns' elements with 'prefix' and 'uri' attributes
+               used to assign the uri for variable or function names
+    location:  the path of the current file relative to the top-level
+
+returns:
+    A sequence of 2 elements:
+    spans: container for all updated span elements
+    xmlns: container for all namespace (ns) elements
+-->
+
+<xsl:function name="f:target">
+<xsl:param name="spans" as="element()*"/>
+<xsl:variable name="xmlns" as="element()*"
+select="f:get-xmlns($spans)"/>
+<result>
+<spans>
+<xsl:apply-templates select="$spans" mode="target">
+<xsl:with-param name="xmlns" tunnel="yes" select="$xmlns"/>
+</xsl:apply-templates>
+</spans>
+<xsl:sequence select="$xmlns"/>
+</result>
+</xsl:function>
+
+<xsl:template match="span" mode="target">
+<xsl:param name="xmlns" as="element()*" tunnel="yes"/>
+<xsl:choose>
+<xsl:when test="@class = ('fname', 'tname')">
+<xsl:variable name="char" select="substring(@class,1,1)"/>
+<xsl:variable name="name" select="."/>
+<xsl:variable name="prefix" select="substring-before($name, ':')"/>
+<xsl:variable name="prefix-length"
+select="if ($prefix eq '') then 1
+else string-length($prefix) + 2"/>
+
+<xsl:variable name="local-name" select="substring($name, $prefix-length)"/>
+<xsl:variable name="clark-name"
+select="if ($prefix eq '')
+then ''
+else
+concat('{',
+$xmlns/ns[@prefix eq $prefix]/@uri,
+'}')
+"/>
+<xsl:copy>
+<xsl:copy-of select="@*"/>
+<xsl:attribute name="id" select="concat($char, '-',$clark-name, $local-name)"/>
+<xsl:value-of select="$name"/>
+</xsl:copy>
+</xsl:when>
+<xsl:otherwise>
+<xsl:copy-of select="."/>
+</xsl:otherwise>
+</xsl:choose>
+</xsl:template>
+
+<xsl:function name="f:get-xmlns">
+<xsl:param name="spans" as="element()*"/>
+<xsl:variable name="p-spans" as="element()">
+<p>
+<xsl:call-template name="get-root-spans">
+<xsl:with-param name="spans" as="element()*"
+ select="$spans" tunnel="yes"/>
+<xsl:with-param name="index" as="xs:integer" select="1"/>
+</xsl:call-template>
+</p>
+</xsl:variable>
+<xmlns>
+<xsl:for-each select="$p-spans/span[@class eq 'atn'][starts-with(., 'xmlns')]">
+<xsl:variable name="att-value">
+<xsl:call-template name="get-next-class">
+<xsl:with-param name="spans" as="element()*" tunnel="yes"/>
+<xsl:with-param name="index" as="xs:integer" select="count(preceding-sibling::*)"/>
+<xsl:with-param name="class" as="xs:string" select="'av'" tunnel="yes"/>
+</xsl:call-template> 
+</xsl:variable>
+<ns prefix="{substring-after(., ':')}"
+uri="{./following-sibling::*[position() lt 5][@class eq 'av'][1]}"/>
+</xsl:for-each>
+</xmlns>
+</xsl:function>
+
+<xsl:template name="get-root-spans">
+<xsl:param name="spans" tunnel="yes" as="element()*"/>
+<xsl:param name="index" as="xs:integer"/>
+<xsl:variable name="span" select="$spans[$index]"/>
+
+<xsl:if test="$index + 1 lt count($spans)
+and $span/@class ne 'scx'">
+<xsl:sequence select="$span"/>
+<xsl:call-template name="get-root-spans">
+<xsl:with-param name="index" select="$index + 1"/>
+</xsl:call-template>
+</xsl:if>
+
+</xsl:template>
+
+<xsl:template name="get-next-class" as="element()?">
+<xsl:param name="spans" tunnel="yes" as="element()*"/>
+<xsl:param name="index" as="xs:integer"/>
+<xsl:param name="class" as="xs:string" tunnel="yes"/>
+<xsl:variable name="span" select="$spans[$index]"/>
+
+<xsl:choose>
+<xsl:when test="$span/@class eq $class">
+<xsl:sequence select="$span"/>
+</xsl:when>
+<xsl:when test="$index + 1 lt count($spans)">
+<xsl:call-template name="get-root-spans">
+<xsl:with-param name="index" select="$index + 1"/>
+</xsl:call-template>
+</xsl:when>
+</xsl:choose>
+
+</xsl:template>
+
+
 
 <xsl:function name="f:indentTextSpan" as="element()">
 <xsl:param name="span" as="element()"/>
@@ -312,10 +469,10 @@ params:
 select="for $a in ('variable','param') return concat($prefix, $a)"/>
 </xsl:function>
 
-<xsl:function name="f:get-xslt-fnames" as="xs:string*">
+<xsl:function name="f:prefixed-name" as="xs:string*">
 <xsl:param name="prefix" as="xs:string"/>
-<xsl:sequence
-select="for $a in ('template','function') return concat($prefix, $a)"/>
+<xsl:param name="name" as="xs:string"/>
+<xsl:sequence select="concat($prefix, $name)"/>
 </xsl:function>
 
 <xsl:function name="f:get-xsd-names" as="xs:string*">
@@ -663,7 +820,8 @@ else false()"/>
 <xsl:variable name="metaXPathName" as="xs:string"
 select="if ($is-xsl-element) then
 if ($elementName = f:get-xslt-names($root-prefix)) then 'vname'
-else if ($elementName = f:get-xslt-fnames($root-prefix)) then 'fname'
+else if ($elementName = f:prefixed-name($root-prefix, 'function')) then 'fname'
+else if ($elementName = f:prefixed-name($root-prefix, 'template')) then 'tname'
 else 'av'
 else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'fname' else 'av'"/>
 
@@ -824,7 +982,7 @@ span.yellow, span.op, span.type-op, span.if, span.higher, span.step {
 span.orange, span.type, span.node-type, span.function {
     color: #cb4b16;
 }
-span.red, span.fname {
+span.red, span.fname, span.tname {
     color: #dc322f;
 }
 span.magenta, span.vname, span.variable, span.external  {

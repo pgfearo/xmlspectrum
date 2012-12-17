@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<abc>
+The quick brown <![CDATA[<library><books><book class="fiction>War and Peace</book></books></library>]]>
+</abc>

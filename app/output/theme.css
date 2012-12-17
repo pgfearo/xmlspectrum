@@ -1,4 +1,4 @@
-pre.xslt, pre.xsd, pre.xpath, 
+
 p.spectrum {
     margin:0px;
     font-family: monospace;
@@ -66,7 +66,7 @@ span.yellow, span.op, span.type-op, span.if, span.higher, span.step {
 span.orange, span.type, span.node-type, span.function {
     color: #cb4b16;
 }
-span.red, span.fname {
+span.red, span.fname, span.tname {
     color: #dc322f;
 }
 span.magenta, span.vname, span.variable, span.external  {

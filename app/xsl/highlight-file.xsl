@@ -9,6 +9,8 @@ Purpose: Syntax highlighter for XPath (text), XML, XSLT and XSD 1.1 file formats
 
 Description:
 
+A sample XSLT stylesheet that exploits xmlspectrum.xsl
+
 Takes the input file specified in the sourcepath XSLT parameter and generates an
 HTML output file and a CSS file. The input file may be 1 of 4 types:
 
@@ -60,9 +62,11 @@ xmlns:f="internal">
 <xsl:param name="light-theme" select="'no'"/>
 <xsl:param name="css-path" select="''"/>
 <xsl:param name="auto-trim" select="'no'"/>
+<xsl:param name="link-names" select="'no'"/>
+
 
 <xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/>
-
+<xsl:variable name="do-link" select="$link-names eq 'yes'"/>
 <xsl:variable name="indent-size" select="xs:integer($indent)"/>
 
 <xsl:template name="main" match="/">
@@ -107,6 +111,7 @@ then $css-path else 'theme.css'}"/>
 <!-- Call to imported functions returns sequence of span elements
      with class attribute values used to colorise with CSS
 -->
+<xsl:variable name="out-spans" as="element()*">
 <xsl:choose>
 <xsl:when test="$is-xml and $indent-size lt 0 and not($do-trim)">
 <!-- for case where XPath is embedded in XML text -->
@@ -122,6 +127,29 @@ as="xs:integer"/>
 <xsl:otherwise>
 <!-- for case where XPath is standalone -->
 <xsl:sequence select="loc:showXPath($file-content)"/>
+</xsl:otherwise>
+</xsl:choose>
+</xsl:variable>
+
+<xsl:choose>
+<xsl:when test="$is-xml and $do-link">
+<!--
+<xsl:variable name="xmlns" select="f:get-xmlns($out-spans)"/>
+<xsl:for-each select="$xmlns">
+<span class="av">&#10;xmlns&#10;</span>
+<span class="atn">@prefix <xsl:value-of select="@prefix"/></span>
+<span class="av"> @uri <xsl:value-of select="@uri"/></span>
+</xsl:for-each>
+
+-->
+<xsl:variable name="target-result" select="f:target($out-spans)"/>
+<!--
+<span class="av">count-x: <xsl:value-of select="$target-result/xmlns/ns/@uri"/></span>
+-->
+<xsl:sequence select="$target-result/spans"/>
+</xsl:when>
+<xsl:otherwise>
+<xsl:sequence select="$out-spans"/>
 </xsl:otherwise>
 </xsl:choose>
 </p>
