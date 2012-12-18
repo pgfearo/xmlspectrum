@@ -196,7 +196,9 @@ as="xs:integer"/>
 </xsl:for-each>
 
 -->
+<!--
 <span class="av">baseuri: <xsl:value-of select="base-uri($root-element)"/></span>
+-->
 <xsl:variable name="target-result" select="f:target($out-spans)"/>
 <!--
 <span class="av">count-x: <xsl:value-of select="$target-result/xmlns/ns/@uri"/></span>
