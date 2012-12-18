@@ -41,6 +41,12 @@ params:
     root-prefix: string prefix used for elements requiring special coloring for XSLT
                  or XSD 1.1 - often 'xsl' and 'xs' respectively
 -->
+
+
+<xsl:import href="dummy.xsl"/>
+<xsl:include href="sub/dummy2.xsl"/>
+
+
 <xsl:function name="f:render">
 <xsl:param name="xmlText" as="xs:string"/>
 <xsl:param name="is-xsl" as="xs:boolean"/>
@@ -186,20 +192,21 @@ returns:
 
 <xsl:function name="f:target">
 <xsl:param name="spans" as="element()*"/>
-<xsl:variable name="xmlns" as="element()*"
-select="f:get-xmlns($spans)"/>
-<result>
+<xsl:param name="xmlns" as="element()"/>
+<xsl:param name="globals" as="element()"/>
+
 <spans>
 <xsl:apply-templates select="$spans" mode="target">
 <xsl:with-param name="xmlns" tunnel="yes" select="$xmlns"/>
+<xsl:with-param name="globals" tunnel="yes" select="$globals"/>
 </xsl:apply-templates>
 </spans>
 <xsl:sequence select="$xmlns"/>
-</result>
 </xsl:function>
 
 <xsl:template match="span" mode="target">
-<xsl:param name="xmlns" as="element()*" tunnel="yes"/>
+<xsl:param name="xmlns" as="element()" tunnel="yes"/>
+<xsl:param name="globals" as="element()" tunnel="yes"/>
 <xsl:choose>
 <xsl:when test="@class = ('fname', 'tname')">
 <xsl:variable name="char" select="substring(@class,1,1)"/>
@@ -224,13 +231,16 @@ $xmlns/ns[@prefix eq $prefix]/@uri,
 <xsl:value-of select="$name"/>
 </xsl:copy>
 </xsl:when>
+<xsl:when test="@class = 'en'">
+<xsl:copy-of select="."/>
+</xsl:when>
 <xsl:otherwise>
 <xsl:copy-of select="."/>
 </xsl:otherwise>
 </xsl:choose>
 </xsl:template>
 
-<xsl:function name="f:get-xmlns">
+<xsl:function name="f:get-xmlns" as="element()">
 <xsl:param name="spans" as="element()*"/>
 <xsl:variable name="p-spans" as="element()">
 <p>
