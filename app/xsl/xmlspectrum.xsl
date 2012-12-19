@@ -195,13 +195,10 @@ returns:
 <xsl:param name="xmlns" as="element()"/>
 <xsl:param name="globals" as="element()"/>
 
-<spans>
 <xsl:apply-templates select="$spans" mode="target">
 <xsl:with-param name="xmlns" tunnel="yes" select="$xmlns"/>
 <xsl:with-param name="globals" tunnel="yes" select="$globals"/>
 </xsl:apply-templates>
-</spans>
-<xsl:sequence select="$xmlns"/>
 </xsl:function>
 
 <xsl:template match="span" mode="target">
@@ -968,6 +965,16 @@ color: #002b36;
 span.base02 {
 color: #073642;
 }
+
+/* hover-effect [start] */
+span.base03, span.ww:not(:hover), span.txt:not(:hover), span.cm:not(:hover), span.pi:not(:hover)  {
+background-color: <css:background dark="#002b36" light="white"/>;
+}
+span.ww {
+background-color: <css:background dark="#00202e" light="#fdf6e3"/>;
+}
+/* hover-effect [end] */
+
 span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq {
 color: #586e75;
 }
