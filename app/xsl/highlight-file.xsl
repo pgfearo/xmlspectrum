@@ -122,6 +122,7 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 <globals>
 <xsl:for-each select="$all-files">
 <file path="{substring(., $root-length + 1)}">
+<uri><xsl:value-of select="."/></uri>
 <xsl:sequence select="f:get-globals(.)"/>
 </file>
 </xsl:for-each>
@@ -133,10 +134,13 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 <xsl:for-each select="$globals/file">
 
 <xsl:message><xsl:value-of select="'tokenizing', @path, '...'"/></xsl:message>
+<xsl:variable name="full-uri" select="if (not(starts-with(uri, 'file:/'))) then
+    concat('file:/', uri)
+else uri"/>
 
 <xsl:variable name="all-spans" as="node()*">
 <xsl:call-template name="get-result-spans">
-<xsl:with-param name="input-uri" select="@path"/>
+<xsl:with-param name="input-uri" select="$full-uri"/>
 <xsl:with-param name="is-xml" select="$is-xml" as="xs:boolean"/>
 <xsl:with-param name="is-xsl" select="$is-xsl" as="xs:boolean"/>
 <xsl:with-param name="indent-size" select="$indent-size" as="xs:integer"/>
@@ -144,9 +148,18 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 </xsl:call-template>
 </xsl:variable>
 
+
+<xsl:variable name="f-length" as="xs:integer"
+select="string-length(f:file-from-uri(@path))"/>
+<xsl:variable name="p-length" as="xs:integer"
+select="(string-length(@path) - $f-length)"/>
+<xsl:variable name="path" select="substring(@path, 1, $p-length)"/>
+
 <xsl:message>
-<xsl:value-of select="'processing', count($all-spans), 'tokens for', @path"/>
+<xsl:value-of select="'processing', count($all-spans), 'tokens for', $p-length + 1"/>
 </xsl:message>
+
+
 
 <xsl:variable name="xmlns" as="element()" select="f:get-xmlns($all-spans)"/>
 
@@ -156,7 +169,8 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 select="$all-spans"/>
 <xsl:with-param name="globals" select="$globals" tunnel="yes" as="element()"/>
 <xsl:with-param name="xmlns" select="$xmlns" tunnel="yes" as="element()"/>
-<xsl:with-param name="index" select="1"/>
+<xsl:with-param name="index" select="1" as="xs:integer"/>
+<xsl:with-param name="path-length" select="$p-length + 1" as="xs:integer" tunnel="yes"/>
 </xsl:call-template>
 </xsl:variable>
 
@@ -169,6 +183,8 @@ else $css-path"/>
 <xsl:with-param name="filename" select="@path"/>
 <xsl:with-param name="css-link" select="$css-link"/>
 </xsl:call-template>
+
+
 
 </xsl:for-each>
 
@@ -225,11 +241,12 @@ concat(
 <xsl:param name="globals" as="element()" tunnel="yes"/>
 <xsl:param name="xmlns" as="element()" tunnel="yes"/>
 <xsl:param name="index" as="xs:integer"/>
+<xsl:param name="path-length" tunnel="yes" as="xs:integer" select="0"/>
 
 <xsl:variable name="span" select="$spans[$index]"/>
 
 <xsl:if test="$index mod 500 eq 0">
-<xsl:message><xsl:value-of select="'token: ', $index"/></xsl:message>
+<xsl:message><xsl:value-of select="'token: ', $index, 'pl', $path-length"/></xsl:message>
 </xsl:if>
 
 <xsl:choose>
@@ -262,8 +279,11 @@ select="xs:integer(substring($span-children[last()]/@id, 3
 <xsl:otherwise>
 
 <xsl:apply-templates select="$span" mode="markup">
+<!--
 <xsl:with-param name="xmlns" tunnel="yes" select="$xmlns"/>
 <xsl:with-param name="globals" tunnel="yes" select="$globals"/>
+<xsl:with-param name="path" tunnel="yes"/>
+-->
 </xsl:apply-templates>
 
 <xsl:call-template name="wrap-spans">
@@ -430,7 +450,7 @@ namespace-uri-for-prefix($prefix, .),
 <xsl:param name="is-xsl" as="xs:boolean"/>
 <xsl:param name="indent-size" as="xs:integer"/>
 <xsl:param name="root-prefix"/>
-
+<xsl:message><xsl:value-of select="'input-uri', $input-uri"/></xsl:message>
 <xsl:variable name="file-content" as="xs:string" select="unparsed-text($input-uri)"/>
 <xsl:variable name="file-only" select="f:file-from-uri($input-uri)"/>
 

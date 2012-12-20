@@ -54,5 +54,10 @@ Sample 8 Colorise and reformat a blog entry containing XSLT, XSD and XPath - use
 
 8. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples/blog-sample.html indent=2 -o:output/blog-sample.html
 
+C:\Users\Philip\Documents\docbook-xslt2-2.0.0\xslt\base\html\docbook.xsl
 
+9. java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main -xsl:xsl/highlight-file.xsl sourcepath=../xsl/highlight-file.xsl indent=2 link-names=yes light-theme=yes
 
+10. C:\Users\Philip\Documents\xmlspectrum\app>java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t
+ -it:main -xsl:xsl/highlight-file.xsl sourcepath="C:\Users\Philip\Documents\docbook-xslt2-2.0.0\xslt\base\html\docbook".
+xsl indent=0 link-names=yes

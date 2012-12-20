@@ -195,9 +195,8 @@ parameters:
 <xsl:template match="span" mode="markup">
 <xsl:param name="xmlns" as="element()" tunnel="yes"/>
 <xsl:param name="globals" as="element()" tunnel="yes"/>
-<!--
-<xsl:param name="element-qname" as="xs:QName"/>
--->
+<xsl:param name="path-length" as="xs:integer" tunnel="yes" select="0"/>
+
 <xsl:variable name="ref-name"
 select="if (@class eq 'variable') then
 substring(., 2)
@@ -240,7 +239,9 @@ select="if (@class eq 'href') then
 else if (@class eq 'function' and not(contains(., ':'))) then
     concat($w3c-xpath-functions-uri, '#', concat('func-', .))
 else if (exists($resolved-ref)) then
-    concat($resolved-ref, '.html', '#', $id)
+    concat(
+    substring($resolved-ref, $path-length),
+    '.html', '#', $id)
 else ()"/>
 <xsl:choose>
 <xsl:when test="exists($href)">
@@ -334,7 +335,7 @@ and $span/@class ne 'scx'">
 <xsl:variable name="class" select="$span/@class"/>
 
 <xsl:variable name="line-parts" as="element()*">
-<xsl:analyze-string select="$span" regex="\n.*">
+<xsl:analyze-string select="$span" regex="\n.*|\r\n.*">
 <xsl:matching-substring>
 <nl>
 <xsl:variable name="text" select="substring(., 2)" as="xs:string"/>
@@ -1162,14 +1163,14 @@ select="string-length(@value) gt 1 and ends-with(@value, '(')"/>
 <xsl:choose>
 <xsl:when test="exists(@type)">
 <xsl:value-of select="if (@type eq 'literal' and
-matches(@value ,'select[\n\p{Zs}]*=[\n\p{Zs}]*[&quot;&apos;&apos;]'))
+matches(@value ,'select[\s\p{Zs}]*=[\s\p{Zs}]*[&quot;&apos;&apos;]'))
 then 'select'
 else @type"/>
 </xsl:when>
 <xsl:otherwise>
 <xsl:variable name="p" select="$para[$index - 1] "/>
 <xsl:value-of select="if ($p/@type eq 'literal' and
-matches($p/@value ,'name[\n\p{Zs}]*=[\n\p{Zs}]*[&quot;&apos;&apos;]'))
+matches($p/@value ,'name[\s\p{Zs}]*=[\s\p{Zs}]*[&quot;&apos;&apos;]'))
 then 'external'
 else 'qname'"/>
 </xsl:otherwise>
@@ -1628,7 +1629,7 @@ select="$start + string-length($token)"/>
 </xsl:when>
 <xsl:otherwise>
 <xsl:variable name="splitToken" as="xs:string*"
-select="tokenize($token, '[\n\p{Zs}]+')"/>
+select="tokenize($token, '[\s\p{Zs}]+')"/>
 <xsl:value-of
 select="if (count($splitToken) ne 2) then false()
 else if ($splitToken[1] eq 'instance' and $splitToken[2] eq 'of') 
@@ -1649,7 +1650,7 @@ then true() else false()"/>
 <xsl:text></xsl:text>
 </xsl:when>
 <xsl:otherwise>
-<xsl:variable name="fnName" as="xs:string" select="tokenize($token, '[\n\p{Zs}]+|\(')[1]"/>
+<xsl:variable name="fnName" as="xs:string" select="tokenize($token, '[\s\p{Zs}]+|\(')[1]"/>
 <xsl:choose>
 <xsl:when test="$fnName = 'if'">
 <xsl:text>if</xsl:text>
@@ -1675,7 +1676,7 @@ then true() else false()"/>
 <xsl:when test="ends-with($token, '::') or $token eq '@'">
 <xsl:attribute name="type" select="'axis'"/>
 </xsl:when>
-<xsl:when test="matches($token,'[\n\p{Zs}]+')">
+<xsl:when test="matches($token,'[\s\p{Zs}]+')">
 <xsl:attribute name="type" select="'whitespace'"/>
 </xsl:when>
 <xsl:when test="$token = ('.','..')">
@@ -1719,7 +1720,7 @@ then true() else false()"/>
 <xsl:param name="index" as="xs:integer"/>
 <xsl:choose>
 <xsl:when test="true()"><!-- test="$index + 2 lt count($tokens)">  --> 
-<xsl:value-of select="if(replace($tokens[$index + 1],'[\n\p{Zs}]+','') eq '')
+<xsl:value-of select="if(replace($tokens[$index + 1],'[\s\p{Zs}]+','') eq '')
 then $tokens[$index + 2] else $tokens[$index + 1]"/>
 </xsl:when>
 <xsl:otherwise></xsl:otherwise>
@@ -1729,7 +1730,7 @@ then $tokens[$index + 2] else $tokens[$index + 1]"/>
 <xsl:function name="loc:rawTokens" as="xs:string*">
 <xsl:param name="chunk" as="xs:string"/>
 <xsl:analyze-string
-regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(instance[\n\p{{Zs}}]+of)|(cast[\n\p{{Zs}}]+as)|(castable[\n\p{{Zs}}]+as)|(treat[\n\p{{Zs}}]+as)|((\$[\n\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-]*(:[\p{{L}}\p{{Nd}}\.\-\*]*)?(::)?:?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\n\p{{Zs}}]+)|(\C)"
+regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(instance[\s\p{{Zs}}]+of)|(cast[\s\p{{Zs}}]+as)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|((\$[\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-]*(:[\p{{L}}\p{{Nd}}\.\-\*]*)?(::)?:?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
 select="$chunk">
 <xsl:matching-substring>
 <xsl:value-of select="string(.)"/>
