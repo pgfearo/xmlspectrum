@@ -168,68 +168,71 @@ params:
 <xsl:param name="paths" as="xs:string*"/>
 </xsl:function>
 
-<!--
-signature:
-    f:target(spans, xmlns)
-
-description:
-    For each span in the input parameter, adds id attribute for function qnames
-    declared in module uses the form id="f-{xmlns}name" or v-{xmlns}name
-    Call this function after f:render() has been called on the module to
-    produce the span elements that are effectively tokens
-
-params:
-    spans:     element sequence containing span elements output from f:render()
-    xmlns:     sequence of 'ns' elements with 'prefix' and 'uri' attributes
-               used to assign the uri for variable or function names
-    location:  the path of the current file relative to the top-level
-
-returns:
-    A sequence of 2 elements:
-    spans: container for all updated span elements
-    xmlns: container for all namespace (ns) elements
--->
-
-<xsl:function name="f:target">
-<xsl:param name="spans" as="element()*"/>
+<xsl:function name="f:clark-name" as="xs:string">
 <xsl:param name="xmlns" as="element()"/>
-<xsl:param name="globals" as="element()"/>
+<xsl:param name="name" as="xs:string"/>
 
-<xsl:apply-templates select="$spans" mode="target">
-<xsl:with-param name="xmlns" tunnel="yes" select="$xmlns"/>
-<xsl:with-param name="globals" tunnel="yes" select="$globals"/>
-</xsl:apply-templates>
-</xsl:function>
-
-<xsl:template match="span" mode="target">
-<xsl:param name="xmlns" as="element()" tunnel="yes"/>
-<xsl:param name="globals" as="element()" tunnel="yes"/>
-<xsl:choose>
-<xsl:when test="@class = ('fname', 'tname')">
-<xsl:variable name="char" select="substring(@class,1,1)"/>
-<xsl:variable name="name" select="."/>
 <xsl:variable name="prefix" select="substring-before($name, ':')"/>
 <xsl:variable name="prefix-length"
 select="if ($prefix eq '') then 1
 else string-length($prefix) + 2"/>
 
-<xsl:variable name="local-name" select="substring($name, $prefix-length)"/>
-<xsl:variable name="clark-name"
-select="if ($prefix eq '')
-then ''
+<xsl:variable name="local-name" select="substring($name, $prefix-length)" as="xs:string"/>
+<xsl:sequence
+select="if ($prefix eq '') then
+$local-name
 else
 concat('{',
 $xmlns/ns[@prefix eq $prefix]/@uri,
-'}')
+'}',
+$local-name)
 "/>
+
+</xsl:function>
+
+<xsl:function name="f:gen-id" as="xs:string">
+<xsl:param name="type-prefix"/>
+<xsl:param name="clark-name"/>
+<xsl:variable name="char" select="substring($type-prefix,1,1)"/>
+<xsl:value-of select="concat($char, '?',$clark-name)"/>
+
+</xsl:function>
+
+
+<xsl:template match="span" mode="markup">
+<xsl:param name="xmlns" as="element()" tunnel="yes"/>
+<xsl:param name="globals" as="element()" tunnel="yes"/>
+<!--
+<xsl:param name="element-qname" as="xs:QName"/>
+-->
+<xsl:variable name="ref-name"
+select="if (@class eq 'variable') then
+substring(., 2)
+else ." as="xs:string"/>
+<xsl:variable name="clark-name" select="f:clark-name($xmlns, $ref-name)" as="xs:string"/>
+<xsl:variable name="id" select="f:gen-id(@class, $clark-name)"/>
+
+<xsl:choose>
+<xsl:when test="@class = ('fname', 'tname')">
 <xsl:copy>
 <xsl:copy-of select="@*"/>
-<xsl:attribute name="id" select="concat($char, '-',$clark-name, $local-name)"/>
-<xsl:value-of select="$name"/>
+<xsl:attribute name="id" select="$id"/>
+<xsl:value-of select="$ref-name"/>
 </xsl:copy>
 </xsl:when>
-<xsl:when test="@class = 'en'">
+<xsl:when test="@class = 
+('variable', 'href','tcall')
+or
+(@class eq 'function' and contains(., ':'))">
+
+<xsl:variable name="href"
+select="if (@class eq 'href') then
+concat(., '.html')
+else
+concat('#',$id)"/>
+<a href="{$href}" class="solar">
 <xsl:copy-of select="."/>
+</a>
 </xsl:when>
 <xsl:otherwise>
 <xsl:copy-of select="."/>
@@ -470,16 +473,12 @@ params:
 </xsl:apply-templates>
 </xsl:function>
 
-<xsl:function name="f:get-xslt-names" as="xs:string*">
-<xsl:param name="prefix" as="xs:string"/>
-<xsl:sequence
-select="for $a in ('variable','param') return concat($prefix, $a)"/>
-</xsl:function>
-
 <xsl:function name="f:prefixed-name" as="xs:string*">
 <xsl:param name="prefix" as="xs:string"/>
-<xsl:param name="name" as="xs:string"/>
-<xsl:sequence select="concat($prefix, $name)"/>
+<xsl:param name="name" as="xs:string+"/>
+<xsl:for-each select="$name">
+<xsl:sequence select="concat($prefix, .)"/>
+</xsl:for-each>
 </xsl:function>
 
 <xsl:function name="f:get-xsd-names" as="xs:string*">
@@ -692,7 +691,7 @@ else 'cl'}">
 <span>[parts]<xsl:value-of select="string-join($parts,'/')"/></span>
 -->
 
-<xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $is-xsl, $root-prefix)"/>
+<xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $is-xsl, $root-prefix, '')"/>
 
 <!-- must be an open tag, so check for attributes -->
 
@@ -737,6 +736,7 @@ select="if ($stillAwaiting) then $beganAt else $index"/>
 <xsl:param name="index" as="xs:integer"/>
 <xsl:param name="is-xsl" as="xs:boolean"/>
 <xsl:param name="root-prefix" as="xs:string"/>
+<xsl:param name="ename" as="xs:string"/>
 
 <xsl:variable name="is-xsd" select="not($is-xsl)" as="xs:boolean"/>
 
@@ -745,11 +745,10 @@ select="$parts[$index]"/>
 <xsl:variable name="part2" as="xs:string?"
 select="$parts[$index + 1]"/>
 
-<xsl:variable name="elementName" as="xs:string?">
-<xsl:if test="$index eq 1">
-<xsl:value-of select="tokenize($part1, '>|\s+|/')[1]"/>
-</xsl:if>
-</xsl:variable>
+<xsl:variable name="elementName" as="xs:string?"
+select="if ($ename eq '') then
+tokenize($part1, '>|\s+|/')[1]
+else $ename"/>
 
 <xsl:variable name="is-xsl-element" select="$is-xsl and starts-with($attToken, $root-prefix)"/>
 
@@ -815,22 +814,21 @@ else 'z'"/>
 </xsl:for-each>
 </xsl:variable>
 
+<xsl:variable name="att-name" select="$attSpans[@class eq 'atn']"/>
+
 <xsl:sequence select="$attSpans"/>
 <xsl:variable name="isXPath"
 select="if ($is-xsl-element)
-then $attSpans[@class = 'atn'] = ('select','test', 'match')
+then $att-name = ('select','test', 'match')
 else if ($is-xsd and f:get-xsd-names($root-prefix) = $elementName and $attSpans[@class = 'atn'] = 'test') 
 then true()
 else false()"/>
 
 <!-- for coloring attribute values that are referenced from XPath -->
 <xsl:variable name="metaXPathName" as="xs:string"
-select="if ($is-xsl-element) then
-if ($elementName = f:get-xslt-names($root-prefix)) then 'vname'
-else if ($elementName = f:prefixed-name($root-prefix, 'function')) then 'fname'
-else if ($elementName = f:prefixed-name($root-prefix, 'template')) then 'tname'
-else 'av'
-else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'fname' else 'av'"/>
+select="f:get-av-class($is-xsl-element, $is-xsd, 
+               $elementName, $att-name, $root-prefix)"/>
+
 
 <span class="atneq"><xsl:value-of select="substring($left,string-length($pre) + 1)"/></span>
 
@@ -838,6 +836,10 @@ else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'fname'
 <span class="z"><xsl:value-of select="substring($part2,1,1)"/></span>
 
 <xsl:variable name="attValue" select="substring($part2, 2, $sl - 2)"/>
+
+<xsl:if test="$att-name eq 'mode'">
+<xsl:message>mode: <xsl:value-of select="$attValue, $metaXPathName, 'en', $elementName, 'pfx', $root-prefix"/></xsl:message>
+</xsl:if>
 
 <xsl:choose>
 <xsl:when test="$isXPath">
@@ -860,8 +862,32 @@ else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'fname'
 <xsl:variable name="newOffset" select="string-length($part1) + string-length($part2) + $offset"/>
 
 <xsl:if test="not($isFinalPart)">
-<xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2, $is-xsl, $root-prefix)"/>
+<xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2, $is-xsl, $root-prefix, $elementName)"/>
 </xsl:if>
+
+</xsl:function>
+
+<xsl:function name="f:get-av-class" as="xs:string">
+<xsl:param name="is-xsl-element" as="xs:boolean"/>
+<xsl:param name="is-xsd" as="xs:boolean"/>
+<xsl:param name="elementName"/>
+<xsl:param name="att-name"/>
+<xsl:param name="root-prefix"/>
+<xsl:value-of
+select="if ($is-xsl-element) then
+if ($elementName = f:prefixed-name($root-prefix, ('variable', 'param'))
+    and $att-name eq 'name') then 'vname'
+else if ($elementName = f:prefixed-name($root-prefix, ('import', 'include'))
+    and $att-name eq 'href') then 'href'
+else if ($elementName = f:prefixed-name($root-prefix, ('call-template'))
+    and $att-name eq 'name') then 'tcall'
+else if ($elementName = f:prefixed-name($root-prefix, 'function') 
+    and $att-name eq 'name') then 'fname'
+else if ($elementName = f:prefixed-name($root-prefix, 'template') 
+    and $att-name eq 'name') then 'tname'
+else 'av'
+else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'fname' else 'av'"/>
+
 
 </xsl:function>
 
@@ -976,7 +1002,7 @@ background-color: <css:background dark="#00202e" light="#fdf6e3"/>;
 /* hover-effect [end] */
 
 span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq {
-color: #586e75;
+color: <css:background dark="#586e75" light="#93a1a1"/>;
 }
 span.base00 {
 color: #657b83;
@@ -1002,10 +1028,10 @@ span.orange, span.type, span.node-type, span.function {
 span.red, span.fname, span.tname {
     color: #dc322f;
 }
-span.magenta, span.vname, span.variable, span.external  {
+span.magenta, span.vname, span.variable, span.external {
     color: #d33682;
 }
-span.violet, span.qname, span.type-name, span.unclosed, span.en, span.cl {
+span.violet, span.qname, span.type-name, span.unclosed, span.en, span.cl, span.href, span.tcall {
     color: #6c71c4;
 }
 span.blue, span.enxsl, span.clxsl, span.enx, 
@@ -1017,6 +1043,9 @@ span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context {
 }
 span.green, span.cm, span.comment {
     color: #859900;
+}
+a.solar {
+    text-decoration:none;
 }
 </css:theme>
 

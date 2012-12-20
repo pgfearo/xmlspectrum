@@ -12,7 +12,9 @@ Description:
 A sample XSLT stylesheet that exploits xmlspectrum.xsl
 
 Takes the input file specified in the sourcepath XSLT parameter and generates an
-HTML output file and a CSS file. The input file may be 1 of 4 types:
+HTML output file ( plus also include/import files if link-names=yes ) and a CSS file.
+
+The input file may be 1 of 4 types:
 
 1. XSLT 1.0 or 2.0
 2. XSD 1.0 or 1.1
@@ -33,8 +35,10 @@ Usage:
 initial-template: 'main'
 source-xml: (not used)
 xsl parameters:
-    sourcepath:  (path or URI for source file)
-    light-theme: (yes|no) [Default:'no']
+    sourcepath:  path or URI for source file
+    light-theme: (yes|no) [Default:'no'] sets light/dark theme
+    link-names:  (yes|no) [Default:'no']
+                 processes all linked xsl files and adds hrefs
     css-path:    (path for output CSS)
 
 Sample transform using Saxon-HE/Java on command-line (unbroken line):
@@ -96,9 +100,6 @@ else ()"/>
 
 <xsl:choose>
 <xsl:when test="$is-xsl and $do-link">
-<!--
-<span class="av">baseuri: <xsl:value-of select="base-uri($root-element)"/></span>
--->
 
 <xsl:variable name="all-files" as="xs:string*"
 select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
@@ -115,91 +116,57 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 <xsl:variable name="joined-path" select="string-join($root-path, '/')"/>
 
 <xsl:variable name="root-length" select="string-length($joined-path) + 1"/>
-<!--
-<test>
-<one>hello: <xsl:value-of select="$common-path-length"/></one>
-</test>
--->
 
-<xsl:variable name="all" as="element()">
-<all>
+<xsl:variable name="globals" as="element()">
+<globals>
 <xsl:for-each select="$all-files">
-<xsl:variable name="doc" select="doc(.)" as="document-node()"/>
-<xsl:variable name="doc-element" select="$doc/*" as="element()"/>
-<xsl:variable name="doc-prefix"
-select="prefix-from-QName(node-name($doc-element))"/>
-<xsl:message>XMLSpectrum processing: <xsl:value-of select="."/></xsl:message>
 <file path="{substring(., $root-length + 1)}">
+<xsl:sequence select="f:get-globals(.)"/>
+</file>
+</xsl:for-each>
+</globals>
+</xsl:variable>
+
+<xsl:sequence select="$globals"/>
+
+<xsl:for-each select="$globals/file">
+
+<xsl:message>XMLSpectrum processing: <xsl:value-of select="@path"/></xsl:message>
+
+
 <xsl:variable name="all-spans" as="node()*">
 <xsl:call-template name="get-result-spans">
-<xsl:with-param name="input-uri" select="."/>
+<xsl:with-param name="input-uri" select="@path"/>
 <xsl:with-param name="is-xml" select="$is-xml" as="xs:boolean"/>
 <xsl:with-param name="is-xsl" select="$is-xsl" as="xs:boolean"/>
 <xsl:with-param name="indent-size" select="$indent-size" as="xs:integer"/>
-<xsl:with-param name="root-prefix" select="$doc-prefix"/>
+<xsl:with-param name="root-prefix" select="doc-prefix"/>
 </xsl:call-template>
 </xsl:variable>
 
-<xsl:variable name="xmlns" as="element()*" select="f:get-xmlns($all-spans)"/>
+<xsl:variable name="xmlns" as="element()" select="f:get-xmlns($all-spans)"/>
 
-<global-declarations>
-<xsl:sequence select="f:get-globals(., $root-length)"/>
-</global-declarations>
-
-
-<spans>
-<!--
-<xsl:sequence select="$all-spans"/>
--->
+<xsl:variable name="spans" as="element()*">
 <xsl:call-template name="wrap-spans">
 <xsl:with-param name="spans" as="node()*" tunnel="yes"
 select="$all-spans"/>
+<xsl:with-param name="globals" select="$globals" tunnel="yes" as="element()"/>
+<xsl:with-param name="xmlns" select="$xmlns" tunnel="yes" as="element()"/>
 <xsl:with-param name="index" select="1"/>
 </xsl:call-template>
-</spans>
-
-<namespaces>
-<xsl:sequence select="$xmlns"/>
-</namespaces>
-
-<doc-prefix>
-<xsl:value-of select="$doc-prefix"/>
-</doc-prefix>
-
-</file>
-</xsl:for-each>
-</all>
 </xsl:variable>
-
-<!--
-<test>
-<xsl:for-each select="$all/file">
-<file path="{@path}">
-<xsl:sequence select="global-declarations"/>
-<xsl:sequence select="namespaces"/>
-</file>
-</xsl:for-each>
-</test>
-
--->
-
-<xsl:for-each select="$all/file">
-<xsl:variable name="target-spans" as="element()*"
-select="f:target(spans, namespaces, global-declarations)"/>
 
 <xsl:variable name="css-link" select="if ($css-path eq '') then
     f:get-relative-path(@path)
 else $css-path"/>
 
-
 <xsl:call-template name="output-html-doc">
-<xsl:with-param name="result-spans" select="$target-spans"/>
+<xsl:with-param name="result-spans" select="$spans"/>
 <xsl:with-param name="filename" select="@path"/>
 <xsl:with-param name="css-link" select="$css-link"/>
 </xsl:call-template>
 
 </xsl:for-each>
-
 
 </xsl:when>
 <xsl:otherwise>
@@ -251,7 +218,10 @@ concat(
 
 <xsl:template name="wrap-spans">
 <xsl:param name="spans" as="node()*" tunnel="yes"/>
+<xsl:param name="globals" as="element()" tunnel="yes"/>
+<xsl:param name="xmlns" as="element()" tunnel="yes"/>
 <xsl:param name="index" as="xs:integer"/>
+
 <xsl:variable name="span" select="$spans[$index]"/>
 
 <xsl:choose>
@@ -267,7 +237,8 @@ concat(
 <xsl:sequence select="$span-children"/>
 </span>
 
-<xsl:variable name="prev-index" select="xs:integer(substring($span-children[last()]/@id, 3
+<xsl:variable name="prev-index"
+select="xs:integer(substring($span-children[last()]/@id, 3
 ))"/>
 
 <xsl:call-template name="wrap-spans">
@@ -281,7 +252,12 @@ concat(
 </span>
 </xsl:when>
 <xsl:otherwise>
-<xsl:sequence select="$span"/>
+
+<xsl:apply-templates select="$span" mode="markup">
+<xsl:with-param name="xmlns" tunnel="yes" select="$xmlns"/>
+<xsl:with-param name="globals" tunnel="yes" select="$globals"/>
+</xsl:apply-templates>
+
 <xsl:call-template name="wrap-spans">
 <xsl:with-param name="index" select="$index + 1"/>
 </xsl:call-template>
@@ -362,36 +338,31 @@ if ($file = ($uri-list)) then () else $file"/>
 
 
 <!--
-sample globals element:
-<globals>
-<file path="sample/test1.xsl">
+sample globals elements:
+<doc-prefix>xsl</doc-prefix>
 <function name="do-something" ns="internal"/>
 <function name="somethin-else" ns="internal"/>
 <template name="output-days" ns=""/>
 <variable name="my-global" ns=""/>
-</file>
-<file path="sample/test21.xsl">
-<function name="do-something" ns="internal"/>
-<function name="somethin-else" ns="internal"/>
-<template name="output-days" ns=""/>
-<variable name="my-global" ns=""/>
-</file>
-</globals>
-
 -->
 
 <xsl:function name="f:get-globals" as="element()*">
 <xsl:param name="file-uri" as="xs:string"/>
-<xsl:param name="root-length" as="xs:integer"/>
 
 <xsl:variable name="doc" select="doc($file-uri)"/>
-<globals path="{substring($file-uri, $root-length + 1)}">
-<xsl:apply-templates select="$doc/*/xsl:template[@name]|
-$doc/*/xsl:function|
-$doc/*/xsl:variable" mode="globals">
-</xsl:apply-templates>
+<doc-prefix>
+<xsl:value-of select="prefix-from-QName(node-name($doc/*))"/>
+</doc-prefix>
 
-</globals>
+<templates>
+<xsl:apply-templates select="$doc/*/xsl:template[@name]" mode="globals"/>
+</templates>
+<functions>
+<xsl:apply-templates select="$doc/*/xsl:function" mode="globals"/>
+</functions>
+<variables>
+<xsl:apply-templates select="$doc/*/xsl:variable" mode="globals"/>
+</variables>
 
 </xsl:function>
 
@@ -400,10 +371,17 @@ $doc/*/xsl:variable" mode="globals">
 <xsl:variable name="local" select="if ($after-colon eq '') then @name else $after-colon"/>
 <xsl:variable name="prefix" select="substring-before(@name, ':')"/>
 
-<xsl:element name="{local-name(.)}">
-<xsl:attribute name="name" select="$local"/>
-<xsl:attribute name="ns" select="namespace-uri-for-prefix($prefix, .)"/>
-</xsl:element>
+<!--
+<item name="{$local}" ns="{namespace-uri-for-prefix($prefix, .)}"/>
+-->
+<xsl:variable name="clark-name"
+select="if ($prefix eq '') then
+$local
+else concat('{',
+namespace-uri-for-prefix($prefix, .),
+'}', $local)"/>
+<item><xsl:value-of select="$clark-name"/></item>
+
 </xsl:template>
 
 <xsl:template name="output-html-doc">
