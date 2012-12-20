@@ -213,7 +213,7 @@ else ." as="xs:string"/>
 <xsl:variable name="id" select="f:gen-id(@class, $clark-name)"/>
 
 <xsl:choose>
-<xsl:when test="@class = ('fname', 'tname')">
+<xsl:when test="@class = ('fname', 'tname', 'vname')">
 <xsl:copy>
 <xsl:copy-of select="@*"/>
 <xsl:attribute name="id" select="$id"/>
@@ -225,14 +225,41 @@ else ." as="xs:string"/>
 or
 (@class eq 'function' and contains(., ':'))">
 
-<xsl:variable name="href"
+<xsl:variable name="global-refs" as="element()*"
+select="if (@class eq 'variable') then
+    $globals/file/variables
+else if (@class eq 'tcall') then
+    $globals/file/templates
+else if (@class eq 'function') then
+    $globals/file/functions
+else ()"/>
+<xsl:variable name="resolved-ref" as="xs:string?"
+select="if (exists($global-refs)) then
+    $global-refs/item[string(.) eq $clark-name]/../parent::file/@path
+else ()"/>
+
+<!--
+<xsl:if test="@class eq 'tcall'">
+<xsl:message><xsl:value-of select="$clark-name, 'rsv', $resolved-ref"/></xsl:message>
+</xsl:if>
+-->
+
+<xsl:variable name="href" as="xs:string?"
 select="if (@class eq 'href') then
-concat(., '.html')
-else
-concat('#',$id)"/>
+    concat(., '.html')
+else if (exists($resolved-ref)) then
+    concat($resolved-ref, '.html', '#', $id)
+else ()"/>
+<xsl:choose>
+<xsl:when test="exists($href)">
 <a href="{$href}" class="solar">
 <xsl:copy-of select="."/>
 </a>
+</xsl:when>
+<xsl:otherwise>
+<xsl:copy-of select="."/>
+</xsl:otherwise>
+</xsl:choose>
 </xsl:when>
 <xsl:otherwise>
 <xsl:copy-of select="."/>
