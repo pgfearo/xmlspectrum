@@ -39,6 +39,7 @@ xsl parameters:
     light-theme: (yes|no) [Default:'no'] sets light/dark theme
     link-names:  (yes|no) [Default:'no']
                  processes all linked xsl files and adds hrefs
+                 for variables, functions, parameters and named templates
     css-path:    (path for output CSS)
 
 Sample transform using Saxon-HE/Java on command-line (unbroken line):
@@ -57,7 +58,6 @@ exclude-result-prefixes="loc f xs css"
 xmlns=""
 xmlns:f="internal">
 
-
 <xsl:import href="xmlspectrum.xsl"/>
 <xsl:output indent="yes"/>
 <xsl:param name="sourcepath" as="xs:string" select="''"/>
@@ -74,9 +74,6 @@ xmlns:f="internal">
  -->
 <xsl:param name="w3c-xpath-functions-uri"
 select="'http://www.w3.org/TR/xpath-functions/'"/>
-
-
-
 <xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/>
 <xsl:variable name="do-link" select="$link-names eq 'yes'"/>
 <xsl:variable name="indent-size" select="xs:integer($indent)"/>
@@ -103,14 +100,11 @@ else ()"/>
 
 <xsl:variable name="is-xsl" as="xs:boolean" select="$root-namespace eq $xsl-xmlns"/>
 
-
-
 <xsl:choose>
 <xsl:when test="$is-xsl and $do-link">
 
 <xsl:variable name="all-files" as="xs:string*"
 select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
-
 
 <xsl:variable name="root-path" as="xs:string*">
 <xsl:call-template name="get-common-root">
@@ -165,7 +159,6 @@ select="$all-spans"/>
 <xsl:with-param name="index" select="1"/>
 </xsl:call-template>
 </xsl:variable>
-
 
 <xsl:variable name="css-link" select="if ($css-path eq '') then
     f:get-relative-path(@path)
@@ -285,7 +278,6 @@ select="xs:integer(substring($span-children[last()]/@id, 3
 <xsl:param name="index" as="xs:integer"/>
 <xsl:param name="common-path" as="xs:string*"/>
 
-
 <xsl:variable name="current-file" select="tokenize($all-files[$index],'/')"/>
 
 <xsl:variable name="min-file" as="xs:string*"
@@ -350,7 +342,6 @@ if ($file = ($uri-list)) then () else $file"/>
 </xsl:choose>
 
 </xsl:function>
-
 
 <!--
 sample globals elements:
@@ -432,8 +423,6 @@ namespace-uri-for-prefix($prefix, .),
 <xsl:param name="uri"/>
 <xsl:value-of select="tokenize($uri, '/|\\')[last()]"/>
 </xsl:function>
-
-
 
 <xsl:template name="get-result-spans">
 <xsl:param name="input-uri" as="xs:string"/>

@@ -14,6 +14,10 @@ f:get-css(is-light-theme)
 f:indent(spans, char-width)
 f:link(spans, paths, location)
 
+Interface Templates:
+====================
+<xsl:template match="span" mode="markup">
+
 -->
 
 <xsl:stylesheet version="2.0"
@@ -41,7 +45,7 @@ params:
                  or XSD 1.1 - often 'xsl' and 'xs' respectively
 -->
 
-
+<!-- import xsl just for self-testing -->
 <xsl:import href="dummy.xsl"/>
 <xsl:include href="sub/dummy2.xsl"/>
 
@@ -177,6 +181,16 @@ $local-name)
 
 </xsl:function>
 
+<!-- 
+description
+    
+    Adds ids and hrefs to span elements for global-variables, named-templates and functions
+
+parameters:
+    xmlns:          declared prefixes/namespaces on root-element for current document
+    globals:        clark-notation names for all globally declared items that may be
+                    referenced.
+ -->
 
 <xsl:template match="span" mode="markup">
 <xsl:param name="xmlns" as="element()" tunnel="yes"/>
@@ -305,8 +319,6 @@ and $span/@class ne 'scx'">
 
 </xsl:template>
 
-
-
 <xsl:function name="f:indentTextSpan" as="element()">
 <xsl:param name="span" as="element()"/>
 <xsl:param name="level" as="xs:integer"/>
@@ -320,7 +332,6 @@ and $span/@class ne 'scx'">
 <xsl:param name="auto-trim" as="xs:boolean"/>
 
 <xsl:variable name="class" select="$span/@class"/>
-
 
 <xsl:variable name="line-parts" as="element()*">
 <xsl:analyze-string select="$span" regex="\n.*">
@@ -421,16 +432,6 @@ else string($line-parts[1])"/>
 <xsl:copy-of select="$span/@*"/>
 <xsl:value-of select="$span-text"/>
 </span>
-<!--
-<span class="literal">
-<xsl:text>[il: </xsl:text><xsl:value-of select="$line-count"/><xsl:text>]</xsl:text>
-<xsl:for-each select="$line-parts">
-<xsl:value-of select="name(.)"/>
-<xsl:text> </xsl:text>
-</xsl:for-each>
-<xsl:text>]]</xsl:text>
-</span>
--->
 <an-offset>
 <xsl:value-of select="$an-outOffset"/>
 </an-offset>
@@ -1735,6 +1736,5 @@ select="$chunk">
 </xsl:matching-substring>
 </xsl:analyze-string>
 </xsl:function>
-
 
 </xsl:stylesheet>
