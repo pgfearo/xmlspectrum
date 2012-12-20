@@ -148,18 +148,12 @@ else uri"/>
 </xsl:call-template>
 </xsl:variable>
 
-
-<xsl:variable name="f-length" as="xs:integer"
-select="string-length(f:file-from-uri(@path))"/>
-<xsl:variable name="p-length" as="xs:integer"
-select="(string-length(@path) - $f-length)"/>
-<xsl:variable name="path" select="substring(@path, 1, $p-length)"/>
-
 <xsl:message>
-<xsl:value-of select="'processing', count($all-spans), 'tokens for', $p-length + 1"/>
+<xsl:value-of select="'processing', count($all-spans), 'tokens for', @path"/>
 </xsl:message>
 
-
+<xsl:variable name="ancestor-length" select="count(tokenize(@path, '/')) - 1" as="xs:integer"/>
+<xsl:variable name="ancestor-path" select="f:ancestor-path($ancestor-length)"/>
 
 <xsl:variable name="xmlns" as="element()" select="f:get-xmlns($all-spans)"/>
 
@@ -170,7 +164,7 @@ select="$all-spans"/>
 <xsl:with-param name="globals" select="$globals" tunnel="yes" as="element()"/>
 <xsl:with-param name="xmlns" select="$xmlns" tunnel="yes" as="element()"/>
 <xsl:with-param name="index" select="1" as="xs:integer"/>
-<xsl:with-param name="path-length" select="$p-length + 1" as="xs:integer" tunnel="yes"/>
+<xsl:with-param name="path-length" select="$ancestor-path" as="xs:string" tunnel="yes"/>
 </xsl:call-template>
 </xsl:variable>
 
@@ -236,17 +230,32 @@ concat(
 
 </xsl:function>
 
+<xsl:function name="f:ancestor-path">
+<xsl:param name="levels" as="xs:integer"/>
+<xsl:value-of select="if ($levels eq 0) then 
+''
+else
+concat(
+    string-join(
+        for $n in 1 to $levels return
+        '..'
+    , '/')
+, '/')"/>
+
+</xsl:function>
+
+
 <xsl:template name="wrap-spans">
 <xsl:param name="spans" as="node()*" tunnel="yes"/>
 <xsl:param name="globals" as="element()" tunnel="yes"/>
 <xsl:param name="xmlns" as="element()" tunnel="yes"/>
 <xsl:param name="index" as="xs:integer"/>
-<xsl:param name="path-length" tunnel="yes" as="xs:integer" select="0"/>
+<xsl:param name="path-length" tunnel="yes" as="xs:string"/>
 
 <xsl:variable name="span" select="$spans[$index]"/>
 
 <xsl:if test="$index mod 500 eq 0">
-<xsl:message><xsl:value-of select="'token: ', $index, 'pl', $path-length"/></xsl:message>
+<xsl:message><xsl:value-of select="'token: ', $index"/></xsl:message>
 </xsl:if>
 
 <xsl:choose>

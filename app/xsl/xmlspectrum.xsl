@@ -195,7 +195,7 @@ parameters:
 <xsl:template match="span" mode="markup">
 <xsl:param name="xmlns" as="element()" tunnel="yes"/>
 <xsl:param name="globals" as="element()" tunnel="yes"/>
-<xsl:param name="path-length" as="xs:integer" tunnel="yes" select="0"/>
+<xsl:param name="path-length" as="xs:string" tunnel="yes"/>
 
 <xsl:variable name="ref-name"
 select="if (@class eq 'variable') then
@@ -240,7 +240,8 @@ else if (@class eq 'function' and not(contains(., ':'))) then
     concat($w3c-xpath-functions-uri, '#', concat('func-', .))
 else if (exists($resolved-ref)) then
     concat(
-    substring($resolved-ref, $path-length),
+    $path-length,
+    $resolved-ref,
     '.html', '#', $id)
 else ()"/>
 <xsl:choose>
