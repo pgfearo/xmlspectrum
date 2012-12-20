@@ -69,6 +69,13 @@ xmlns:f="internal">
 <xsl:param name="auto-trim" select="'no'"/>
 <xsl:param name="link-names" select="'no'"/>
 
+<!-- note: set this to a proxy server storing the W3C resource to avoid
+           excessive calls to the W3C server
+ -->
+<xsl:param name="w3c-xpath-functions-uri"
+select="'http://www.w3.org/TR/xpath-functions/'"/>
+
+
 
 <xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/>
 <xsl:variable name="do-link" select="$link-names eq 'yes'"/>
@@ -131,8 +138,7 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 
 <xsl:for-each select="$globals/file">
 
-<xsl:message>XMLSpectrum processing: <xsl:value-of select="@path"/></xsl:message>
-
+<xsl:message><xsl:value-of select="'tokenizing', @path, '...'"/></xsl:message>
 
 <xsl:variable name="all-spans" as="node()*">
 <xsl:call-template name="get-result-spans">
@@ -143,6 +149,10 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 <xsl:with-param name="root-prefix" select="doc-prefix"/>
 </xsl:call-template>
 </xsl:variable>
+
+<xsl:message>
+<xsl:value-of select="'processing', count($all-spans), 'tokens for', @path"/>
+</xsl:message>
 
 <xsl:variable name="xmlns" as="element()" select="f:get-xmlns($all-spans)"/>
 
@@ -155,6 +165,7 @@ select="$all-spans"/>
 <xsl:with-param name="index" select="1"/>
 </xsl:call-template>
 </xsl:variable>
+
 
 <xsl:variable name="css-link" select="if ($css-path eq '') then
     f:get-relative-path(@path)
@@ -223,6 +234,10 @@ concat(
 <xsl:param name="index" as="xs:integer"/>
 
 <xsl:variable name="span" select="$spans[$index]"/>
+
+<xsl:if test="$index mod 500 eq 0">
+<xsl:message><xsl:value-of select="'token: ', $index"/></xsl:message>
+</xsl:if>
 
 <xsl:choose>
 <xsl:when test="empty($span)"/>
@@ -361,12 +376,12 @@ sample globals elements:
 <xsl:apply-templates select="$doc/*/xsl:function" mode="globals"/>
 </functions>
 <variables>
-<xsl:apply-templates select="$doc/*/xsl:variable" mode="globals"/>
+<xsl:apply-templates select="$doc/*/(xsl:variable|xsl:param)" mode="globals"/>
 </variables>
 
 </xsl:function>
 
-<xsl:template match="xsl:template|xsl:function|xsl:variable" mode="globals">
+<xsl:template match="xsl:template|xsl:function|xsl:variable|xsl:param" mode="globals">
 <xsl:variable name="after-colon" select="substring-after(@name, ':')"/>
 <xsl:variable name="local" select="if ($after-colon eq '') then @name else $after-colon"/>
 <xsl:variable name="prefix" select="substring-before(@name, ':')"/>

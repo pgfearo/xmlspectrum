@@ -12,7 +12,6 @@ f:render(xml-content, is-xml, root-prefix)
 loc:showXPath(text-content)
 f:get-css(is-light-theme)
 f:indent(spans, char-width)
-f:target(spans)
 f:link(spans, paths, location)
 
 -->
@@ -45,6 +44,11 @@ params:
 
 <xsl:import href="dummy.xsl"/>
 <xsl:include href="sub/dummy2.xsl"/>
+
+<!-- override this variable -->
+<xsl:variable name="w3c-xpath-functions-uri"
+select="'http://www.w3.org/TR/xpath-functions/'"/>
+
 
 
 <xsl:function name="f:render">
@@ -143,31 +147,6 @@ $nextClass, $prevClass, $multi-line, $auto-trim
 </xsl:if>
 </xsl:template>
 
-<!--
-signature:
-    f:link(spans, paths, location)
-
-description:
-    For XPath functions and variables, wraps their <span> elements with <a>
-    elements and href attribute with #id values
-
-    Calls this function after f:target() has been called on each XSLT in the
-    module collection that adds the corresponding id attribute and produces
-    the paths data
-
-params:
-    spans:     element sequence containing span elements output from f:render()
-    paths:     element sequence with one element for each function or variable defined
-               members of each element identify the function/variable name and
-               its path relative to the top-level folder
-    location:  the path of the current file relative to the top-level
--->
-
-<xsl:function name="f:link">
-<xsl:param name="spans" as="element()*"/>
-<xsl:param name="paths" as="xs:string*"/>
-</xsl:function>
-
 <xsl:function name="f:clark-name" as="xs:string">
 <xsl:param name="xmlns" as="element()"/>
 <xsl:param name="name" as="xs:string"/>
@@ -220,10 +199,7 @@ else ." as="xs:string"/>
 <xsl:value-of select="$ref-name"/>
 </xsl:copy>
 </xsl:when>
-<xsl:when test="@class = 
-('variable', 'href','tcall')
-or
-(@class eq 'function' and contains(., ':'))">
+<xsl:when test="@class = ('variable', 'href','tcall','function')">
 
 <xsl:variable name="global-refs" as="element()*"
 select="if (@class eq 'variable') then
@@ -235,7 +211,7 @@ else if (@class eq 'function') then
 else ()"/>
 <xsl:variable name="resolved-ref" as="xs:string?"
 select="if (exists($global-refs)) then
-    $global-refs/item[string(.) eq $clark-name]/../parent::file/@path
+    ($global-refs/item[string(.) eq $clark-name])[1]/../parent::file/@path
 else ()"/>
 
 <!--
@@ -247,6 +223,8 @@ else ()"/>
 <xsl:variable name="href" as="xs:string?"
 select="if (@class eq 'href') then
     concat(., '.html')
+else if (@class eq 'function' and not(contains(., ':'))) then
+    concat($w3c-xpath-functions-uri, '#', concat('func-', .))
 else if (exists($resolved-ref)) then
     concat($resolved-ref, '.html', '#', $id)
 else ()"/>
@@ -863,10 +841,6 @@ select="f:get-av-class($is-xsl-element, $is-xsd,
 <span class="z"><xsl:value-of select="substring($part2,1,1)"/></span>
 
 <xsl:variable name="attValue" select="substring($part2, 2, $sl - 2)"/>
-
-<xsl:if test="$att-name eq 'mode'">
-<xsl:message>mode: <xsl:value-of select="$attValue, $metaXPathName, 'en', $elementName, 'pfx', $root-prefix"/></xsl:message>
-</xsl:if>
 
 <xsl:choose>
 <xsl:when test="$isXPath">
