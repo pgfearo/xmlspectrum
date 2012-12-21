@@ -59,6 +59,8 @@ xmlns=""
 xmlns:f="internal">
 
 <xsl:import href="xmlspectrum.xsl"/>
+<xsl:import href="make-toc.xsl"/>
+
 <xsl:output indent="yes"/>
 <xsl:param name="sourcepath" as="xs:string" select="''"/>
 <!--  by default - rely on original indentation -->
@@ -68,6 +70,7 @@ xmlns:f="internal">
 <xsl:param name="css-path" select="''"/>
 <xsl:param name="auto-trim" select="'no'"/>
 <xsl:param name="link-names" select="'no'"/>
+<xsl:param name="output-path" select="'output/'"/>
 
 <!-- note: set this to a proxy server storing the W3C resource to avoid
            excessive calls to the W3C server
@@ -178,11 +181,31 @@ else $css-path"/>
 <xsl:with-param name="css-link" select="$css-link"/>
 </xsl:call-template>
 
-
-
 </xsl:for-each>
 
+<xsl:variable name="css-link" select="if ($css-path eq '') then
+    $css-name
+else $css-path"/>
+
+<xsl:call-template name="create-toc">
+<xsl:with-param name="globals" select="$globals" as="element()" tunnel="yes"/>
+<xsl:with-param name="output-path" select="$output-path"/>
+<xsl:with-param name="css-link" select="$css-link"/>
+</xsl:call-template>
+
+<!--
+<
+
+<xsl:template name="create-toc">
+<xsl:param name="globals" as="element()"/>
+<xsl:param name="output-path"/>
+<xsl:param name="css-link"/>
+
+-->
+
 </xsl:when>
+
+
 <xsl:otherwise>
 <xsl:variable name="result-spans" as="node()*">
 <xsl:call-template name="get-result-spans">
@@ -208,7 +231,7 @@ else $css-path"/>
 </xsl:choose>
 
 <xsl:if test="$css-path eq ''">
-<xsl:result-document href="{concat('output/', $css-name)}" method="text" indent="no">
+<xsl:result-document href="{concat($output-path, $css-name)}" method="text" indent="no">
 <xsl:sequence select="f:get-css($light-theme eq 'yes')"/>
 </xsl:result-document>
 </xsl:if>
@@ -287,13 +310,7 @@ select="xs:integer(substring($span-children[last()]/@id, 3
 </xsl:when>
 <xsl:otherwise>
 
-<xsl:apply-templates select="$span" mode="markup">
-<!--
-<xsl:with-param name="xmlns" tunnel="yes" select="$xmlns"/>
-<xsl:with-param name="globals" tunnel="yes" select="$globals"/>
-<xsl:with-param name="path" tunnel="yes"/>
--->
-</xsl:apply-templates>
+<xsl:apply-templates select="$span" mode="markup"/>
 
 <xsl:call-template name="wrap-spans">
 <xsl:with-param name="index" select="$index + 1"/>
@@ -426,7 +443,7 @@ namespace-uri-for-prefix($prefix, .),
 
 <xsl:variable name="file-only" select="f:file-from-uri($filename)"/>
 
-<xsl:result-document href="{concat('output/', $filename, '.html')}" method="html" indent="no">
+<xsl:result-document href="{concat($output-path, $filename, '.html')}" method="html" indent="no">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
 <html>
 <head>

@@ -212,6 +212,18 @@ else ." as="xs:string"/>
 <xsl:value-of select="$ref-name"/>
 </xsl:copy>
 </xsl:when>
+<xsl:when test="@class = 'enxsl'
+and (ends-with(., 'stylesheet')
+ or  ends-with(., 'transform')
+  )">
+<a class="solar" href="{concat($path-length, 'index.html')}">
+<xsl:copy>
+<xsl:copy-of select="@*"/>
+<xsl:attribute name="id" select="$id"/>
+<xsl:value-of select="$ref-name"/>
+</xsl:copy>
+</a>
+</xsl:when>
 <xsl:when test="@class = ('variable', 'href','tcall','function')">
 
 <xsl:variable name="global-refs" as="element()*"
@@ -962,6 +974,19 @@ p.spectrum {
     background-color:<css:background dark="#002b36" light="#white"/>;
 padding: 2px;
 margin-bottom:5px;
+}
+
+div.spectrum-toc {
+    font-family: monospace;
+    display: block;
+    border: none thin;
+    border-color: #405075;
+    background-color: <css:background dark="#002b36" light="#white"/>;
+    padding: 2px;
+}
+
+ul.base1, ul.spectrum-toc {
+    color:<css:background dark="#93a1a1" light="#586e75"/>;
 }
 
 .spectrum span {

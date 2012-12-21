@@ -11,6 +11,19 @@ padding: 2px;
 margin-bottom:5px;
 }
 
+div.spectrum-toc {
+    font-family: monospace;
+    display: block;
+    border: none thin;
+    border-color: #405075;
+    background-color: #002b36;
+    padding: 2px;
+}
+
+ul.base1, ul.spectrum-toc {
+    color:#93a1a1;
+}
+
 .spectrum span {
     white-space: pre-wrap;
 }
