@@ -1,34 +1,37 @@
 
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
 p.spectrum {
     margin:0px;
-    font-family: monospace;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.8em;
     white-space: pre-wrap;
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color:#white;
+    background-color:#002b36;
 padding: 2px;
 margin-bottom:5px;
 }
 
 div.spectrum-toc {
-    font-family: monospace;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.8em;
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color: #white;
+    background-color: #002b36;
     padding: 2px;
 }
 
 ul.base1, ul.spectrum-toc {
-    color:#586e75;
+    color:#93a1a1;
 }
 
 .spectrum span {
     white-space: pre-wrap;
 }
 /*
-chosen theme background: light;
+chosen theme background: dark;
 
 $base03:    #002b36; //background
 $base02:    #073642; //highlighted-background
@@ -58,15 +61,15 @@ color: #073642;
 
 /* hover-effect [start] */
 span.base03, span.ww:not(:hover), span.txt:not(:hover), span.cm:not(:hover), span.pi:not(:hover)  {
-background-color: white;
+background-color: #002b36;
 }
 span.ww {
-background-color: #fdf6e3;
+background-color: #00202e;
 }
 /* hover-effect [end] */
 
 span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq {
-color: #93a1a1;
+color: #586e75;
 }
 span.base00 {
 color: #657b83;
@@ -75,7 +78,7 @@ span.base0, span.txt, span.cd {
 color: #839496;
 }
 span.base1, span.literal, span.av {
-color:#586e75;
+color:#93a1a1;
 }
 span.base2 {
     color: #eee8d5;

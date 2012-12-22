@@ -18,6 +18,14 @@ Interface Templates:
 ====================
 <xsl:template match="span" mode="markup">
 
+Global Variables (for overriding)
+=================================
+w3c-xpath-functions-uri: location of resource proxy
+font-name:               abbreviated font name [std|scp] default
+                         is std for standard monospace - override
+                         with 'scp' for 'Souce Code Pro'
+                         font-family
+
 -->
 
 <xsl:stylesheet version="2.0"
@@ -49,9 +57,10 @@ params:
 <xsl:import href="dummy.xsl"/>
 <xsl:include href="sub/dummy2.xsl"/>
 
-<!-- override this variable -->
+<!-- override these variables -->
 <xsl:variable name="w3c-xpath-functions-uri"
 select="'http://www.w3.org/TR/xpath-functions/'"/>
+<xsl:variable name="font-name" select="'std'"/>
 
 
 
@@ -513,10 +522,15 @@ select="for $a in ('assert') return concat($prefix, $a)"/>
 select="for $a in ('element','attribute') return concat($prefix, $a)"/>
 </xsl:function>
 
+<xsl:template match="css:font" mode="css">
+<xsl:value-of select="if ($font-name eq 'scp') then @scp else ''"/>
+</xsl:template>
+
 <xsl:template match="css:background" mode="css">
 <xsl:param name="is-light-theme" tunnel="yes" as="xs:boolean"/>
 <xsl:value-of select="if ($is-light-theme) then @light else @dark"/>
 </xsl:template>
+
 
 <xsl:function name="f:getTagType">
 <xsl:param name="token" as="xs:string?"/>
@@ -964,9 +978,11 @@ else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'fname'
  light-theme #fdf6e3 = base 3-->
 
 <css:theme>
+<css:font scp="@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);"/>
 p.spectrum {
     margin:0px;
-    font-family: monospace;
+    font-family: <css:font scp="'Source Code Pro', "/>monospace;
+    <css:font scp="font-size: 0.8em;"/>
     white-space: pre-wrap;
     display: block;
     border: none thin;
@@ -977,7 +993,8 @@ margin-bottom:5px;
 }
 
 div.spectrum-toc {
-    font-family: monospace;
+    font-family: <css:font scp="'Source Code Pro', "/>monospace;
+    <css:font scp="font-size: 0.8em;"/>
     display: block;
     border: none thin;
     border-color: #405075;

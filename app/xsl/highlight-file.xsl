@@ -72,6 +72,8 @@ xmlns:f="internal">
 <xsl:param name="auto-trim" select="'no'"/>
 <xsl:param name="link-names" select="'no'"/>
 <xsl:param name="output-path" select="'output/'"/>
+<!-- make source code pro the default -->
+<xsl:param name="font-name" select="'scp'"/>
 
 <!-- note: set this to a proxy server storing the W3C resource to avoid
            excessive calls to the W3C server
