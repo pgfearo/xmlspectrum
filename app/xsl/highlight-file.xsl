@@ -41,6 +41,7 @@ xsl parameters:
                  processes all linked xsl files and adds hrefs
                  for variables, functions, parameters and named templates
     css-path:    (path for output CSS)
+    output-path: path in which to create html files - default is 'output/'
 
 Sample transform using Saxon-HE/Java on command-line (unbroken line):
 
@@ -132,8 +133,6 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 </globals>
 </xsl:variable>
 
-<xsl:sequence select="$globals"/>
-
 <xsl:for-each select="$globals/file">
 
 <xsl:message><xsl:value-of select="'tokenizing', @path, '...'"/></xsl:message>
@@ -171,9 +170,7 @@ select="$all-spans"/>
 </xsl:call-template>
 </xsl:variable>
 
-<xsl:variable name="css-link" select="if ($css-path eq '') then
-    f:get-relative-path(@path)
-else $css-path"/>
+<xsl:variable name="css-link" select="f:get-css-link(@path)"/>
 
 <xsl:call-template name="output-html-doc">
 <xsl:with-param name="result-spans" select="$spans"/>
@@ -183,25 +180,13 @@ else $css-path"/>
 
 </xsl:for-each>
 
-<xsl:variable name="css-link" select="if ($css-path eq '') then
-    $css-name
-else $css-path"/>
+<xsl:variable name="css-link" select="f:get-css-link('rootlevel')"/>
 
 <xsl:call-template name="create-toc">
 <xsl:with-param name="globals" select="$globals" as="element()" tunnel="yes"/>
 <xsl:with-param name="output-path" select="$output-path"/>
 <xsl:with-param name="css-link" select="$css-link"/>
 </xsl:call-template>
-
-<!--
-<
-
-<xsl:template name="create-toc">
-<xsl:param name="globals" as="element()"/>
-<xsl:param name="output-path"/>
-<xsl:param name="css-link"/>
-
--->
 
 </xsl:when>
 
@@ -238,18 +223,13 @@ else $css-path"/>
 
 </xsl:template>
 
-<xsl:function name="f:get-relative-path">
-<xsl:param name="abs-path"/>
-<xsl:variable name="parent-count" as="xs:integer" select="count(tokenize($abs-path,'/')) - 1"/>
-<xsl:value-of select="if ($parent-count eq 0) then 
-$css-name
-else
-concat(
-    string-join(
-        for $n in 1 to $parent-count return
-        '..'
-    , '/')
-, '/', $css-name)"/>
+<xsl:function name="f:get-css-link">
+<xsl:param name="path"/>
+<xsl:value-of select="if ($css-path eq '') then
+    concat(
+        f:ancestor-path(count(tokenize($path,'/')) - 1),
+    $css-name)
+else $css-path"/>
 
 </xsl:function>
 
@@ -266,7 +246,6 @@ concat(
 , '/')"/>
 
 </xsl:function>
-
 
 <xsl:template name="wrap-spans">
 <xsl:param name="spans" as="node()*" tunnel="yes"/>

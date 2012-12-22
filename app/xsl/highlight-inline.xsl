@@ -11,9 +11,9 @@ Description:
 
 Transforms the source XHTML file by converting <samp> elements to para elements
 with span child elements containing class attributes for color styles. Also
-inserts a link to a generated CSS file. 
+inserts a link to a generated CSS file output as a xsl:result-document. 
 
-Note that this file interface is a simple wrapper for xmlspectrum.xsl.
+Note that this interface stylesheet is a simple wrapper for xmlspectrum.xsl.
 
 Dependencies:
 
