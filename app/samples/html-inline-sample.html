@@ -1,20 +1,50 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Test XMLSpectrum</title>
+<style type="text/css">
+td, th {
+border: 1px solid #cacaca; padding: 1px;
+white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+white-space: -pre-wrap;      /* Opera 4-6 */
+white-space: -o-pre-wrap;    /* Opera 7 */
+white-space: pre-wrap;       /* css-3 */
+word-wrap: break-word;       /* Internet Explorer 5.5+ */
+padding-left:2px;  
+}
+</style>
 </head>
 <body>
-<h1><code>Code Sample Syntax Highlighting</code></h1>
-<p>A standard XSLT 2.0 solution for syntax highlighting code samples embedded, in this sample, within an XHTML file.</p>
-<p>The top-level stylesheet is <code>highlight-inline.xsl</code>, this is part of the <code><a href="https://github.com/pgfearo/xmlspectrum">xmlspectrum.xsl</a></code> project hosted on GitHub. See the <a href="html-inline-sample.html">input file</a> for a 'pre-transform' comparison.</p>
+<h1><code>XMLSpectrum: Inline Syntax Highlighting</code></h1>
+<p>This web page describes an XSLT 2.0 solution for syntax highlighting embedded code samples contained within an XHTML file. The HTML for this web page was transformed from <a href="html-inline-sample.html">html-inline-sample.html</a> using this method, with the following command-line:</p>
+<pre>
+  C:\>java -cp "C:\Program Files\Saxon\saxon9he.jar" net.sf.saxon.Transform -t `
+  -xsl:xsl/highlight-inline.xsl -s:samples/html-inline-sample.html -o:output/highlighted-inline.html
+</pre>
+<p>The solution is included in the <code><a href="https://github.com/pgfearo/xmlspectrum">XMLSpectrum</a></code> project hosted on GitHub, the top-level stylesheet is <code>highlight-inline.xsl</code>.</p>
 <h2><code>Supported Languages</code></h2>
-<ul>
-<li><code>XPath 2.0</code></li>
-<li><code>XSLT 2.0</code></li>
-<li><code>XSD 1.1</code></li>
-</ul>
+<p>List of languages along with the required <code>lang</code> attribute of the <code>pre</code> element</p>
+<table width="200px" border="1px" style="border-collapse:collapse;border:1px solid #cacaca">
+<thead>
+<tr>
+<th>Language</th>
+<th>@lang</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XPath 2.0</td><td>xpath</td>
+</tr>
+<tr>
+<td>XSLT 2.0</td><td>xslt</td>
+</tr>
+<tr>
+<td>XSD 1.1</td><td>xsd</td>
+</tr>
+</tbody>
+</table>
 <h2>How it works</h2>
 <p>The <code>highlight-inline.xsl</code> stylesheet performs an identity transform on the XHTML input, it imports <code>xmlspectrum.xsl</code>, the module containing the highlighting and formatting functions. There are custom templates matching all <code>pre</code> elements with a <code>lang</code> attribute, as this attribute is used to specify the language of the enclosed code sample. Two further attributes: <code>data-indent</code> and <code>data-trim</code> are used to specify whether XML indentation should be added, and initially left-trimmed respectively.</p>
-<p>For XSLT or XSD snippets, namespaces do not need to be declared in the source, the 'xsl' and 'xs' prefixes are assumed to represent the XSLT and XML Schema namespaces respectively. In cases where another prefix is used, the <code>data-prefix</code> attribute on the <code>pre</code> element should be set to the alternate prefix in use.</p>
+<p>For XSLT or XSD snippets, namespace-correctness is not required, that is, all namespaces don't need to be declared. Instead, the first prefix found on the first element is assumed to be that for either the XSLT or XML Schema namespace. The <code>data-prefix</code> attribute on the <code>pre</code> element can be used to set the prefix explicitly.</p>
 <h2>XSLT Code Sample #1</h2>
 <p>The following XSLT highlighting sample had no indentation in the source code to reflect the XML nesting level, but there is indentation within the first XPath expression</p>
 
@@ -124,7 +154,7 @@ xmlns:f="internal"&gt;
 
 &lt;xsl:template match="pre[exists(@lang) and @lang ne 'xpath']"&gt;
 &lt;xsl:variable name="is-xsl" select="@lang eq 'xslt'" as="xs:boolean"/&gt;
-&lt;xsl:variable name="prefix" select="if($is-xsl) then 'xsl' else 'xs'"/&gt;
+&lt;xsl:variable name="prefix" select="(@data-prefix, '')[1]" as="xs:string"/&gt;
 &lt;xsl:variable name="context-indent" select="if (exists(@data-indent))
 then xs:integer(@data-indent)
 else $indent-size"/&gt;
@@ -166,7 +196,8 @@ as="element()*"/&gt;
 
 &lt;/xsl:template&gt;
 
-&lt;/xsl:stylesheet&gt;</pre>
+&lt;/xsl:stylesheet&gt;
+</pre>
 <h2>XSD Code Sample</h2>
 <p> The following XSD is colorised  as XSD because the <code>pre</code> element
 has a <code>lang</code> attribute with value 'xsd'.</p>

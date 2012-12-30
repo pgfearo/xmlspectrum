@@ -83,9 +83,7 @@ xmlns:f="internal">
 
 <xsl:template match="pre[exists(@lang) and @lang ne 'xpath']">
 <xsl:variable name="is-xsl" select="@lang eq 'xslt'" as="xs:boolean"/>
-<xsl:variable name="prefix" select="if (@data-prefix)
-then @data-prefix
-else if($is-xsl) then 'xsl' else 'xs'"/>
+<xsl:variable name="prefix" select="(@data-prefix, '')[1]" as="xs:string"/>
 <xsl:variable name="context-indent" select="if (exists(@data-indent))
 then xs:integer(@data-indent)
 else $indent-size"/>

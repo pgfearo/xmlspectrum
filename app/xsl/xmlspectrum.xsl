@@ -36,6 +36,16 @@ xmlns:css="css-defs.com"
 exclude-result-prefixes="loc f xs css"
 xmlns=""
 xmlns:f="internal">
+
+<!-- import xsl just for self-testing -->
+<xsl:import href="dummy.xsl"/>
+<xsl:include href="sub/dummy2.xsl"/>
+
+<!-- override these variables -->
+<xsl:variable name="w3c-xpath-functions-uri"
+select="'http://www.w3.org/TR/xpath-functions/'"/>
+<xsl:variable name="font-name" select="'std'"/>
+
 <!--
 signature:
     f:render(xml-content, is-xml, root-prefix)
@@ -52,17 +62,6 @@ params:
     root-prefix: string prefix used for elements requiring special coloring for XSLT
                  or XSD 1.1 - often 'xsl' and 'xs' respectively
 -->
-
-<!-- import xsl just for self-testing -->
-<xsl:import href="dummy.xsl"/>
-<xsl:include href="sub/dummy2.xsl"/>
-
-<!-- override these variables -->
-<xsl:variable name="w3c-xpath-functions-uri"
-select="'http://www.w3.org/TR/xpath-functions/'"/>
-<xsl:variable name="font-name" select="'std'"/>
-
-
 
 <xsl:function name="f:render">
 <xsl:param name="xmlText" as="xs:string"/>
@@ -192,7 +191,7 @@ $local-name)
 
 <!-- 
 description
-    
+    XSLT Template
     Adds ids and hrefs to span elements for global-variables, named-templates and functions
 
 parameters:
@@ -247,12 +246,6 @@ else ()"/>
 select="if (exists($global-refs)) then
     ($global-refs/item[string(.) eq $clark-name])[1]/../parent::file/@path
 else ()"/>
-
-<!--
-<xsl:if test="@class eq 'tcall'">
-<xsl:message><xsl:value-of select="$clark-name, 'rsv', $resolved-ref"/></xsl:message>
-</xsl:if>
--->
 
 <xsl:variable name="href" as="xs:string?"
 select="if (@class eq 'href') then
@@ -482,7 +475,7 @@ return ' ','')"/>
 </xsl:function>
 
 <!--
-signature: 
+XSLT function signature: 
     f:get-css(is-light-theme)
 
 description:
@@ -625,11 +618,27 @@ id="{js:getStackIndex()}">
 </xsl:if>
 </xsl:variable>
 
+<xsl:variable name="char1" as="xs:string?" select="substring($token,1,1)"/>
+<xsl:variable name="is-element-start" as="xs:boolean"
+select="not($awaiting) and not($char1 = ('?','!','/'))"/>
+<xsl:variable name="is-root-element" as="xs:boolean"
+select="$counter eq 0 and $is-element-start"/>
+<!-- if root-prefix not initially supplied, get this from the first element name -->
+<xsl:variable name="new-root-prefix"
+select="if ($is-root-element)
+then if ($root-prefix eq '')
+    then 
+        for $s in substring-before($token, ':') return
+            if ($s eq '') then '' else concat($s, ':')
+    else $root-prefix
+else $root-prefix"/>
+
+
 <!-- return 2 strings if required close found - that befoe and that after (even if empty string)
  if no required close found - just return the required close-->
+
 <xsl:variable name="parseStrings" as="element()*">
 <xsl:if test="not($awaiting)">
-<xsl:variable name="char1" as="xs:string?" select="substring($token,1,1)"/>
 <xsl:variable name="requiredClose" as="xs:string">
 <xsl:variable name="char2" as="xs:string?" select="substring($token,2,1)"/>
 <xsl:choose>
@@ -651,7 +660,7 @@ id="{js:getStackIndex()}">
 <x/>
 -->
 </xsl:when>
-<xsl:when test="$char1 = ('?','!','/')">
+<xsl:when test="not($is-element-start)">
 <!-- cdata, dtd, pi, comment, or close-tag -->
 <xsl:variable name="foundClose"
 select="if (string-length($beforeClose) gt 0)
@@ -719,13 +728,7 @@ else 'cl'}">
 </xsl:analyze-string>
 </xsl:variable>
 
-<xsl:variable name="pre-text" select="substring-before($parts[1], '>')"/>
-
-<!--
-<span>[parts]<xsl:value-of select="string-join($parts,'/')"/></span>
--->
-
-<xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $is-xsl, $root-prefix, '')"/>
+<xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $is-xsl, $new-root-prefix, '')"/>
 
 <!-- must be an open tag, so check for attributes -->
 
@@ -735,6 +738,8 @@ else 'cl'}">
 </xsl:variable>
 
 <xsl:variable name="newLevel" as="xs:integer" select="0"/>
+<xsl:variable name="newCounter" select="if ($is-element-start)
+then $counter + 1 else $counter"/>
 
 <xsl:variable name="stillAwaiting" as="xs:boolean"
 select="$awaiting and empty($expectedOutput)"/>
@@ -759,7 +764,8 @@ else 'n'"/>
 select="if ($stillAwaiting) then $beganAt else $index"/>
 
 <xsl:if test="$index le count($tokens)">
-<xsl:sequence select="f:iterateTokens($counter + 1, $tokens, $index + 1, $newExpected, $newBeganAt, $newLevel, $is-xsl, $root-prefix)"/>
+<xsl:sequence select="f:iterateTokens($newCounter, $tokens, $index + 1,
+$newExpected, $newBeganAt, $newLevel, $is-xsl, $new-root-prefix)"/>
 </xsl:if>
 </xsl:function>
 
