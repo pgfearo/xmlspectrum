@@ -3,42 +3,173 @@
 <title>Test XMLSpectrum</title>
 </head>
 <body>
-<h1><code>Sample output from xmlspectrum.xsl</code></h1>
-<p>The <code><a href="https://github.com/pgfearo/xmlspectrum">xmlspectrum.xsl</a></code> project is hosted on GitHub. See the <a href="html-inline-sample.html">input file</a> for a comparison.</p>
-<h2>XSLT Code Sample</h2>
-<p> The following XSLT is colorised  as XSLT because the <code>samp</code> element
-has a <code>lang</code> attribute with value 'xslt'.</p>
-<pre lang="xslt">
-&lt;xsl:variable name="className"&gt;
-    &lt;xsl:choose&gt;
-        &lt;xsl:when test="exists(@type)"&gt;
-            &lt;xsl:value-of
-                            select="if (@type eq 'literal' and
-                            matches(@value ,
-                            'select[\n\p{Zs}]*=[\n\p{Zs}]*[&amp;quot;&amp;apos;&amp;apos;]')
-                            )
-                            then 'select' else @type"
-                            /&gt;
-        &lt;/xsl:when&gt;
-        &lt;xsl:otherwise&gt;
-            &lt;xsl:variable name="p" select="$para[$index - 1] "/&gt;
-            &lt;xsl:value-of
-                            select="if ($p/@type eq 'literal' and                           
-                            matches(
-                            $p/@value ,
-                            'name[\n\p{Zs}]*=[\n\p{Zs}]*[&amp;quot;&amp;apos;&amp;apos;]')
-                            )
-                            then 'external'
-                            else 'qname'"
-            /&gt;
-        &lt;/xsl:otherwise&gt;
-    &lt;/xsl:choose&gt;
+<h1><code>Code Sample Syntax Highlighting</code></h1>
+<p>A standard XSLT 2.0 solution for syntax highlighting code samples embedded, in this sample, within an XHTML file.</p>
+<p>The top-level stylesheet is <code>highlight-inline.xsl</code>, this is part of the <code><a href="https://github.com/pgfearo/xmlspectrum">xmlspectrum.xsl</a></code> project hosted on GitHub. See the <a href="html-inline-sample.html">input file</a> for a 'pre-transform' comparison.</p>
+<h2><code>Supported Languages</code></h2>
+<ul>
+<li><code>XPath 2.0</code></li>
+<li><code>XSLT 2.0</code></li>
+<li><code>XSD 1.1</code></li>
+</ul>
+<h2>How it works</h2>
+<p>The <code>highlight-inline.xsl</code> stylesheet performs an identity transform on the XHTML input, it imports <code>xmlspectrum.xsl</code>, the module containing the highlighting and formatting functions. There are custom templates matching all <code>pre</code> elements with a <code>lang</code> attribute, as this attribute is used to specify the language of the enclosed code sample. Two further attributes: <code>data-indent</code> and <code>data-trim</code> are used to specify whether XML indentation should be added, and initially left-trimmed respectively.</p>
+<p>For XSLT or XSD snippets, namespaces do not need to be declared in the source, the 'xsl' and 'xs' prefixes are assumed to represent the XSLT and XML Schema namespaces respectively. In cases where another prefix is used, the <code>data-prefix</code> attribute on the <code>pre</code> element should be set to the alternate prefix in use.</p>
+<h2>XSLT Code Sample #1</h2>
+<p>The following XSLT highlighting sample had no indentation in the source code to reflect the XML nesting level, but there is indentation within the first XPath expression</p>
+
+<p>The raw source code:</p>
+<pre style="background-color:#efefef;color:2a2a2a;">
+&lt;xsl:template match="test"&gt;
+
+&lt;xsl:variable name="like" as="xs:string"
+select="(:describe the total amount:)
+if ($total gt 100)
+    then 'too big'
+else if ($total gt 10)
+    then 'big'
+else 'small'"/&gt;
+
+&lt;xsl:variable name="tree"&gt;
+&lt;books class="size: {concat($like, 'xyz')}"&gt;
+&lt;book&gt;
+&lt;title&gt;
+&lt;main&gt;The main title&lt;/main&gt;
+&lt;stub&gt;The stub for the title&lt;/stub&gt;
+&lt;/title&gt;
+&lt;/book&gt;
+&lt;/books&gt;
 &lt;/xsl:variable&gt;
+
+&lt;xsl:sequence select="$tree"/&gt;
+
+&lt;/xsl:template&gt;
 </pre>
-<p>Some more text.</p>
+
+<p>After highlighting and indentation:</p>
+<pre lang="xslt" data-indent="2" data-trim="'no'">
+&lt;xsl:template match="test"&gt;
+
+&lt;xsl:variable name="like" as="xs:string"
+select="(:describe the total amount:)
+if ($total gt 100)
+    then 'too big'
+else if ($total gt 10)
+    then 'big'
+else 'small'"/&gt;
+
+&lt;xsl:variable name="tree"&gt;
+&lt;books class="size: {concat($like, 'xyz')}"&gt;
+&lt;book&gt;
+&lt;title&gt;
+&lt;main&gt;The main title&lt;/main&gt;
+&lt;stub&gt;The stub for the title&lt;/stub&gt;
+&lt;/title&gt;
+&lt;/book&gt;
+&lt;/books&gt;
+&lt;/xsl:variable&gt;
+
+&lt;xsl:sequence select="$tree"/&gt;
+
+&lt;/xsl:template&gt;
+</pre>
+<h2>XSLT Code Sample #2</h2>
+<p> The following XSLT is the auto-indented source code for <code>highlight-inline.xsl</code>.</p>
+<pre lang="xslt" data-indent="2">
+&lt;xsl:stylesheet version="2.0"
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:xs="http://www.w3.org/2001/XMLSchema"
+xmlns:loc="com.qutoric.sketchpath.functions"
+xmlns:css="css-defs.com"
+exclude-result-prefixes="loc f xs css"
+xmlns="http://www.w3.org/1999/xhtml"
+xpath-default-namespace="http://www.w3.org/1999/xhtml"
+xmlns:f="internal"&gt;
+
+&lt;xsl:import href="xmlspectrum.xsl"/&gt;
+
+&lt;xsl:output indent="no" method="html"/&gt;
+
+&lt;xsl:param name="light-theme" select="'no'" as="xs:string"/&gt;
+&lt;xsl:param name="indent" select="'-1'" as="xs:string"/&gt;
+&lt;xsl:param name="auto-trim" select="'no'" as="xs:string"/&gt;
+
+&lt;xsl:variable name="indent-size" select="xs:integer($indent)" as="xs:integer"/&gt;
+&lt;xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/&gt;
+
+&lt;xsl:template match="/"&gt;
+&lt;xsl:apply-templates/&gt;
+&lt;xsl:call-template name="create-css"/&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template match="html"&gt;
+&lt;xsl:text disable-output-escaping='yes'&gt;&lt;!DOCTYPE html&gt;&lt;/xsl:text&gt;
+&lt;xsl:copy&gt;
+&lt;xsl:apply-templates select="node()|@*"/&gt;
+&lt;/xsl:copy&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template match="head"&gt;
+&lt;xsl:apply-templates select="@*"/&gt;
+&lt;link rel="stylesheet" type="text/css" href="theme.css"/&gt;
+&lt;xsl:apply-templates/&gt;
+&lt;/xsl:template&gt;
+
+
+&lt;xsl:template match="@* | node()"&gt;
+&lt;xsl:copy&gt;
+&lt;xsl:apply-templates select="@* | node()"/&gt;
+&lt;/xsl:copy&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template match="pre[exists(@lang) and @lang ne 'xpath']"&gt;
+&lt;xsl:variable name="is-xsl" select="@lang eq 'xslt'" as="xs:boolean"/&gt;
+&lt;xsl:variable name="prefix" select="if($is-xsl) then 'xsl' else 'xs'"/&gt;
+&lt;xsl:variable name="context-indent" select="if (exists(@data-indent))
+then xs:integer(@data-indent)
+else $indent-size"/&gt;
+&lt;xsl:copy&gt;
+&lt;xsl:attribute name="class" select="@lang"/&gt;
+&lt;xsl:apply-templates select="@* except @class"/&gt;
+&lt;xsl:variable name="real-trim" as="xs:boolean"
+select="if (exists(@data-trim))
+then @data-trim='yes'
+else $do-trim"/&gt;
+&lt;xsl:choose&gt;
+&lt;xsl:when test="$real-trim or $context-indent gt 0"&gt;
+&lt;xsl:variable name="renderedXML" select="f:render(., $is-xsl, $prefix)"
+as="element()*"/&gt;
+&lt;xsl:sequence select="f:indent($renderedXML, $context-indent, $real-trim)"/&gt;
+&lt;/xsl:when&gt;
+&lt;xsl:otherwise&gt;
+&lt;xsl:sequence select="f:render(., $is-xsl, $prefix)"/&gt;
+&lt;/xsl:otherwise&gt;
+&lt;/xsl:choose&gt;
+&lt;/xsl:copy&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template match="pre[@lang eq 'xpath']"&gt;
+&lt;xsl:copy&gt;
+&lt;xsl:attribute name="class" select="@lang"/&gt;
+&lt;xsl:apply-templates select="@* except @class"/&gt;
+&lt;xsl:sequence select="loc:showXPath(.)"/&gt;
+&lt;/xsl:copy&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template name="create-css"&gt;
+
+&lt;xsl:result-document href="theme.css" method="text" indent="no"&gt;
+&lt;xsl:variable name="classes" select="'pre.xslt, pre.xsd, pre.xpath, '"/&gt;
+&lt;xsl:variable name="is-light-theme" as="xs:boolean" select="$light-theme eq 'yes'"/&gt;
+&lt;xsl:sequence select="$classes, f:get-css($is-light-theme)"/&gt;
+&lt;/xsl:result-document&gt;
+
+&lt;/xsl:template&gt;
+
+&lt;/xsl:stylesheet&gt;</pre>
 <h2>XSD Code Sample</h2>
-<pre> The following XSD is colorised  as XSD because the <code>samp</code> element
-has a <code>lang</code> attribute with value 'xsd'.</pre>
+<p> The following XSD is colorised  as XSD because the <code>pre</code> element
+has a <code>lang</code> attribute with value 'xsd'.</p>
 <pre lang="xsd">
 &lt;xs:element name="price"&gt;
  &lt;xs:complexType&gt;
@@ -71,19 +202,25 @@ has a <code>lang</code> attribute with value 'xsd'.</pre>
  &lt;/xs:complexType&gt;
 &lt;/xs:element&gt;
 </pre>
-<p>Some more text.</p>
+<p>The sample above shows XPath syntax highlighting for the contents of the <code>test</code> attribute belonging to the <code>xs:assert</code> element. Also, <code>xs:attribute</code> and <code>xs:element</code> declarations have different highlighting so they are emphasized.</p>
 
-<h2>XPathCode Sample</h2>
-<p> The following XSLT is colorised as XPath because the <code>samp</code> element
-in the source has a <code>lang</code> attribute of  'xpath'.</p>
+<h2>XPath Code Sample</h2>
+<p> The following code in a <code>pre</code> element is colorised as XPath because the <code>pre</code> element
+has a <code>lang</code> attribute of 'xpath'.</p>
 <pre lang="xpath">
-if (@type eq 'literal' and
-    matches(
-            @value ,
-            'select[\n\p{Zs}]*=[\n\p{Zs}]*[&amp;quot;&amp;apos;&amp;apos;]')
-           )
-then 'select' else @type
+    if (@type eq 'literal'
+        and matches(
+                @value ,
+                'select[\n\p{Zs}]*=[\n\p{Zs}]*[&amp;quot;&amp;apos;&amp;apos;]')
+    )
+    then
+        'select'
+    else
+        @type
 </pre>
-<p>Some more text.</p>
+<h2>Summary</h2>
+<p>
+The <code>highlight-inline.xsl</code> stylesheet is a simple working demonstration of how the XSLT functions contained within <code>xmlspectrum.xsl</code> can be called to add syntax highlighting to <code>pre</code> elements within an XHTML source file. Only small changes would be required for this to work with code samples included in XML vocabularies other than XHTML, such as Docbook, XMLSpec or DITA.
+</p>
 </body>
 </html>

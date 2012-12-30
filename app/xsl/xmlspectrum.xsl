@@ -916,7 +916,9 @@ else if ($elementName = f:prefixed-name($root-prefix, 'function')
 else if ($elementName = f:prefixed-name($root-prefix, 'template') 
     and $att-name eq 'name') then 'tname'
 else 'av'
-else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'fname' else 'av'"/>
+
+else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)
+    and $att-name eq 'name') then 'fname' else 'av'"/>
 
 
 </xsl:function>
