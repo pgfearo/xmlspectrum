@@ -4,7 +4,7 @@ The **_output_** directory contains files created by running XMLSpectrum transfo
 
 ##Links
 
-For usage instructions, see [xmlspectrum/app/xsl/readme](app/xsl/readme.md)
+For usage instructions, see [xmlspectrum/app/xsl/readme](xsl/readme.md)
 
 Introduction and features: [xmlspectrum/readme](../README.md)
 
