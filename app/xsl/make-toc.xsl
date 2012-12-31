@@ -6,6 +6,8 @@ exclude-result-prefixes="loc f xs"
 xmlns=""
 xmlns:f="internal">
 
+<!-- Creates a table of contents derived from globals result-tree -->
+
 
 <xsl:template name="create-toc">
 <xsl:param name="globals" as="element()" tunnel="yes"/>
@@ -58,6 +60,7 @@ xmlns:f="internal">
 <span class="en">Templates</span>
 <ul>
 <xsl:apply-templates select="templates/item" mode="toc">
+<xsl:sort select="f:resolve-clark-name(.)"/>
 <xsl:with-param name="path" select="@path"/>
 </xsl:apply-templates>
 </ul>
@@ -68,6 +71,7 @@ xmlns:f="internal">
 <span class="fname">Functions</span>
 <ul>
 <xsl:apply-templates select="functions/item" mode="toc">
+<xsl:sort select="f:resolve-clark-name(.)"/>
 <xsl:with-param name="path" select="@path"/>
 </xsl:apply-templates>
 </ul>
@@ -78,6 +82,7 @@ xmlns:f="internal">
 <span class="vname">Variables</span>
 <ul>
 <xsl:apply-templates select="variables/item" mode="toc">
+<xsl:sort select="f:resolve-clark-name(.)"/>
 <xsl:with-param name="path" select="@path"/>
 </xsl:apply-templates>
 </ul>
@@ -92,19 +97,26 @@ xmlns:f="internal">
 
 <xsl:template match="item" mode="toc">
 <xsl:param name="path"/>
+
 <xsl:variable name="char" select="substring(local-name(..),1, 1)"/>
-<xsl:variable name="ns" select="substring(substring-before(., '}'), 2)"/>
-<xsl:variable name="name" select="if ($ns eq '') then
-  string(.)  
-else
-    substring-after(., '}')
-"/>
+<xsl:variable name="name" select="f:resolve-clark-name(.)"/>
 <li>
 <a class="solar" href="{concat($path, '.html', '#',$char,'?', string(.))}">
 <span class="atn"><xsl:value-of select="$name"/></span>
 </a>
 </li>
 </xsl:template>
+
+<xsl:function name="f:resolve-clark-name" as="xs:string">
+<xsl:param name="text"/>
+<xsl:variable name="ns" select="substring(substring-before($text, '}'), 2)"/>
+<xsl:value-of select="if ($ns eq '') then
+  string($text)  
+else
+    substring-after($text, '}')
+"/>
+
+</xsl:function>
 
 </xsl:stylesheet>
 
