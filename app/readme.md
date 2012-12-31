@@ -1,0 +1,1 @@
+Directories=======output-------samples---------xsl---<table><tr><td>xmlspectrum.xsl</td><td>The core stylesheet. Provides functions to be used by an importing stylesheet.</td></tr><tr><td>one</td><td>two</td></tr></table>
