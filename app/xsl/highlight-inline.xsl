@@ -52,6 +52,7 @@ xmlns:f="internal">
 <xsl:param name="light-theme" select="'no'" as="xs:string"/>
 <xsl:param name="indent" select="'-1'" as="xs:string"/>
 <xsl:param name="auto-trim" select="'no'" as="xs:string"/>
+<xsl:param name="font-name" select="'std'"/>
 
 <xsl:variable name="indent-size" select="xs:integer($indent)" as="xs:integer"/>
 <xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/>
