@@ -89,7 +89,6 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 <xsl:param name="sourceuri" select="$sourcepath"/>
 
 <xsl:variable name="xsl-xmlns" select="'http://www.w3.org/1999/XSL/Transform'"/>
-<xsl:variable name="xsd-xmlns" select="'http://www.w3.org/2001/XMLSchema'"/>
 
 <!-- if windows OS, convert path to URI -->
 <xsl:variable name="corrected-uri" select="replace($sourceuri,'\\','/')"/>

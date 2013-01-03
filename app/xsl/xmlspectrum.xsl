@@ -48,7 +48,7 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 
 <!-- override if 'xsd' vocabulary is not XML Schema -->
 <xsl:variable name="xsd-xpath-names" as="element()+">
-<element name="assert" attribute="test"/>
+<element name="assert"><att>test</att></element>
 </xsl:variable>
 
 <!-- override if 'xsd' vocabulary is not XML Schema -->
@@ -518,7 +518,9 @@ params:
 <xsl:function name="f:get-xsd-names" as="element()*">
 <xsl:param name="prefix" as="xs:string"/>
 <xsl:for-each select="$xsd-xpath-names">
-<element name="{concat($prefix, @name)}" attribute="{@attribute}"/>
+<element name="{concat($prefix, @name)}">
+<xsl:copy-of select="*"/>
+</element>
 </xsl:for-each>
 </xsl:function>
 
@@ -817,11 +819,12 @@ select="if ($ename eq '') then
 tokenize($part1, '>|\s+|/')[1]
 else $ename"/>
 
-<xsl:variable name="is-xsl-element" select="$is-xsl and starts-with($attToken, $root-prefix)"/>
+<xsl:variable name="with-prefix" select="starts-with($attToken, $root-prefix)"/>
+<xsl:variable name="is-xsl-element" select="$is-xsl and $with-prefix"/>
 
 <xsl:if test="$index eq 1">
 <span class="es">&lt;</span>
-<span class="{if ($is-xsl-element)
+<span class="{if ($is-xsl-element or not($with-prefix))
 then 'enxsl'
 else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)/@name) then 'enxsl' 
 else 'en'}">
@@ -890,14 +893,13 @@ then $att-name = ('select','test', 'match')
 else
 
 ($is-xsd and exists( 
-$xsd-xpath-elements[@name = $elementName and $att-name = @attribute])) 
+$xsd-xpath-elements[@name = $elementName and ./att = $att-name])) 
 "/>
 
 <!-- for coloring attribute values that are referenced from XPath -->
 <xsl:variable name="metaXPathName" as="xs:string"
 select="f:get-av-class($is-xsl-element, $is-xsd, 
                $elementName, $att-name, $root-prefix)"/>
-
 
 <span class="atneq"><xsl:value-of select="substring($left,string-length($pre) + 1)"/></span>
 
@@ -1094,7 +1096,7 @@ color: #657b83;
 span.base0, span.txt, span.cd {
 color: #839496;
 }
-span.base1, span.literal, span.av {
+span.base1, span.literal {
 color:<css:background dark="#93a1a1" light="#586e75"/>;
 }
 span.base2 {
@@ -1125,7 +1127,7 @@ span.filter, span.parenthesis, span.node{
 span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context {
     color: #2aa198;
 }
-span.green, span.cm, span.comment {
+span.green, span.cm, span.comment, span.av {
     color: #859900;
 }
 a.solar {

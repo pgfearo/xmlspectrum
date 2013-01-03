@@ -77,7 +77,7 @@ color: #657b83;
 span.base0, span.txt, span.cd {
 color: #839496;
 }
-span.base1, span.literal, span.av {
+span.base1, span.literal {
 color:#93a1a1;
 }
 span.base2 {
@@ -108,7 +108,7 @@ span.filter, span.parenthesis, span.node{
 span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context {
     color: #2aa198;
 }
-span.green, span.cm, span.comment {
+span.green, span.cm, span.comment, span.av {
     color: #859900;
 }
 a.solar {
