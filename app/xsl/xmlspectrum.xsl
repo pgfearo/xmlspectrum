@@ -46,6 +46,18 @@ xmlns:f="internal">
 select="'http://www.w3.org/TR/xpath-functions/'"/>
 <xsl:variable name="font-name" select="'std'"/>
 
+<!-- override if 'xsd' vocabulary is not XML Schema -->
+<xsl:variable name="xsd-xpath-names" as="element()+">
+<element name="assert" attribute="test"/>
+</xsl:variable>
+
+<!-- override if 'xsd' vocabulary is not XML Schema -->
+<xsl:variable name="xsd-highlight-names" as="element()+">
+<element name="element" attribute="name"/>
+<element name="attribute" attribute="name"/>
+</xsl:variable>
+
+
 <!--
 signature:
     f:render(xml-content, is-xml, root-prefix)
@@ -503,17 +515,29 @@ params:
 </xsl:for-each>
 </xsl:function>
 
-<xsl:function name="f:get-xsd-names" as="xs:string*">
+<xsl:function name="f:get-xsd-names" as="element()*">
 <xsl:param name="prefix" as="xs:string"/>
-<xsl:sequence
-select="for $a in ('assert') return concat($prefix, $a)"/>
+<xsl:for-each select="$xsd-xpath-names">
+<element name="{concat($prefix, @name)}" attribute="{@attribute}"/>
+</xsl:for-each>
 </xsl:function>
 
-<xsl:function name="f:get-xsd-fnames" as="xs:string*">
+<xsl:function name="f:get-xsd-fnames" as="element()+">
 <xsl:param name="prefix" as="xs:string"/>
-<xsl:sequence
-select="for $a in ('element','attribute') return concat($prefix, $a)"/>
+<xsl:for-each select="$xsd-highlight-names">
+<element name="{concat($prefix, @name)}" attribute="{@attribute}"/>
+</xsl:for-each>
 </xsl:function>
+
+
+<xsl:function name="f:is-xsd-fname" as="xs:boolean">
+<xsl:param name="prefix"/>
+<xsl:param name="element"/>
+<xsl:param name="attribute"/>
+<xsl:variable name="fnames" as="element()+" select="f:get-xsd-fnames($prefix)"/>
+<xsl:value-of select="exists($fnames[@name = $element and @attribute = $attribute])"/>
+</xsl:function>
+
 
 <xsl:template match="css:font" mode="css">
 <xsl:value-of select="if ($font-name eq 'scp') then @scp else ''"/>
@@ -676,12 +700,15 @@ as="xs:boolean"/>
 <span class="{if ($isElementClose) then 'ez' else 'z'}">
 <xsl:value-of select="concat('&lt;',$tagStart)"/></span>
 <xsl:variable name="tagContent" select="substring($beforeClose, string-length($tagStart) + 1)"/>
-
+<xsl:variable name="with-prefix" select="starts-with($tagContent, $root-prefix)" as="xs:boolean"/>
 <xsl:choose>
 <xsl:when test="$isElementClose">
-<span class="{if ($is-xsl and starts-with($tagContent, $root-prefix))
+<span class="{if ($is-xsl and $with-prefix)
 then 'clxsl'
-else if ($is-xsd and $tagContent = f:get-xsd-fnames($root-prefix)) then 'clxsl'
+else if ($is-xsd
+         and ($tagContent = f:get-xsd-fnames($root-prefix)/@name
+         or not($with-prefix))) 
+then 'clxsl'
 else 'cl'}">
 <xsl:value-of select="$tagContent"/>
 </span>
@@ -796,7 +823,7 @@ else $ename"/>
 <span class="es">&lt;</span>
 <span class="{if ($is-xsl-element)
 then 'enxsl'
-else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)) then 'enxsl' 
+else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)/@name) then 'enxsl' 
 else 'en'}">
 <!--
 id="{js:stackPush($elementName)}">
@@ -855,14 +882,16 @@ else 'z'"/>
 </xsl:variable>
 
 <xsl:variable name="att-name" select="$attSpans[@class eq 'atn']"/>
-
+<xsl:variable name="xsd-xpath-elements" select="f:get-xsd-names($root-prefix)" as="element()+"/>
 <xsl:sequence select="$attSpans"/>
-<xsl:variable name="isXPath"
+<xsl:variable name="isXPath" as="xs:boolean"
 select="if ($is-xsl-element)
 then $att-name = ('select','test', 'match')
-else if ($is-xsd and f:get-xsd-names($root-prefix) = $elementName and $attSpans[@class = 'atn'] = 'test') 
-then true()
-else false()"/>
+else
+
+($is-xsd and exists( 
+$xsd-xpath-elements[@name = $elementName and $att-name = @attribute])) 
+"/>
 
 <!-- for coloring attribute values that are referenced from XPath -->
 <xsl:variable name="metaXPathName" as="xs:string"
@@ -923,8 +952,9 @@ else if ($elementName = f:prefixed-name($root-prefix, 'template')
     and $att-name eq 'name') then 'tname'
 else 'av'
 
-else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)
-    and $att-name eq 'name') then 'fname' else 'av'"/>
+else if ($is-xsd 
+         and f:is-xsd-fname($root-prefix, $elementName, $att-name))
+then 'fname' else 'av'"/>
 
 
 </xsl:function>
