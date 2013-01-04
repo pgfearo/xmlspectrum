@@ -42,6 +42,7 @@ xsl parameters:
                  for variables, functions, parameters and named templates
     css-path:    (path for output CSS)
     output-path: path in which to create html files - default is 'output/'
+    output-method: [html|xml] default:html - for xml, no css file is created
 
 Sample transform using Saxon-HE/Java on command-line (unbroken line):
 
@@ -74,6 +75,7 @@ xmlns:f="internal">
 <xsl:param name="output-path" select="'output/'"/>
 <!-- make source code pro the default -->
 <xsl:param name="font-name" select="'std'"/>
+<xsl:param name="output-method" select="'html'"/>
 
 <!-- note: set this to a proxy server storing the W3C resource to avoid
            excessive calls to the W3C server
@@ -216,7 +218,7 @@ else $css-path"/>
 </xsl:otherwise>
 </xsl:choose>
 
-<xsl:if test="$css-path eq ''">
+<xsl:if test="$css-path eq '' and $output-method ne 'xml'">
 <xsl:result-document href="{concat($output-path, $css-name)}" method="text" indent="no">
 <xsl:sequence select="f:get-css($light-theme eq 'yes')"/>
 </xsl:result-document>
@@ -422,9 +424,17 @@ namespace-uri-for-prefix($prefix, .),
 <xsl:param name="css-link"/>
 
 <xsl:variable name="file-only" select="f:file-from-uri($filename)"/>
-
-<xsl:result-document href="{concat($output-path, $filename, '.html')}" method="html" indent="no">
+<xsl:variable name="href-1" select="concat($output-path, $filename)"/>
+<xsl:variable name="href" select="if ($output-method eq 'xml')
+then $href-1
+else
+concat($href-1,'.', $output-method)"/>
+<xsl:message>writing: <xsl:value-of select="$href"/></xsl:message>
+<xsl:result-document href="{$href}"
+method="{$output-method}" indent="no">
+<xsl:if test="$output-method eq 'html'">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
+</xsl:if>
 <html>
 <head>
 <title><xsl:value-of select="$file-only"/></title>

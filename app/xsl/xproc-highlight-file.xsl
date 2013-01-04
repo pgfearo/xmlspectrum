@@ -51,6 +51,7 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 <att>attribute-value</att>
 </element>
 <element name="delete"><att>match</att></element>
+<element name="filter"><att>select</att></element>
 <element name="hash"><att>match</att></element>
 <element name="input"><att>select</att></element>
 <element name="insert"><att>match</att></element>
