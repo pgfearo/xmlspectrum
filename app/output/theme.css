@@ -1,9 +1,9 @@
-
-
+pre.xslt, pre.xsd, pre.xpath, 
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
 p.spectrum {
     margin:0px;
-    font-family: monospace;
-    
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.8em;
     white-space: pre-wrap;
     display: block;
     border: none thin;
@@ -14,8 +14,8 @@ margin-bottom:5px;
 }
 
 div.spectrum-toc {
-    font-family: monospace;
-    
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.8em;
     display: block;
     border: none thin;
     border-color: #405075;

@@ -17,14 +17,16 @@ xmlns:c="http://www.w3.org/ns/xproc-step"
 name="xmlspecturm-xsl"
 version="1.0">
 
-
-
 <p:input port="my-source" primary="true" sequence="false"/>
 
 <p:output port="result" sequence="true">
 <!-- there's no primary output, only secondary result-document output -->
 <p:empty/>
 </p:output>
+
+<!--
+<p:serialization port="store-result" encoding="UTF-8" indent="false" method="xml"/>
+-->
 
 <p:xslt name="step1"
 template-name="main"
@@ -48,11 +50,15 @@ version="2">
 <p:iteration-source>
 <p:pipe step="step1" port="secondary"/>
 </p:iteration-source>
-<!-- can't serialize as HTML in XProc -->
-<p:store encoding="utf-8"
+<!-- can't use method='HTML' in p:store but can add DOCTYPE -->
+<p:store
+name="step3"
+encoding="utf-8"
 indent="false"
 omit-xml-declaration="true"
+method="xml"
 doctype-system="about:legacy-compat">
+
 <!-- xslt adds an xml extension, so replace this with html -->
 <p:with-option name="href" select="concat(p:base-uri(), '.html')"/>
 </p:store>

@@ -57,6 +57,78 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 <element name="attribute" attribute="name"/>
 </xsl:variable>
 
+<xsl:variable name="xsd-names" as="element()">
+<document-types>
+<document-type name="xsd">
+<xpath-names>
+<element name="assert"><att>test</att></element>
+</xpath-names>
+<highlight-names>
+<element name="element" attribute="name"/>
+<element name="attribute" attribute="name"/>
+</highlight-names>
+</document-type>
+<document-type name="xproc">
+<xpath-names>
+<element name="add-attribute">
+<att>match</att>
+<!-- note: XProc spec states attribute-value has type xs:string
+           but the value may be an XPath expression so it can
+           do no harm to colorise as such -->
+<att>attribute-value</att>
+</element>
+<element name="delete"><att>match</att></element>
+<element name="filter"><att>select</att></element>
+<element name="hash"><att>match</att></element>
+<element name="input"><att>select</att></element>
+<element name="insert"><att>match</att></element>
+<element name="iteration-source"><att>select</att></element>
+<element name="label-elements">
+<att>label</att>
+<att>match</att>
+</element>
+<element name="make-absolute-uris"><att>match</att></element>
+<element name="namespaces"><att>element</att></element>
+
+<element name="option"><att>select</att></element>
+<element name="rename"><att>match</att></element>
+<element name="replace"><att>match</att></element>
+<element name="set-attributes"><att>match</att></element>
+<element name="string-replace">
+<att>match</att>
+<att>replace</att>
+</element>
+<element name="unwrap"><att>match</att></element>
+<element name="uuid"><att>match</att></element>
+<element name="variable"><att>select</att></element>
+<element name="viewport"><att>match</att></element>
+<element name="when"><att>test</att></element>
+<element name="with-option"><att>select</att></element>
+<element name="with-param"><att>select</att></element>
+<element name="wrap"><att>match</att></element>
+<element name="www-form-urlencode"><att>match</att></element>
+</xpath-names>
+<highlight-names>
+<element name="option" attribute="name"/>
+<element name="variable" attribute="name"/>
+</highlight-names>
+</document-type>
+
+</document-types>
+</xsl:variable>
+
+<xsl:function name="f:xsd-xpath-names" as="element()+">
+<xsl:param name="doctype" as="xs:string"/>
+<xsl:sequence
+select="$xsd-names/document-type[@name eq $doctype]/xpath-names/*"/>
+</xsl:function>
+
+<xsl:function name="f:xsd-highlight-names" as="element()+">
+<xsl:param name="doctype" as="xs:string"/>
+<xsl:sequence
+select="$xsd-names/document-type[@name eq $doctype]/highlight-names/*"/>
+</xsl:function>
+
 
 <!--
 signature:
@@ -77,7 +149,7 @@ params:
 
 <xsl:function name="f:render">
 <xsl:param name="xmlText" as="xs:string"/>
-<xsl:param name="is-xsl" as="xs:boolean"/>
+<xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="root-prefix-a" as="xs:string"/>
 
 <xsl:variable name="root-prefix" as="xs:string"
@@ -86,8 +158,14 @@ then ''
 else concat($root-prefix-a, ':')"/>
 
 <xsl:variable name="tokens-a" as="xs:string*" select="tokenize($xmlText, '&lt;')"/>
+<xsl:message>
+<xsl:text>rendering </xsl:text>
+<xsl:value-of select="concat(string(count($tokens-a)),' ')"/>
+<xsl:value-of select="$doctype"/>
+<xsl:text> tokens ...</xsl:text>
+</xsl:message>
 <xsl:variable name="tokens" select="if (normalize-space($tokens-a[1]) eq '') then subsequence($tokens-a, 2) else $tokens-a"/>
-<xsl:variable name="spans" select="f:iterateTokens(0, $tokens,1,'n',0, 0, $is-xsl, $root-prefix)" as="element()*"/>
+<xsl:variable name="spans" select="f:iterateTokens(0, $tokens,1,'n',0, 0, $doctype, $root-prefix)" as="element()*"/>
 
 <xsl:sequence select="$spans"/>
 </xsl:function>
@@ -517,7 +595,8 @@ params:
 
 <xsl:function name="f:get-xsd-names" as="element()*">
 <xsl:param name="prefix" as="xs:string"/>
-<xsl:for-each select="$xsd-xpath-names">
+<xsl:param name="doctype" as="xs:string"/>
+<xsl:for-each select="f:xsd-xpath-names($doctype)">
 <element name="{concat($prefix, @name)}">
 <xsl:copy-of select="*"/>
 </element>
@@ -526,7 +605,8 @@ params:
 
 <xsl:function name="f:get-xsd-fnames" as="element()+">
 <xsl:param name="prefix" as="xs:string"/>
-<xsl:for-each select="$xsd-highlight-names">
+<xsl:param name="doctype" as="xs:string"/>
+<xsl:for-each select="f:xsd-highlight-names($doctype)">
 <element name="{concat($prefix, @name)}" attribute="{@attribute}"/>
 </xsl:for-each>
 </xsl:function>
@@ -534,9 +614,10 @@ params:
 
 <xsl:function name="f:is-xsd-fname" as="xs:boolean">
 <xsl:param name="prefix"/>
+<xsl:param name="doctype"/>
 <xsl:param name="element"/>
 <xsl:param name="attribute"/>
-<xsl:variable name="fnames" as="element()+" select="f:get-xsd-fnames($prefix)"/>
+<xsl:variable name="fnames" as="element()+" select="f:get-xsd-fnames($prefix, $doctype)"/>
 <xsl:value-of select="exists($fnames[@name = $element and @attribute = $attribute])"/>
 </xsl:function>
 
@@ -585,9 +666,9 @@ else 1"/>
 <xsl:param name="expected" as="xs:string"/>
 <xsl:param name="beganAt" as="xs:integer"/>
 <xsl:param name="level" as="xs:integer"/>
-<xsl:param name="is-xsl" as="xs:boolean"/>
+<xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="root-prefix" as="xs:string"/>
-
+<xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
 <xsl:variable name="is-xsd" select="not($is-xsl)" as="xs:boolean"/>
 
 <xsl:variable name="token" select="$tokens[$index]" as="xs:string?"/>
@@ -708,7 +789,7 @@ as="xs:boolean"/>
 <span class="{if ($is-xsl and $with-prefix)
 then 'clxsl'
 else if ($is-xsd
-         and ($tagContent = f:get-xsd-fnames($root-prefix)/@name
+         and ($tagContent = f:get-xsd-fnames($root-prefix, $doctype)/@name
          or not($with-prefix))) 
 then 'clxsl'
 else 'cl'}">
@@ -757,7 +838,7 @@ else 'cl'}">
 </xsl:analyze-string>
 </xsl:variable>
 
-<xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $is-xsl, $new-root-prefix, '')"/>
+<xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $doctype, $new-root-prefix, '')"/>
 
 <!-- must be an open tag, so check for attributes -->
 
@@ -794,7 +875,7 @@ select="if ($stillAwaiting) then $beganAt else $index"/>
 
 <xsl:if test="$index le count($tokens)">
 <xsl:sequence select="f:iterateTokens($newCounter, $tokens, $index + 1,
-$newExpected, $newBeganAt, $newLevel, $is-xsl, $new-root-prefix)"/>
+$newExpected, $newBeganAt, $newLevel, $doctype, $new-root-prefix)"/>
 </xsl:if>
 </xsl:function>
 
@@ -803,10 +884,10 @@ $newExpected, $newBeganAt, $newLevel, $is-xsl, $new-root-prefix)"/>
 <xsl:param name="offset" as="xs:integer"/>
 <xsl:param name="parts" as="xs:string*"/>
 <xsl:param name="index" as="xs:integer"/>
-<xsl:param name="is-xsl" as="xs:boolean"/>
+<xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="root-prefix" as="xs:string"/>
 <xsl:param name="ename" as="xs:string"/>
-
+<xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
 <xsl:variable name="is-xsd" select="not($is-xsl)" as="xs:boolean"/>
 
 <xsl:variable name="part1" as="xs:string?"
@@ -826,7 +907,7 @@ else $ename"/>
 <span class="es">&lt;</span>
 <span class="{if ($is-xsl-element or not($with-prefix))
 then 'enxsl'
-else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix)/@name) then 'enxsl' 
+else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix, $doctype)/@name) then 'enxsl' 
 else 'en'}">
 <!--
 id="{js:stackPush($elementName)}">
@@ -885,7 +966,7 @@ else 'z'"/>
 </xsl:variable>
 
 <xsl:variable name="att-name" select="$attSpans[@class eq 'atn']"/>
-<xsl:variable name="xsd-xpath-elements" select="f:get-xsd-names($root-prefix)" as="element()+"/>
+<xsl:variable name="xsd-xpath-elements" select="f:get-xsd-names($root-prefix, $doctype)" as="element()+"/>
 <xsl:sequence select="$attSpans"/>
 <xsl:variable name="isXPath" as="xs:boolean"
 select="if ($is-xsl-element)
@@ -898,7 +979,7 @@ $xsd-xpath-elements[@name = $elementName and ./att = $att-name]))
 
 <!-- for coloring attribute values that are referenced from XPath -->
 <xsl:variable name="metaXPathName" as="xs:string"
-select="f:get-av-class($is-xsl-element, $is-xsd, 
+select="f:get-av-class($is-xsl-element, $doctype, $is-xsd, 
                $elementName, $att-name, $root-prefix)"/>
 
 <span class="atneq"><xsl:value-of select="substring($left,string-length($pre) + 1)"/></span>
@@ -929,13 +1010,14 @@ select="f:get-av-class($is-xsl-element, $is-xsd,
 <xsl:variable name="newOffset" select="string-length($part1) + string-length($part2) + $offset"/>
 
 <xsl:if test="not($isFinalPart)">
-<xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2, $is-xsl, $root-prefix, $elementName)"/>
+<xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2, $doctype, $root-prefix, $elementName)"/>
 </xsl:if>
 
 </xsl:function>
 
 <xsl:function name="f:get-av-class" as="xs:string">
 <xsl:param name="is-xsl-element" as="xs:boolean"/>
+<xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="is-xsd" as="xs:boolean"/>
 <xsl:param name="elementName"/>
 <xsl:param name="att-name"/>
@@ -955,7 +1037,7 @@ else if ($elementName = f:prefixed-name($root-prefix, 'template')
 else 'av'
 
 else if ($is-xsd 
-         and f:is-xsd-fname($root-prefix, $elementName, $att-name))
+         and f:is-xsd-fname($root-prefix, $doctype, $elementName, $att-name))
 then 'fname' else 'av'"/>
 
 

@@ -92,6 +92,14 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 
 <xsl:variable name="xsl-xmlns" select="'http://www.w3.org/1999/XSL/Transform'"/>
 
+<xsl:variable name="doctypes" as="element()">
+<doctypes>
+<doctype name="xsd" ns-uri="http://www.w3.org/2001/XMLSchema"/>
+<doctype name="xslt" ns-uri="http://www.w3.org/1999/XSL/Transform"/>
+<doctype name="xproc" ns-uri="http://www.w3.org/ns/xproc"/>
+</doctypes>
+</xsl:variable>
+
 <!-- if windows OS, convert path to URI -->
 <xsl:variable name="corrected-uri" select="replace($sourceuri,'\\','/')"/>
 
@@ -105,7 +113,13 @@ then prefix-from-QName($root-qname)
 else ()"/>
 <xsl:variable name="root-namespace" select="if ($is-xml) then namespace-uri-from-QName($root-qname) else ()"/>
 
-<xsl:variable name="is-xsl" as="xs:boolean" select="$root-namespace eq $xsl-xmlns"/>
+<xsl:variable name="doctype" as="xs:string"
+select="if ($is-xml) then
+    for $x in $doctypes/doctype[@ns-uri eq $root-namespace] return
+        if (exists($x)) then $x/@name else ''
+else ''"/>
+
+<xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
 
 <xsl:choose>
 <xsl:when test="$is-xsl and $do-link">
@@ -147,7 +161,7 @@ else uri"/>
 <xsl:call-template name="get-result-spans">
 <xsl:with-param name="input-uri" select="$full-uri"/>
 <xsl:with-param name="is-xml" select="$is-xml" as="xs:boolean"/>
-<xsl:with-param name="is-xsl" select="$is-xsl" as="xs:boolean"/>
+<xsl:with-param name="doctype" select="$doctype" as="xs:string"/>
 <xsl:with-param name="indent-size" select="$indent-size" as="xs:integer"/>
 <xsl:with-param name="root-prefix" select="doc-prefix"/>
 </xsl:call-template>
@@ -199,7 +213,7 @@ select="$all-spans"/>
 <xsl:call-template name="get-result-spans">
 <xsl:with-param name="input-uri" select="$corrected-uri"/>
 <xsl:with-param name="is-xml" select="$is-xml" as="xs:boolean"/>
-<xsl:with-param name="is-xsl" select="$is-xsl" as="xs:boolean"/>
+<xsl:with-param name="doctype" select="$doctype" as="xs:string"/>
 <xsl:with-param name="indent-size" select="$indent-size" as="xs:integer"/>
 <xsl:with-param name="root-prefix" select="$root-prefix"/>
 </xsl:call-template>
@@ -432,9 +446,11 @@ concat($href-1,'.', $output-method)"/>
 <xsl:message>writing: <xsl:value-of select="$href"/></xsl:message>
 <xsl:result-document href="{$href}"
 method="{$output-method}" indent="no">
+
 <xsl:if test="$output-method eq 'html'">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
 </xsl:if>
+
 <html>
 <head>
 <title><xsl:value-of select="$file-only"/></title>
@@ -463,7 +479,7 @@ method="{$output-method}" indent="no">
 <xsl:template name="get-result-spans">
 <xsl:param name="input-uri" as="xs:string"/>
 <xsl:param name="is-xml" as="xs:boolean"/>
-<xsl:param name="is-xsl" as="xs:boolean"/>
+<xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="indent-size" as="xs:integer"/>
 <xsl:param name="root-prefix"/>
 <xsl:message><xsl:value-of select="'input-uri', $input-uri"/></xsl:message>
@@ -473,11 +489,11 @@ method="{$output-method}" indent="no">
 <xsl:choose>
 <xsl:when test="$is-xml and $indent-size lt 0 and not($do-trim)">
 <!-- for case where XPath is embedded in XML text -->
-<xsl:sequence select="f:render($file-content, $is-xsl, $root-prefix)"/>
+<xsl:sequence select="f:render($file-content, $doctype, $root-prefix)"/>
 </xsl:when>
 <xsl:when test="$is-xml">
 <!-- for case where XPath is embedded in XML text and indentation required -->
-<xsl:variable name="spans" select="f:render($file-content, $is-xsl, $root-prefix)"/>
+<xsl:variable name="spans" select="f:render($file-content, $doctype, $root-prefix)"/>
 <xsl:variable name="real-indent" select="if ($indent-size lt 0) then 0 else $indent-size"
 as="xs:integer"/>
 <xsl:sequence select="f:indent($spans, $real-indent, $do-trim)"/>

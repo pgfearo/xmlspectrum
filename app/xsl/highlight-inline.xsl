@@ -97,12 +97,12 @@ then @data-trim='yes'
 else $do-trim"/>
 <xsl:choose>
 <xsl:when test="$real-trim or $context-indent gt 0">
-<xsl:variable name="renderedXML" select="f:render(., $is-xsl, $prefix)"
+<xsl:variable name="renderedXML" select="f:render(., @lang, $prefix)"
 as="element()*"/>
 <xsl:sequence select="f:indent($renderedXML, $context-indent, $real-trim)"/>
 </xsl:when>
 <xsl:otherwise>
-<xsl:sequence select="f:render(., $is-xsl, $prefix)"/>
+<xsl:sequence select="f:render(., @lang, $prefix)"/>
 </xsl:otherwise>
 </xsl:choose>
 </xsl:copy>
