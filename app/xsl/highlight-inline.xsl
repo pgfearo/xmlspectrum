@@ -89,7 +89,7 @@ xmlns:f="internal">
 then xs:integer(@data-indent)
 else $indent-size"/>
 <xsl:copy>
-<xsl:attribute name="class" select="@lang"/>
+<xsl:attribute name="class" select="'spectrum'"/>
 <xsl:apply-templates select="@* except @class"/>
 <xsl:variable name="real-trim" as="xs:boolean"
 select="if (exists(@data-trim))
@@ -110,7 +110,7 @@ as="element()*"/>
 
 <xsl:template match="pre[@lang eq 'xpath']">
 <xsl:copy>
-<xsl:attribute name="class" select="@lang"/>
+<xsl:attribute name="class" select="'spectrum'"/>
 <xsl:apply-templates select="@* except @class"/>
 <xsl:sequence select="loc:showXPath(.)"/>
 </xsl:copy>
@@ -119,9 +119,8 @@ as="element()*"/>
 <xsl:template name="create-css">
 
 <xsl:result-document href="theme.css" method="text" indent="no">
-<xsl:variable name="classes" select="'pre.xslt, pre.xsd, pre.xpath, '"/>
 <xsl:variable name="is-light-theme" as="xs:boolean" select="$light-theme eq 'yes'"/>
-<xsl:sequence select="$classes, f:get-css($is-light-theme)"/>
+<xsl:sequence select="f:get-css($is-light-theme)"/>
 </xsl:result-document>
 
 </xsl:template>

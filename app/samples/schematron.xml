@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--from: sample extract from http://www.xml.com/lpt/a/2000/11/22/schematron.html -->
+<schema xmlns="http://www.ascc.net/xml/schematron">
+<pattern name="Structural Validation">
+<rule context="rss">
+<assert test="@version">
+An RSS version identifier should be supplied
+</assert>
+<report test="@version != 0.91">
+  This Schematron validator is for RSS 0.91 only
+</report>
+<assert test="count(channel) = 1">
+  An RSS element can only contain a single channel element
+</assert>
+</rule>
+
+<rule context="title|description|link">
+<assert test="parent::channel or parent::image 
+or parent::item or parent::textinput">
+A<name/> element can only be contained with a
+ channel, image, item or textinput element.
+</assert>
+<report test="child::*">
+A<name/> element cannot contain sub-elements,
+ remove any additional markup
+</report>
+</rule>
+</pattern>
+</schema>
+

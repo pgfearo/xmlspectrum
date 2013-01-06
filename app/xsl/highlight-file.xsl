@@ -90,16 +90,6 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 <xsl:template name="main" match="/">
 <xsl:param name="sourceuri" select="$sourcepath"/>
 
-<xsl:variable name="xsl-xmlns" select="'http://www.w3.org/1999/XSL/Transform'"/>
-
-<xsl:variable name="doctypes" as="element()">
-<doctypes>
-<doctype name="xsd" ns-uri="http://www.w3.org/2001/XMLSchema"/>
-<doctype name="xslt" ns-uri="http://www.w3.org/1999/XSL/Transform"/>
-<doctype name="xproc" ns-uri="http://www.w3.org/ns/xproc"/>
-</doctypes>
-</xsl:variable>
-
 <!-- if windows OS, convert path to URI -->
 <xsl:variable name="corrected-uri" select="replace($sourceuri,'\\','/')"/>
 
@@ -109,14 +99,13 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 <xsl:variable name="root-qname" select="if ($is-xml) then node-name($root-element) else ()" as="xs:QName?"/>
 
 <xsl:variable name="root-prefix" select="if ($is-xml) 
-then prefix-from-QName($root-qname) 
+then ((prefix-from-QName($root-qname), '')[1]) 
 else ()"/>
 <xsl:variable name="root-namespace" select="if ($is-xml) then namespace-uri-from-QName($root-qname) else ()"/>
 
 <xsl:variable name="doctype" as="xs:string"
 select="if ($is-xml) then
-    for $x in $doctypes/doctype[@ns-uri eq $root-namespace] return
-        if (exists($x)) then $x/@name else ''
+f:doctype-from-xmlns($root-namespace)
 else ''"/>
 
 <xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
@@ -481,7 +470,7 @@ method="{$output-method}" indent="no">
 <xsl:param name="is-xml" as="xs:boolean"/>
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="indent-size" as="xs:integer"/>
-<xsl:param name="root-prefix"/>
+<xsl:param name="root-prefix" as="xs:string"/>
 <xsl:message><xsl:value-of select="'input-uri', $input-uri"/></xsl:message>
 <xsl:variable name="file-content" as="xs:string" select="unparsed-text($input-uri)"/>
 <xsl:variable name="file-only" select="f:file-from-uri($input-uri)"/>

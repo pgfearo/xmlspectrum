@@ -46,20 +46,14 @@ xmlns:f="internal">
 select="'http://www.w3.org/TR/xpath-functions/'"/>
 <xsl:variable name="font-name" select="'std'"/>
 
-<!-- override if 'xsd' vocabulary is not XML Schema -->
-<xsl:variable name="xsd-xpath-names" as="element()+">
-<element name="assert"><att>test</att></element>
-</xsl:variable>
-
-<!-- override if 'xsd' vocabulary is not XML Schema -->
-<xsl:variable name="xsd-highlight-names" as="element()+">
-<element name="element" attribute="name"/>
-<element name="attribute" attribute="name"/>
-</xsl:variable>
-
+<!-- override if xml document type is not included here -->
 <xsl:variable name="xsd-names" as="element()">
 <document-types>
+<document-type name="xslt">
+<ns>http://www.w3.org/1999/XSL/Transform</ns>
+</document-type>
 <document-type name="xsd">
+<ns>http://www.w3.org/2001/XMLSchema</ns>
 <xpath-names>
 <element name="assert"><att>test</att></element>
 </xpath-names>
@@ -68,7 +62,23 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 <element name="attribute" attribute="name"/>
 </highlight-names>
 </document-type>
+<document-type name="schematron">
+<ns>http://purl.oclc.org/dsdl/schematron</ns>
+<ns>http://www.ascc.net/xml/schematron</ns>
+<xpath-names>
+<element name="assert"><att>test</att></element>
+<element name="key"><att>path</att></element>
+<element name="report"><att>test</att></element>
+<element name="rule"><att>context</att></element>
+<element name="value-of"><att>select</att></element>
+</xpath-names>
+<highlight-names>
+<element name="pattern" attribute="name"/>
+<element name="key" attribute="name"/>
+</highlight-names>
+</document-type>
 <document-type name="xproc">
+<ns>http://www.w3.org/ns/xproc</ns>
 <xpath-names>
 <element name="add-attribute">
 <att>match</att>
@@ -117,13 +127,19 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 </document-types>
 </xsl:variable>
 
-<xsl:function name="f:xsd-xpath-names" as="element()+">
+<xsl:function name="f:doctype-from-xmlns" as="xs:string">
+<xsl:param name="xmlns" as="xs:string"/>
+<xsl:sequence
+select="($xsd-names/document-type[ns = $xmlns]/@name, '')[1]"/>
+</xsl:function>
+
+<xsl:function name="f:xsd-xpath-names" as="element()*">
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:sequence
 select="$xsd-names/document-type[@name eq $doctype]/xpath-names/*"/>
 </xsl:function>
 
-<xsl:function name="f:xsd-highlight-names" as="element()+">
+<xsl:function name="f:xsd-highlight-names" as="element()*">
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:sequence
 select="$xsd-names/document-type[@name eq $doctype]/highlight-names/*"/>
@@ -440,10 +456,11 @@ and $span/@class ne 'scx'">
 <xsl:variable name="class" select="$span/@class"/>
 
 <xsl:variable name="line-parts" as="element()*">
-<xsl:analyze-string select="$span" regex="\n.*|\r\n.*">
+<xsl:analyze-string select="$span" regex="(\r?)\n.*">
 <xsl:matching-substring>
+<xsl:variable name="r-length" as="xs:integer" select="string-length(regex-group(1))"/>
 <nl>
-<xsl:variable name="text" select="substring(., 2)" as="xs:string"/>
+<xsl:variable name="text" select="substring(., 2 + $r-length)" as="xs:string"/>
 <xsl:value-of select="if ($auto-trim)
 then f:left-trim($text)
 else $text"/>
@@ -603,7 +620,7 @@ params:
 </xsl:for-each>
 </xsl:function>
 
-<xsl:function name="f:get-xsd-fnames" as="element()+">
+<xsl:function name="f:get-xsd-fnames" as="element()*">
 <xsl:param name="prefix" as="xs:string"/>
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:for-each select="f:xsd-highlight-names($doctype)">
@@ -617,7 +634,7 @@ params:
 <xsl:param name="doctype"/>
 <xsl:param name="element"/>
 <xsl:param name="attribute"/>
-<xsl:variable name="fnames" as="element()+" select="f:get-xsd-fnames($prefix, $doctype)"/>
+<xsl:variable name="fnames" as="element()*" select="f:get-xsd-fnames($prefix, $doctype)"/>
 <xsl:value-of select="exists($fnames[@name = $element and @attribute = $attribute])"/>
 </xsl:function>
 
@@ -734,8 +751,9 @@ select="$counter eq 0 and $is-element-start"/>
 <xsl:variable name="new-root-prefix"
 select="if ($is-root-element)
 then if ($root-prefix eq '')
-    then 
-        for $s in substring-before($token, ':') return
+    then
+        for $x in tokenize($token, '\s+')[1] return 
+        for $s in substring-before($x, ':') return
             if ($s eq '') then '' else concat($s, ':')
     else $root-prefix
 else $root-prefix"/>
@@ -900,12 +918,16 @@ select="if ($ename eq '') then
 tokenize($part1, '>|\s+|/')[1]
 else $ename"/>
 
-<xsl:variable name="with-prefix" select="starts-with($attToken, $root-prefix)"/>
+<xsl:variable name="with-prefix" select="starts-with($elementName, $root-prefix)"/>
 <xsl:variable name="is-xsl-element" select="$is-xsl and $with-prefix"/>
 
 <xsl:if test="$index eq 1">
 <span class="es">&lt;</span>
-<span class="{if ($is-xsl-element or not($with-prefix))
+<span class="{if ($is-xsl-element)
+then 'enxsl'
+else if ($is-xsl and not($with-prefix))
+then 'en'
+else if ($is-xsd and not($with-prefix))
 then 'enxsl'
 else if ($is-xsd and $elementName = f:get-xsd-fnames($root-prefix, $doctype)/@name) then 'enxsl' 
 else 'en'}">
@@ -966,7 +988,7 @@ else 'z'"/>
 </xsl:variable>
 
 <xsl:variable name="att-name" select="$attSpans[@class eq 'atn']"/>
-<xsl:variable name="xsd-xpath-elements" select="f:get-xsd-names($root-prefix, $doctype)" as="element()+"/>
+<xsl:variable name="xsd-xpath-elements" select="f:get-xsd-names($root-prefix, $doctype)" as="element()*"/>
 <xsl:sequence select="$attSpans"/>
 <xsl:variable name="isXPath" as="xs:boolean"
 select="if ($is-xsl-element)
@@ -1101,7 +1123,7 @@ then 'fname' else 'av'"/>
 
 <css:theme>
 <css:font scp="@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);"/>
-p.spectrum {
+p.spectrum, pre.spectrum {
     margin:0px;
     font-family: <css:font scp="'Source Code Pro', "/>monospace;
     <css:font scp="font-size: 0.8em;"/>
