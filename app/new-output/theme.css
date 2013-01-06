@@ -1,37 +1,37 @@
 
-@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
-p.spectrum {
+
+p.spectrum, pre.spectrum {
     margin:0px;
-    font-family: 'Source Code Pro', monospace;
-    font-size: 0.8em;
+    font-family: monospace;
+    
     white-space: pre-wrap;
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color:#002b36;
+    background-color:#white;
 padding: 2px;
 margin-bottom:5px;
 }
 
 div.spectrum-toc {
-    font-family: 'Source Code Pro', monospace;
-    font-size: 0.8em;
+    font-family: monospace;
+    
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color: #002b36;
+    background-color: #white;
     padding: 2px;
 }
 
 ul.base1, ul.spectrum-toc {
-    color:#93a1a1;
+    color:#586e75;
 }
 
 .spectrum span {
     white-space: pre-wrap;
 }
 /*
-chosen theme background: dark;
+chosen theme background: light;
 
 $base03:    #002b36; //background
 $base02:    #073642; //highlighted-background
@@ -61,15 +61,15 @@ color: #073642;
 
 /* hover-effect [start] */
 span.base03, span.ww:not(:hover), span.txt:not(:hover), span.cm:not(:hover), span.pi:not(:hover)  {
-background-color: #002b36;
+background-color: white;
 }
 span.ww {
-background-color: #00202e;
+background-color: #fdf6e3;
 }
 /* hover-effect [end] */
 
 span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq {
-color: #586e75;
+color: #93a1a1;
 }
 span.base00 {
 color: #657b83;
@@ -77,8 +77,8 @@ color: #657b83;
 span.base0, span.txt, span.cd {
 color: #839496;
 }
-span.base1, span.literal, span.av {
-color:#93a1a1;
+span.base1, span.literal {
+color:#586e75;
 }
 span.base2 {
     color: #eee8d5;
@@ -108,7 +108,7 @@ span.filter, span.parenthesis, span.node{
 span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context {
     color: #2aa198;
 }
-span.green, span.cm, span.comment {
+span.green, span.cm, span.comment, span.av {
     color: #859900;
 }
 a.solar {

@@ -86,6 +86,12 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 <xsl:variable name="do-link" select="$link-names eq 'yes'"/>
 <xsl:variable name="indent-size" select="xs:integer($indent)"/>
 <xsl:variable name="css-name" select="'theme.css'"/>
+<xsl:variable name="do-output-path"
+select="for $c in f:path-to-uri($output-path) return
+if (ends-with($c, '/'))
+then $c
+else concat($c, '/')
+"/>
 
 <xsl:template name="main" match="/">
 <xsl:param name="sourceuri" select="$sourcepath"/>
@@ -182,6 +188,7 @@ select="$all-spans"/>
 <xsl:with-param name="result-spans" select="$spans"/>
 <xsl:with-param name="filename" select="@path"/>
 <xsl:with-param name="css-link" select="$css-link"/>
+<xsl:with-param name="html-path" select="$do-output-path"/>
 </xsl:call-template>
 
 </xsl:for-each>
@@ -190,7 +197,7 @@ select="$all-spans"/>
 
 <xsl:call-template name="create-toc">
 <xsl:with-param name="globals" select="$globals" as="element()" tunnel="yes"/>
-<xsl:with-param name="output-path" select="$output-path"/>
+<xsl:with-param name="path" select="$do-output-path"/>
 <xsl:with-param name="css-link" select="$css-link"/>
 </xsl:call-template>
 
@@ -217,12 +224,13 @@ select="$all-spans"/>
 select="if ($css-path eq '') then 
 $css-name
 else $css-path"/>
+<xsl:with-param name="html-path" select="$do-output-path"/>
 </xsl:call-template>
 </xsl:otherwise>
 </xsl:choose>
 
 <xsl:if test="$css-path eq '' and $output-method ne 'xml'">
-<xsl:result-document href="{concat($output-path, $css-name)}" method="text" indent="no">
+<xsl:result-document href="{concat($do-output-path, $css-name)}" method="text" indent="no">
 <xsl:sequence select="f:get-css($light-theme eq 'yes')"/>
 </xsl:result-document>
 </xsl:if>
@@ -251,6 +259,21 @@ concat(
     , '/')
 , '/')"/>
 
+</xsl:function>
+
+<xsl:function name="f:path-to-uri">
+<xsl:param name="path"/>
+<xsl:choose>
+<xsl:when test="matches($path, '^[A-Za-z]:.*')">
+<xsl:value-of select="concat('file:/', $path)"/>
+</xsl:when>
+<xsl:when test="starts-with($path, '/')">
+<xsl:value-of select="concat('file://', $path)"/>
+</xsl:when>
+<xsl:otherwise>
+<xsl:value-of select="$path"/>
+</xsl:otherwise>
+</xsl:choose>
 </xsl:function>
 
 <xsl:template name="wrap-spans">
@@ -425,9 +448,10 @@ namespace-uri-for-prefix($prefix, .),
 <xsl:param name="result-spans" as="element()*"/>
 <xsl:param name="filename"/>
 <xsl:param name="css-link"/>
+<xsl:param name="html-path"/>
 
 <xsl:variable name="file-only" select="f:file-from-uri($filename)"/>
-<xsl:variable name="href-1" select="concat($output-path, $filename)"/>
+<xsl:variable name="href-1" select="concat($html-path, $filename)"/>
 <xsl:variable name="href" select="if ($output-method eq 'xml')
 then $href-1
 else
@@ -471,8 +495,9 @@ method="{$output-method}" indent="no">
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="indent-size" as="xs:integer"/>
 <xsl:param name="root-prefix" as="xs:string"/>
-<xsl:message><xsl:value-of select="'input-uri', $input-uri"/></xsl:message>
-<xsl:variable name="file-content" as="xs:string" select="unparsed-text($input-uri)"/>
+<xsl:variable name="fixed-uri" select="f:path-to-uri($input-uri)"/>
+<xsl:message><xsl:value-of select="'input-uri', $fixed-uri"/></xsl:message>
+<xsl:variable name="file-content" as="xs:string" select="unparsed-text($fixed-uri)"/>
 <xsl:variable name="file-only" select="f:file-from-uri($input-uri)"/>
 
 <xsl:choose>

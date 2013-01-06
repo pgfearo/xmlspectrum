@@ -11,10 +11,10 @@ xmlns:f="internal">
 
 <xsl:template name="create-toc">
 <xsl:param name="globals" as="element()" tunnel="yes"/>
-<xsl:param name="output-path"/>
+<xsl:param name="path"/>
 <xsl:param name="css-link"/>
 
-<xsl:result-document href="{concat($output-path, 'index.html')}" method="html" indent="no">
+<xsl:result-document href="{concat($path, 'index.html')}" method="html" indent="no">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
 <html>
 <head>
