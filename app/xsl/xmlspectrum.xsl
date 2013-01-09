@@ -1241,9 +1241,9 @@ a.solar {
 
 <!-- xpath-colorer -->
 
-<xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; //'"/>
-<xsl:variable name="aOps" select="'or and eq ne lt le gt ge is to div idiv mod union intersect except in return satisfies then else'"/>
-<xsl:variable name="hOps" select="'for some every'"/>
+<xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; // := ! ||'"/>
+<xsl:variable name="aOps" select="'or and eq ne lt le gt ge is to div idiv mod union intersect except in return satisfies then else as'"/>
+<xsl:variable name="hOps" select="'for some every let'"/>
 <xsl:variable name="nodes" select="'attribute comment document-node element node processing-instruction text'"/>
 <xsl:variable name="types" select="'empty item node schema-attribute schema-element type'"/>
 
@@ -1917,7 +1917,7 @@ then $tokens[$index + 2] else $tokens[$index + 1]"/>
 <xsl:function name="loc:rawTokens" as="xs:string*">
 <xsl:param name="chunk" as="xs:string"/>
 <xsl:analyze-string
-regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(instance[\s\p{{Zs}}]+of)|(cast[\s\p{{Zs}}]+as)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|((\$[\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-]*(:[\p{{L}}\p{{Nd}}\.\-\*]*)?(::)?:?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
+regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(instance[\s\p{{Zs}}]+of)|(cast[\s\p{{Zs}}]+as)|(:=)|(\|\|)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|((\$[\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-]*(:[\p{{L}}\p{{Nd}}\.\-\*]*)?(::)?:?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
 select="$chunk">
 <xsl:matching-substring>
 <xsl:value-of select="string(.)"/>

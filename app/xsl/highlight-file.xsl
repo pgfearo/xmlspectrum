@@ -106,7 +106,7 @@ else concat($c, '/')
 
 <xsl:variable name="root-prefix" select="if ($is-xml) 
 then ((prefix-from-QName($root-qname), '')[1]) 
-else ()"/>
+else ''"/>
 <xsl:variable name="root-namespace" select="if ($is-xml) then namespace-uri-from-QName($root-qname) else ()"/>
 
 <xsl:variable name="doctype" as="xs:string"

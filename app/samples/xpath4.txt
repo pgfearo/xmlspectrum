@@ -1,0 +1,1 @@
+let $increment  :=  function($x as xs:integer) {$x + 1}
