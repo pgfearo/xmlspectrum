@@ -1241,7 +1241,7 @@ a.solar {
 
 <!-- xpath-colorer -->
 
-<xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; // := ! ||'"/>
+<xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; // := ! || { }'"/>
 <xsl:variable name="aOps" select="'or and eq ne lt le gt ge is to div idiv mod union intersect except in return satisfies then else as'"/>
 <xsl:variable name="hOps" select="'for some every let'"/>
 <xsl:variable name="nodes" select="'attribute comment document-node element node processing-instruction text'"/>

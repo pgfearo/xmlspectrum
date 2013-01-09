@@ -1,1 +1,6 @@
-let $increment  :=  function($x as xs:integer) {$x + 1}
+let $increment := function($x as xs:integer) as xs:integer* {
+	if ($x lt 10) then
+	$x + 1
+	else
+	$x + 2
+}
