@@ -1246,8 +1246,8 @@ a.solar {
 <xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; // := ! || { }'"/>
 <xsl:variable name="aOps" select="'or and eq ne lt le gt ge is to div idiv mod union intersect except in return satisfies then else as'"/>
 <xsl:variable name="hOps" select="'for some every let'"/>
-<xsl:variable name="nodes" select="'attribute comment document-node element node processing-instruction text'"/>
-<xsl:variable name="types" select="'empty item node schema-attribute schema-element type'"/>
+<xsl:variable name="nodes" select="'attribute comment document-node namespace-node element node processing-instruction text'"/>
+<xsl:variable name="types" select="'empty empty-sequence item node schema-attribute schema-element type'"/>
 
 <xsl:variable name="ambiguousOps" select="tokenize($aOps,'\s+')" as="xs:string*"/>
 <xsl:variable name="simpleOps" select="tokenize($ops,'\s+')" as="xs:string*"/>
