@@ -56,6 +56,8 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 <ns>http://www.w3.org/2001/XMLSchema</ns>
 <xpath-names>
 <element name="assert"><att>test</att></element>
+<element name="field"><att>xpath</att></element>
+<element name="selector"><att>xpath</att></element>
 </xpath-names>
 <highlight-names>
 <element name="element" attribute="name"/>
