@@ -1230,7 +1230,7 @@ span.blue, span.enxsl, span.clxsl, span.enx,
 span.filter, span.parenthesis, span.node{
     color: #268bd2;
 }
-span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context {
+span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context, span.bracedq {
     color: #2aa198;
 }
 span.green, span.cm, span.comment, span.av, span.type, span.node-type {
@@ -1652,7 +1652,7 @@ select="loc:createTokens($chunk, $omitPairs, 1, 1)"/>
 <xsl:variable name="token" select="$tokens[$index]" as="element()?"/>
 <xsl:variable name="isQuantifier" select="$quantifierExpected and $token/@value = ('?','*','+')"/>
 <xsl:variable name="currentIsClosed" as="xs:boolean"
-select="$isQuantifier or not($token/@type) or ($token/@value = (')',']') or ($token/@type = ('literal','numeric','variable', 'context')))"/>
+select="$isQuantifier or not($token/@type) or ($token/@value = (')',']', '}') or ($token/@type = ('literal','numeric','variable', 'context')))"/>
 <xsl:element name="token">
 <xsl:attribute name="start" select="$token/@start"/>
 <xsl:attribute name="end" select="$token/@end"/>
@@ -1857,6 +1857,9 @@ then true() else false()"/>
 </xsl:choose>
 </xsl:variable>
 <xsl:choose>
+<xsl:when test="starts-with($token, 'Q{')">
+<xsl:attribute name="type" select="'bracedq'"/>
+</xsl:when>
 <xsl:when test="$isSimpleOps or $isDoubleToken"></xsl:when>
 <xsl:when test="$functionType ne ''">
 <xsl:attribute name="type" select="$functionType"/>
@@ -1918,7 +1921,7 @@ then $tokens[$index + 2] else $tokens[$index + 1]"/>
 <xsl:function name="loc:rawTokens" as="xs:string*">
 <xsl:param name="chunk" as="xs:string"/>
 <xsl:analyze-string
-regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(instance[\s\p{{Zs}}]+of)|(cast[\s\p{{Zs}}]+as)|(:=)|(\|\|)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|((\$[\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-]*(:[\p{{L}}\p{{Nd}}\.\-\*]*)?(::)?:?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
+regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(Q\{{[^\{{\}}]*\}})|(instance[\s\p{{Zs}}]+of)|(cast[\s\p{{Zs}}]+as)|(:=)|(\|\|)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|((\$[\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-]*(:[\p{{L}}\p{{Nd}}\.\-\*]*)?(::)?:?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
 select="$chunk">
 <xsl:matching-substring>
 <xsl:value-of select="string(.)"/>

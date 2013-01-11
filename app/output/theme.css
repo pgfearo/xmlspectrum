@@ -105,7 +105,7 @@ span.blue, span.enxsl, span.clxsl, span.enx,
 span.filter, span.parenthesis, span.node{
     color: #268bd2;
 }
-span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context {
+span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context, span.bracedq {
     color: #2aa198;
 }
 span.green, span.cm, span.comment, span.av, span.type, span.node-type {

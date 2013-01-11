@@ -1,6 +1,6 @@
-let $increment := function($x as xs:integer) as function(xs:integer) {
+let $increment := function($x as xs:integer) as xs:integer* {
 	if ($x lt 10) then
 	$x + 1, $fnb[22](24), $fna(28)
 	else
-	$x + 2
-}
+	$x + 2, Q{http://example.com}div
+} return books/book/@title + $test
