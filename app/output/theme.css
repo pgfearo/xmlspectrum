@@ -89,7 +89,7 @@ span.base3 {
 span.yellow, span.op, span.type-op, span.if, span.higher, span.step {
     color: #b58900;
 }
-span.orange, span.type, span.node-type, span.function {
+span.orange, span.function {
     color: #cb4b16;
 }
 span.red, span.fname, span.tname {
@@ -108,7 +108,7 @@ span.filter, span.parenthesis, span.node{
 span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context {
     color: #2aa198;
 }
-span.green, span.cm, span.comment, span.av {
+span.green, span.cm, span.comment, span.av, span.type, span.node-type {
     color: #859900;
 }
 a.solar {

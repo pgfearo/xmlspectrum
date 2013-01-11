@@ -1214,7 +1214,7 @@ span.base3 {
 span.yellow, span.op, span.type-op, span.if, span.higher, span.step {
     color: #b58900;
 }
-span.orange, span.type, span.node-type, span.function {
+span.orange, span.function {
     color: #cb4b16;
 }
 span.red, span.fname, span.tname {
@@ -1233,7 +1233,7 @@ span.filter, span.parenthesis, span.node{
 span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context {
     color: #2aa198;
 }
-span.green, span.cm, span.comment, span.av {
+span.green, span.cm, span.comment, span.av, span.type, span.node-type {
     color: #859900;
 }
 a.solar {
@@ -1247,7 +1247,7 @@ a.solar {
 <xsl:variable name="aOps" select="'or and eq ne lt le gt ge is to div idiv mod union intersect except in return satisfies then else as'"/>
 <xsl:variable name="hOps" select="'for some every let'"/>
 <xsl:variable name="nodes" select="'attribute comment document-node namespace-node element node processing-instruction text'"/>
-<xsl:variable name="types" select="'empty empty-sequence item node schema-attribute schema-element type'"/>
+<xsl:variable name="types" select="'empty empty-sequence function item node schema-attribute schema-element type'"/>
 
 <xsl:variable name="ambiguousOps" select="tokenize($aOps,'\s+')" as="xs:string*"/>
 <xsl:variable name="simpleOps" select="tokenize($ops,'\s+')" as="xs:string*"/>
@@ -1672,7 +1672,7 @@ select="$isQuantifier or not($token/@type) or ($token/@value = (')',']') or ($to
 <xsl:when test="$token/@type = ('function','if', 'node') or $token/@value = ('(','[')">
 <xsl:variable name="pair" select="$pbPairs[@start = $token/@end]"/>
 <xsl:choose>
-<xsl:when test="$typeExpected and $token/@type eq 'node'">
+<xsl:when test="$typeExpected and $token/@type = ('node', 'function')">
 <xsl:attribute name="type" select="'node-type'"/>
 </xsl:when>
 <xsl:otherwise>
@@ -1717,8 +1717,7 @@ select="$token/@type = ('whitespace', 'comment')"/>
 
 <xsl:variable name="newTypeExpected" as="xs:boolean"
 select="if ($ignorable) then $typeExpected
-else $token/@type = 'type-op'"/>
-
+else ($token/@type = 'type-op') or ($token/@value eq 'as')"/>
 
 <xsl:if test="$index + 1 le count($tokens)">
 <xsl:variable name="qExpected" as="xs:boolean"
