@@ -63,7 +63,7 @@ xmlns:f="internal">
 <xsl:import href="xmlspectrum.xsl"/>
 <xsl:import href="make-toc.xsl"/>
 
-<xsl:output indent="yes"/>
+<xsl:output indent="no" method="html"/>
 <xsl:param name="sourcepath" as="xs:string" select="''"/>
 <!--  by default - rely on original indentation -->
 <xsl:param name="indent" as="xs:string" select="'-1'"/>
@@ -93,7 +93,53 @@ then $c
 else concat($c, '/')
 "/>
 
-<xsl:template name="main" match="/">
+<!-- use only if file is know to be well-formed, otherwise use 'main' template -->
+<xsl:template match="/">
+
+<xsl:variable name="root-qname" select="node-name(*)" as="xs:QName"/>
+<xsl:variable name="root-prefix" select="(prefix-from-QName($root-qname), '')[1]"/>
+<xsl:variable name="root-namespace" select="namespace-uri-from-QName($root-qname)"/>
+<xsl:variable name="doctype" as="xs:string"
+select="f:doctype-from-xmlns(*/namespace-uri())"/>
+
+
+<xsl:variable name="all-spans" as="node()*">
+<xsl:call-template name="get-result-spans">
+<xsl:with-param name="input-uri" select="base-uri()"/>
+<xsl:with-param name="is-xml" select="true()" as="xs:boolean"/>
+<xsl:with-param name="doctype" select="$doctype" as="xs:string"/>
+<xsl:with-param name="indent-size" select="$indent-size" as="xs:integer"/>
+<xsl:with-param name="root-prefix" select="$root-prefix"/>
+</xsl:call-template>
+</xsl:variable>
+
+<xsl:message>
+<xsl:value-of select="'processing', count($all-spans), 'tokens for', base-uri()"/>
+</xsl:message>
+
+<xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
+<html>
+<head>
+<title><xsl:value-of select="'XMLSpectrum output'"/></title>
+<style type="text/css">
+<xsl:sequence select="f:get-css($light-theme eq 'yes')"/>
+</style>
+</head>
+<body>
+<div>
+<p class="spectrum">
+<!-- Call to imported functions returns sequence of span elements
+     with class attribute values used to colorise with CSS
+-->
+<xsl:sequence select="$all-spans"/>
+</p>
+</div>
+</body>
+</html>
+
+</xsl:template>
+
+<xsl:template name="main">
 <xsl:param name="sourceuri" select="$sourcepath"/>
 
 <!-- if windows OS, convert path to URI -->

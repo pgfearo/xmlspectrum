@@ -1,0 +1,253 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Test XMLSpectrum</title>
+</head>
+<body>
+<h1>XMLSpectrum: Rendering XSLT 2.0 for the Web</h1>
+<p>The XSLT language, especially in version 2.0, presents a number of unique challenges when it comes to rendering the code to enhance readability:</p>
+<ul>
+<li>XSLT instructions are formatted as XML which has its own formatting and syntax-highlighing conventions.</li>
+<li>The instructions for XSLT may contain XPath 2.0 expressions, these have their own formatting and syntax-highlighting conventions.</li>
+<li>Generic syntax-highlighters struggle with the XPath syntax as it is significantly different to languages from the 'curly brace' family.</li>
+<li>Literal XML elements can be interspersed in certain points within the XSLT.</li>
+<li>The XSLT is itself embedded in HTML tags for rendering prose and graphics etc.</li>
+</ul>
+<p>The <strong>XMLSpectrum</strong> project I've launched aims to address syntax-highlighting and formatting issues by providing a core XSLT stylesheet with functions to transform XSLT, XSD and XPath code to HTML.</p>
+<p>In this blog post, I'm using HTML transformed from an <a href="input-blog-sample.xml">XHTML source</a> using the <code><a href="https://github.com/pgfearo/xmlspectrum">xmlspectrum.xsl</a></code> stylesheet - a small top-level stylesheet, <code>highlight-inline.xsl</code> imports this to provide a convenient method to run from the transform from the command line (using Saxon-HE in this case).</p>
+<h2>XSLT Code Sample</h2>
+<p> The following XSLT code is within a <code>CDATA</code> section of a <code>pre</code> element, however it is not highlighted because no <code>lang</code> attribute is present on the element.</p>
+<hr/>
+<pre>
+<![CDATA[
+<xsl:variable name="line-parts" as="element()*">
+<xsl:analyze-string select="$span" regex="\n.*">
+<xsl:matching-substring>
+<nl>
+<xsl:variable name="text" select="substring(., 2)"
+as="xs:string"/>
+<xsl:value-of select="if ($auto-trim)
+then f:left-trim($text)
+else $text"/>
+</nl>
+</xsl:matching-substring>
+<xsl:non-matching-substring>
+<tt>
+<xsl:value-of select="."/>
+</tt>
+</xsl:non-matching-substring>
+</xsl:analyze-string>
+</xsl:variable>
+
+<span class="{if ($isElementClose) then 'ez' else 'z'}">
+<xsl:value-of select="concat('&lt;',$tagStart)"/></span>
+
+<xsl:variable name="firstLine" as="element()?"
+select="$line-parts[1]"/>
+
+<xsl:variable name="indented-lines" as="xs:string*">
+<xsl:sequence select="for $a in $line-parts[name(.) eq 'nl'] return
+string($a)"/>
+</xsl:variable>
+
+<xsl:variable name="flat-part" as="element()?"
+select="$line-parts[name(.) eq 'tt']"/>
+
+<!-- should be max of 1 -->
+<xsl:variable name="flat-line" as="xs:string"
+select="if ($flat-part) then $flat-part else ''"/>
+
+<!-- constant indent when first attribute is on a new line -->
+<xsl:variable name="compact" select="4" as="xs:integer"/>
+
+<xsl:variable name="lineOffset" as="xs:integer"
+select="if (exists($firstLine))
+    then string-length($firstLine)
+else 0"/>
+
+<xsl:variable name="an-outOffset" as="xs:integer"
+select="if ($class = ('en','enxsl'))
+    then $lineOffset + 1
+else if ($prevClass = ('en','enxsl'))
+    then
+if (exists($indented-lines)) then 
+    $compact
+    else $an-offset + $lineOffset
+else $an-offset"/>]]>
+</pre>
+<hr></hr>
+<p>I find the above XSLT quite hard to follow. The absence of syntax-highlighting is not the greatest issue here, its the lack of XML indentation - there's some XPath indentation, but it doesn't appear distinct from the XML.</p>
+<hr/>
+<h2>XSLT Code Sample - With Formatting</h2>
+<p>Now, lets use exactly the same content but add a <code>lang="xslt"</code> attribute to the <code>pre</code> element:</p>
+<pre lang="xslt">
+<![CDATA[
+<xsl:variable name="line-parts" as="element()*">
+<xsl:analyze-string select="$span" regex="\n.*">
+<xsl:matching-substring>
+<nl>
+<xsl:variable name="text" select="substring(., 2)"
+as="xs:string"/>
+<xsl:value-of select="if ($auto-trim)
+then f:left-trim($text)
+else $text"/>
+</nl>
+</xsl:matching-substring>
+<xsl:non-matching-substring>
+<tt>
+<xsl:value-of select="."/>
+</tt>
+</xsl:non-matching-substring>
+</xsl:analyze-string>
+</xsl:variable>
+
+<span class="{if ($isElementClose) then 'ez' else 'z'}">
+<xsl:value-of select="concat('&lt;',$tagStart)"/></span>
+
+<xsl:variable name="firstLine" as="element()?"
+select="$line-parts[1]"/>
+
+<xsl:variable name="indented-lines" as="xs:string*">
+<xsl:sequence select="for $a in $line-parts[name(.) eq 'nl'] return
+string($a)"/>
+</xsl:variable>
+
+<xsl:variable name="flat-part" as="element()?"
+select="$line-parts[name(.) eq 'tt']"/>
+
+<!-- should be max of 1 -->
+<xsl:variable name="flat-line" as="xs:string"
+select="if ($flat-part) then $flat-part else ''"/>
+
+<!-- constant indent when first attribute is on a new line -->
+<xsl:variable name="compact" select="4" as="xs:integer"/>
+
+<xsl:variable name="lineOffset" as="xs:integer"
+select="if (exists($firstLine))
+    then string-length($firstLine)
+else 0"/>
+
+<xsl:variable name="an-outOffset" as="xs:integer"
+select="if ($class = ('en','enxsl'))
+    then $lineOffset + 1
+else if ($prevClass = ('en','enxsl'))
+    then
+if (exists($indented-lines)) then 
+    $compact
+    else $an-offset + $lineOffset
+else $an-offset"/>]]>
+</pre>
+<p>By the addition of the <code>lang</code> attribute, the above snippet has been transformed to be much more readable and what we would hope to see in an XSLT editor (but sadly even some XSLT editors fail to provide this level of colorisation or formatting). A dark color theme has been chosen here (a light theme is also available) to provide better hue contrast.</p>
+<p>There are a number of characteristics of the rendered code that are worth highlighting. First, XSLT instructions are distinguished from XPath code by using cooler colors for the former. There is also special coloring for literal result elements and the name attribute value for xsl:variable instructions. Attribute Value Templats (AVTs) are also recognized and colorised properly. Note also the indentation of the attributes and their values so they are all aligned vertically, if they appear on new lines - but with the indentation of enclosed XPath expressions preserved.</p>
+<h2>XSD Code Sample</h2>
+<p>And now I would like to show some XSD 1.1 code to show that this transform is easily extended for any XML vocabularies that contain XPath. This sample is from <a href="http://mukulgandhi.blogspot.co.uk/2010/03/playing-again-with-xsd-11-assertions.html">Mukul Ghandi's blog</a>:</p>
+<pre lang="xsd" data-indent="1">
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- reproduced from Mukul Gandhi blog at:
+     http://mukulgandhi.blogspot.co.uk/2010/03/playing-again-with-xsd-11-assertions.html
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:complexType name="Product">
+<xs:sequence>
+<xs:element name="shortName">
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:maxLength value="20"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+<xs:element name="description" type="xs:string"/>
+<xs:element name="author" type="xs:string"/>
+<xs:element name="price">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="value" maxOccurs="unbounded">
+<xs:complexType>
+<xs:simpleContent>
+<xs:extension base="xs:double">
+<xs:attribute name="effective" type="xs:date" use="required"/>
+<xs:attribute name="freeware" type="xs:boolean"/>
+<xs:attribute name="format" use="required">
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:enumeration value="hard cover"/>
+<xs:enumeration value="pdf"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:attribute>
+<xs:assert test="@effective lt current-date()" />
+<xs:assert test="if (@freeware eq true()) then (@format eq 'pdf' and . eq 0)
+else true()" />                    
+</xs:extension>
+</xs:simpleContent>
+</xs:complexType>
+</xs:element>
+</xs:sequence>
+<xs:assert test="every $vl in value[position() lt last()] satisfies
+($vl gt $vl/following-sibling::value[1]) and 
+($vl/@effective lt $vl/following-sibling::value[1]/@effective)" />
+</xs:complexType>
+</xs:element>
+</xs:sequence>
+<xs:attribute name="ID" type="xs:positiveInteger" use="required"/>
+</xs:complexType>
+
+<xs:element name="product" type="Product"/>
+
+</xs:schema>
+
+]]>
+</pre>
+<p>In the above sample the nesting-level is quite high, I've therefore used the <code>data-indent="1"</code> attribute setting on the <code>pre</code> element to reduce indentation from the <code>2</code> that was set from the command-line transform. An annoyance though is that there is still some wrapping. The <code>lang="xsd"</code> attribute setting was also used on the <code>pre</code> element</p>
+<p>
+<em>Note that the XML editor I used for the source of this blog uses virtual formatting for XML - no formatting characters except <code>\n</code> are inserted, a continuously adaptive margin provides a similar effect but without the latency. XML pasted in (like from Mukul's blog) is trimmed automatically, unless special space-preserve rules apply. because of this there was no need to specifically trim the source code.</em></p>
+<p>
+<em>A command-line <code>auto-trim=yes</code> parameter is available for the majority who use conventional 'character-injection' formatting and need to tidy the indentation - otherwise formatting will be preserved - and there's no need to use the <code>indent</code> command-line parameter like I have.</em></p>
+<p>As stated earlier code that wraps in the rendered output will not indent properly. This is because (though it is more complex to code) I have gone with the convention of inserting space characters instead of using CSS styling to indent. This at least allows for easier copy and paste for those using editors limited to conventional formatting - but does not fit well with the new <code>Responsive Web Design</code> that is increasingly important because of small-screen mobile devices.</p>
+<h2>XPath Code Sample</h2>
+<p>Time for one last sample, the follwing is just standalone XPath within a <code>pre</code> element with the <code>lang="xpath"</code> attribute setting:
+</p>
+<pre lang="xpath">
+<![CDATA[
+    if (substring(.,1, 3) eq '&amp;#x') then
+        codepoints-to-string(
+            xs:integer(
+                js:hexToDecimal(
+                    substring($precolon, 4)
+                )
+            )
+        )
+    else if (substring(.,1,2) eq '&amp;#') then
+        codepoints-to-string(xs:integer(substring($precolon, 3)))
+    else if (. eq '&amp;amp;') then '&amp;'
+    else if (. eq '&amp;lt;') then '&lt;'
+    else if (. eq '&amp;gt;') then '&gt;'
+    else if (. eq '&amp;quot;') then '&quot;'
+    else if (. eq '&amp;apos;') then '&apos;&apos;'
+    else ''
+]]>
+</pre>
+<h2>Using XMLSpectrum</h2>
+<p>Code, documentation and samples to produce output similar to that in this blow are all available from the GitHub <code><a href="https://github.com/pgfearo/xmlspectrum">xmlspectrum</a></code> project site. With Blogger, I needed to copy and paste the generated CSS into the <code>b:style</code> element of the blog template that will style all my subsequent blog. The HTML output form the transform was just copied and pasted into the <code>HTML edit</code> view - but I would like to automate this process if possible.</p>
+<p>The command line used to run the transform:</p>
+<pre>
+java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" \
+net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl \
+-s:samples/blog-sample.html indent=2 -o:output/blog-sample.html
+</pre>
+<h2>Reasons for not using a generic JavaScript based syntax highlighter</h2>
+<ul>
+<li>Most highlighters can't cope with XPath's more complex syntax rules</li>
+<li>As parsing is processor intensive and a 'one-off' it is well suited to server-side processing.</li>
+<li>There is probably already enough JavaScript running on a typical website</li>
+<li>Standard XML parsers don't preserve all whitespace essential for code formatting</li>
+<li>XML formatters often don't attempt to vertically align attributes and their contents</li>
+</ul>
+<h2>Future Work</h2>
+<p>I hope to add much more in the way of options for this code-rendering XSLT. The XSLT used here is a spin-off from PathEnq project which is an XPath IDE web-application, so much of the embedded metadata in the output remains unexploited right now - as the XSLT is open source my hope is that other projects may be able to exploit this.</p>
+<h2>Please give it a go!</h2>
+<p>If you're publishing code samples in HTML in XSLT 2.0, XSD 1.1 or XPath 2.0, please give XMLSpectrum a try and let me know if any issues/features etc. You are also encouraged to fork the project and roll your own solution.</p>
+<p></p>
+</body>
+</html>
