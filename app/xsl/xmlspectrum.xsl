@@ -1610,9 +1610,12 @@ select="loc:createTokens($chunk, $omitPairs, 1, 1)"/>
 <!-- when closed, a probable operator is a QName instead -->
 
 <xsl:variable name="token" select="$tokens[$index]" as="element()?"/>
+<xsl:message select="'type:',string($token/@type), 'value:', string($token/@value)"/>
 <xsl:variable name="isQuantifier" select="$quantifierExpected and $token/@value = ('?','*','+')"/>
+<xsl:variable name="is-wildcard" as="xs:boolean"
+select="not($isQuantifier) and not($prevIsClosed) and $token/@value eq '*'"/>
 <xsl:variable name="currentIsClosed" as="xs:boolean"
-select="$isQuantifier or not($token/@type) or ($token/@value = (')',']', '}') or ($token/@type = ('literal','numeric','variable', 'context')))"/>
+select="$is-wildcard or $isQuantifier or not($token/@type) or ($token/@value = (')',']', '}') or ($token/@type = ('literal','numeric','variable', 'context')))"/>
 <xsl:element name="token">
 <xsl:attribute name="start" select="$token/@start"/>
 <xsl:attribute name="end" select="$token/@end"/>
@@ -1624,7 +1627,8 @@ select="$isQuantifier or not($token/@type) or ($token/@value = (')',']', '}') or
 <xsl:attribute name="type" select="'op'"/>
 </xsl:if>
 </xsl:when>
-<xsl:when test="not($isQuantifier) and not($prevIsClosed) and $token/@value eq '*'">
+<xsl:when test="$is-wildcard">
+<xsl:message>place-holder</xsl:message>
 <!--
 <xsl:attribute name="type" select="'any'"/>
 

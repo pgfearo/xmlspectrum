@@ -1,0 +1,9 @@
+(
+if ($is-xml) then doc($corrected-uri)/* else (),
+abc/def * count(p),
+def/pre:* mod pqr,
+abc/def/*/child::agents,
+abc/def/*/agents,
+abc/def * mod / def,
+if ($is-xsl) then node-name($root-element) else ()
+)
