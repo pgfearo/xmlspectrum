@@ -36,7 +36,7 @@ initial-template: 'main'
 source-xml: (not used)
 xsl parameters:
     sourcepath:  path or URI for source file
-    light-theme: (yes|no) [Default:'no'] sets light/dark theme
+    color-theme: name of color-theme - default is 'solarized dark'
     link-names:  (yes|no) [Default:'no']
                  processes all linked xsl files and adds hrefs
                  for variables, functions, parameters and named templates
@@ -68,7 +68,7 @@ xmlns:f="internal">
 <!--  by default - rely on original indentation -->
 <xsl:param name="indent" as="xs:string" select="'-1'"/>
 
-<xsl:param name="light-theme" select="'no'"/>
+<xsl:param name="color-theme" select="'dark'"/>
 <xsl:param name="css-path" select="''"/>
 <xsl:param name="auto-trim" select="'no'"/>
 <xsl:param name="link-names" select="'no'"/>
@@ -122,7 +122,7 @@ select="f:doctype-from-xmlns(*/namespace-uri())"/>
 <head>
 <title><xsl:value-of select="'XMLSpectrum output'"/></title>
 <style type="text/css">
-<xsl:sequence select="f:get-css($light-theme eq 'yes')"/>
+<xsl:sequence select="f:get-css($color-theme)"/>
 </style>
 </head>
 <body>
@@ -245,6 +245,7 @@ select="$all-spans"/>
 <xsl:with-param name="globals" select="$globals" as="element()" tunnel="yes"/>
 <xsl:with-param name="path" select="$do-output-path"/>
 <xsl:with-param name="css-link" select="$css-link"/>
+<xsl:with-param name="output-method" select="$output-method"/>
 </xsl:call-template>
 
 </xsl:when>
@@ -277,7 +278,7 @@ else $css-path"/>
 
 <xsl:if test="$css-path eq '' and $output-method ne 'xml'">
 <xsl:result-document href="{concat($do-output-path, $css-name)}" method="text" indent="no">
-<xsl:sequence select="f:get-css($light-theme eq 'yes')"/>
+<xsl:sequence select="f:get-css($color-theme)"/>
 </xsl:result-document>
 </xsl:if>
 

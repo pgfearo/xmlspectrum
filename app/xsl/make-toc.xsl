@@ -13,9 +13,14 @@ xmlns:f="internal">
 <xsl:param name="globals" as="element()" tunnel="yes"/>
 <xsl:param name="path"/>
 <xsl:param name="css-link"/>
+<xsl:param name="output-method"/>
 
-<xsl:result-document href="{concat($path, 'index.html')}" method="html" indent="no">
+<xsl:result-document href="{concat($path, 'index.html')}" method="{$output-method}" indent="no">
+
+<xsl:if test="$output-method eq 'html'">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
+</xsl:if>
+
 <html>
 <head>
 <title><xsl:value-of select="'Summary View'"/></title>

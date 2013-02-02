@@ -10,7 +10,7 @@ Interface Functions:
 ====================
 f:render(xml-content, is-xml, root-prefix)
 loc:showXPath(text-content)
-f:get-css(is-light-theme)
+f:get-css(color-theme)
 f:indent(spans, char-width)
 f:link(spans, paths, location)
 
@@ -35,6 +35,7 @@ xmlns:loc="com.qutoric.sketchpath.functions"
 xmlns:css="css-defs.com"
 exclude-result-prefixes="loc f xs css"
 xmlns=""
+xmlns:c="http://xmlspectrum.colors.org"
 xmlns:f="internal">
 
 <!-- import xsl just for self-testing -->
@@ -45,6 +46,7 @@ xmlns:f="internal">
 <xsl:variable name="w3c-xpath-functions-uri"
 select="'http://www.w3.org/TR/xpath-functions/'"/>
 <xsl:variable name="font-name" select="'std'"/>
+<xsl:variable name="theme-doc-uri" select="'data/color-themes.xml'"/>
 
 <!-- override if xml document type is not included here -->
 <xsl:variable name="xsd-names" as="element()">
@@ -585,22 +587,27 @@ return ' ','')"/>
 
 <!--
 XSLT function signature: 
-    f:get-css(is-light-theme)
+    f:get-css(color-theme)
 
 description:
 
     Generates a CSS file used to colorise span elements generates by the previous 2 functions
-    The colors generated depend on whether a light or dark them is specified with the is-light-theme
+    The colors generated depend on the theme specified with the color-theme
     parameter. The color theme uses the 'Solarized' color points specified at: http://ethanschoonover.com/solarized
 
 params:
-    is-light-theme: boolean indicating whether to generate colors for a light or dark background. 
+    color-theme: xs:string - name of color theme to use 
 
 -->
 <xsl:function name="f:get-css">
-<xsl:param name="is-light-theme" as="xs:boolean"/>
+<xsl:param name="input-theme" as="xs:string"/>
+<xsl:variable name="theme" select="if ($input-theme eq 'light') then 'solarized-light'
+else if ($input-theme eq 'dark') then 'solarized-dark'
+else $input-theme"/>
 <xsl:apply-templates select="document('')/xsl:stylesheet/css:theme" mode="css">
-<xsl:with-param name="is-light-theme" select="$is-light-theme" tunnel="yes"/>
+<xsl:with-param name="theme" as="element(c:theme)"
+ select="doc(resolve-uri($theme-doc-uri, static-base-uri()))
+ /c:themes/c:theme[@name eq $theme]" tunnel="yes"/>
 </xsl:apply-templates>
 </xsl:function>
 
@@ -645,9 +652,40 @@ params:
 <xsl:value-of select="if ($font-name eq 'scp') then @scp else ''"/>
 </xsl:template>
 
-<xsl:template match="css:background" mode="css">
-<xsl:param name="is-light-theme" tunnel="yes" as="xs:boolean"/>
-<xsl:value-of select="if ($is-light-theme) then @light else @dark"/>
+<xsl:template match="css:map" mode="css">
+<xsl:param name="theme" as="element(c:theme)" tunnel="yes"/>
+<xsl:variable name="element" select="@element"/>
+
+<xsl:for-each select="$theme/c:color">
+<xsl:variable name="color" select="@name"/>
+<xsl:variable name="color-value" select="@value"/>
+<xsl:variable name="color-selectors" as="element(c:color)"
+select="$theme/../c:color-map/c:color[@name eq $color]"/>
+<xsl:variable name="css-prop" select="($color-selectors/@property, 'color')[1]"/>
+<xsl:variable name="selectors" select="normalize-space($color-selectors)"/>
+<xsl:variable name="selector-tokens" select="tokenize($selectors, '\s')" as="xs:string+"/>
+<xsl:variable name="qselector-tokens" select="for $s in $selector-tokens return
+concat($element, '.', $s)"/>
+<xsl:variable name="selector-string" select="string-join($qselector-tokens, ', ')"/>
+
+<xsl:sequence select="concat(
+$selector-string,
+' {',
+$css-prop,
+': #',
+$color-value,
+'; }'
+)"/>
+
+</xsl:for-each>
+
+</xsl:template>
+
+
+<xsl:template match="css:color" mode="css">
+<xsl:param name="theme" as="element(c:theme)" tunnel="yes"/>
+<xsl:variable name="color" select="@name"/>
+<xsl:value-of select="concat('#', $theme/c:color[@name eq $color]/@value)"/>
 </xsl:template>
 
 
@@ -1133,7 +1171,7 @@ p.spectrum, pre.spectrum {
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color:<css:background dark="#002b36" light="#white"/>;
+    background-color:<css:color name="base03"/>;
 padding: 2px;
 margin-bottom:5px;
 }
@@ -1144,98 +1182,20 @@ div.spectrum-toc {
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color: <css:background dark="#002b36" light="#white"/>;
+    background-color: <css:color name="base03"/>;
     padding: 2px;
 }
 
 ul.base1, ul.spectrum-toc {
-    color:<css:background dark="#93a1a1" light="#586e75"/>;
+    color:<css:color name="base1"/>;
 }
 
 .spectrum span {
     white-space: pre-wrap;
 }
-/*
-chosen theme background: <css:background dark="dark" light="light"/>;
 
-$base03:    #002b36; //background
-$base02:    #073642; //highlighted-background
-$base01:    #586e75;
-$base00:    #657b83;
-$base0:     #839496;
-$base1:     #93a1a1;
-$base2:     #eee8d5; //highlighted-background
-$base3:     #fdf6e3; //background
-$yellow:    #b58900;
-$orange:    #cb4b16;
-$red:       #dc322f;
-$magenta:   #d33682;
-$violet:    #6c71c4;
-$blue:      #268bd2;
-$cyan:      #2aa198;
-$green:     #859900;
-*/
+<css:map element="span"/>
 
-/* solorized colors */
-span.base03 {
-color: #002b36;
-}
-span.base02 {
-color: #073642;
-}
-
-/* hover-effect [start] */
-span.base03, span.ww:not(:hover), span.txt:not(:hover), span.cm:not(:hover), span.pi:not(:hover)  {
-background-color: <css:background dark="#002b36" light="white"/>;
-}
-span.ww {
-background-color: <css:background dark="#00202e" light="#fdf6e3"/>;
-}
-/* hover-effect [end] */
-
-span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq {
-color: <css:background dark="#586e75" light="#93a1a1"/>;
-}
-span.base00 {
-color: #657b83;
-}
-span.base0, span.txt, span.cd {
-color: #839496;
-}
-span.base1, span.literal {
-color:<css:background dark="#93a1a1" light="#586e75"/>;
-}
-span.base2 {
-    color: #eee8d5;
-}
-span.base3 {
-    color: #fdf6e3;
-}
-span.yellow, span.op, span.type-op, span.if, span.higher, span.step {
-    color: #b58900;
-}
-span.orange, span.function {
-    color: #cb4b16;
-}
-span.red, span.fname, span.tname {
-    color: #dc322f;
-}
-span.magenta, span.vname, span.variable, span.external {
-    color: #d33682;
-}
-span.violet, span.qname, span.type-name, span.unclosed, span.en, span.cl, span.href, span.tcall {
-    color: #6c71c4;
-}
-span.blue, span.enxsl, span.clxsl, span.enx, 
-span.filter, span.parenthesis, span.node{
-    color: #268bd2;
-}
-span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context, span.bracedq {
-    color: #2aa198;
-}
-span.green, span.cm, span.comment, span.av, span.type, span.node-type {
-    color: #859900;
-}
 a.solar {
     text-decoration:none;
 }

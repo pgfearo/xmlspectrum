@@ -25,7 +25,7 @@ initial-template: 'main'
 source-xml: (not used)
 xsl parameters:
     sourcepath:  (path or URI for source file)
-    light-theme: (yes|no) [Default:'no']
+    color-theme: (name of color theme: default is 'solarized-dark')
     css-path:    (path for output CSS)
 
 Sample transform using Saxon-HE/Java on command-line (unbroken line):
@@ -49,7 +49,7 @@ xmlns:f="internal">
 
 <xsl:output indent="no" method="html"/>
 
-<xsl:param name="light-theme" select="'no'" as="xs:string"/>
+<xsl:param name="color-theme" select="'dark'" as="xs:string"/>
 <xsl:param name="indent" select="'-1'" as="xs:string"/>
 <xsl:param name="auto-trim" select="'no'" as="xs:string"/>
 <xsl:param name="font-name" select="'std'"/>
@@ -119,8 +119,7 @@ as="element()*"/>
 <xsl:template name="create-css">
 
 <xsl:result-document href="theme.css" method="text" indent="no">
-<xsl:variable name="is-light-theme" as="xs:boolean" select="$light-theme eq 'yes'"/>
-<xsl:sequence select="f:get-css($is-light-theme)"/>
+<xsl:sequence select="f:get-css($color-theme)"/>
 </xsl:result-document>
 
 </xsl:template>
