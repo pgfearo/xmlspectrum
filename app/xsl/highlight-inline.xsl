@@ -119,7 +119,7 @@ as="element()*"/>
 <xsl:template name="create-css">
 
 <xsl:result-document href="theme.css" method="text" indent="no">
-<xsl:sequence select="f:get-css($color-theme)"/>
+<xsl:sequence select="f:get-css()"/>
 </xsl:result-document>
 
 </xsl:template>

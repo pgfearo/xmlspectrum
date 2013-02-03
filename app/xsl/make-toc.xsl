@@ -14,6 +14,7 @@ xmlns:f="internal">
 <xsl:param name="path"/>
 <xsl:param name="css-link"/>
 <xsl:param name="output-method"/>
+<xsl:param name="is-css-inline" as="xs:boolean"/>
 
 <xsl:result-document href="{concat($path, 'index.html')}" method="{$output-method}" indent="no">
 
@@ -28,6 +29,10 @@ xmlns:f="internal">
 </head>
 <body>
 <div class="spectrum-toc">
+<xsl:if test="$is-css-inline">
+<xsl:attribute name="style" select="f:inline-css-toc()"/>
+</xsl:if>
+
 <p class="av">
 <span class="z">(HTML code rendering by XMLSpectrum)</span>
 </p>

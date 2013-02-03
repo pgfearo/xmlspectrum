@@ -73,15 +73,21 @@ xmlns:f="internal">
 <xsl:param name="auto-trim" select="'no'"/>
 <xsl:param name="link-names" select="'no'"/>
 <xsl:param name="output-path" select="'output/'"/>
-<!-- make source code pro the default -->
+<!-- set value to 'scp' for source-code-pro font -->
 <xsl:param name="font-name" select="'std'"/>
+<!-- set value to 'xml' or 'xhtml' for use in XProc step -->
 <xsl:param name="output-method" select="'html'"/>
-
-<!-- note: set this to a proxy server storing the W3C resource to avoid
-           excessive calls to the W3C server
+<!-- set value to 'yes' to embed css inline with element -->
+<xsl:param name="css-inline" select="'no'"/>
+<!-- 
+w3c-xpath-functions-uri is use to add hyperlinks to built-in
+xpath functions when 'link-names' = 'yes'
+set uri to a proxy server storing the W3C resource to avoid
+excessive calls to the W3C server
  -->
 <xsl:param name="w3c-xpath-functions-uri"
 select="'http://www.w3.org/TR/xpath-functions/'"/>
+
 <xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/>
 <xsl:variable name="do-link" select="$link-names eq 'yes'"/>
 <xsl:variable name="indent-size" select="xs:integer($indent)"/>
@@ -122,7 +128,7 @@ select="f:doctype-from-xmlns(*/namespace-uri())"/>
 <head>
 <title><xsl:value-of select="'XMLSpectrum output'"/></title>
 <style type="text/css">
-<xsl:sequence select="f:get-css($color-theme)"/>
+<xsl:sequence select="f:get-css()"/>
 </style>
 </head>
 <body>
@@ -217,10 +223,10 @@ else uri"/>
 
 <xsl:variable name="xmlns" as="element()" select="f:get-xmlns($all-spans)"/>
 
+<!-- note: removed tunel on spans param as this caused 32% performance degrade -->
 <xsl:variable name="spans" as="element()*">
 <xsl:call-template name="wrap-spans">
-<xsl:with-param name="spans" as="node()*" tunnel="yes"
-select="$all-spans"/>
+<xsl:with-param name="spans" as="node()*" select="$all-spans"/>
 <xsl:with-param name="globals" select="$globals" tunnel="yes" as="element()"/>
 <xsl:with-param name="xmlns" select="$xmlns" tunnel="yes" as="element()"/>
 <xsl:with-param name="index" select="1" as="xs:integer"/>
@@ -246,6 +252,7 @@ select="$all-spans"/>
 <xsl:with-param name="path" select="$do-output-path"/>
 <xsl:with-param name="css-link" select="$css-link"/>
 <xsl:with-param name="output-method" select="$output-method"/>
+<xsl:with-param name="is-css-inline" as="xs:boolean" select="$css-inline eq 'yes'"/>
 </xsl:call-template>
 
 </xsl:when>
@@ -276,9 +283,9 @@ else $css-path"/>
 </xsl:otherwise>
 </xsl:choose>
 
-<xsl:if test="$css-path eq '' and $output-method ne 'xml'">
+<xsl:if test="$css-path eq '' and $output-method ne 'xml' and $css-inline eq 'no'">
 <xsl:result-document href="{concat($do-output-path, $css-name)}" method="text" indent="no">
-<xsl:sequence select="f:get-css($color-theme)"/>
+<xsl:sequence select="f:get-css()"/>
 </xsl:result-document>
 </xsl:if>
 
@@ -324,7 +331,7 @@ concat(
 </xsl:function>
 
 <xsl:template name="wrap-spans">
-<xsl:param name="spans" as="node()*" tunnel="yes"/>
+<xsl:param name="spans" as="node()*"/>
 <xsl:param name="globals" as="element()" tunnel="yes"/>
 <xsl:param name="xmlns" as="element()" tunnel="yes"/>
 <xsl:param name="index" as="xs:integer"/>
@@ -341,6 +348,7 @@ concat(
 <xsl:when test="$span/@class eq 'es'">
 <xsl:variable name="span-children" as="node()*">
 <xsl:call-template name="wrap-spans">
+<xsl:with-param name="spans" select="$spans"/>
 <xsl:with-param name="index" select="$index + 1"/>
 </xsl:call-template>
 </xsl:variable>
@@ -354,6 +362,7 @@ select="xs:integer(substring($span-children[last()]/@id, 3
 ))"/>
 
 <xsl:call-template name="wrap-spans">
+<xsl:with-param name="spans" select="$spans"/>
 <xsl:with-param name="index" select="$prev-index + 1"/>
 </xsl:call-template>
 
@@ -366,8 +375,8 @@ select="xs:integer(substring($span-children[last()]/@id, 3
 <xsl:otherwise>
 
 <xsl:apply-templates select="$span" mode="markup"/>
-
 <xsl:call-template name="wrap-spans">
+<xsl:with-param name="spans" select="$spans"/>
 <xsl:with-param name="index" select="$index + 1"/>
 </xsl:call-template>
 </xsl:otherwise>
@@ -514,16 +523,21 @@ method="{$output-method}" indent="no">
 <html>
 <head>
 <title><xsl:value-of select="$file-only"/></title>
+<xsl:if test="$css-inline eq 'no'">
 <link rel="stylesheet" type="text/css" href="{$css-link}"/>
+</xsl:if>
 </head>
 <body>
 <div>
-<p class="spectrum">
+<pre class="spectrum">
+<xsl:if test="$css-inline eq 'yes'">
+<xsl:attribute name="style" select="f:inline-css-main()"/>
+</xsl:if>
 <!-- Call to imported functions returns sequence of span elements
      with class attribute values used to colorise with CSS
 -->
 <xsl:sequence select="$result-spans"/>
-</p>
+</pre>
 </div>
 </body>
 </html>

@@ -33,20 +33,28 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:loc="com.qutoric.sketchpath.functions"
 xmlns:css="css-defs.com"
-exclude-result-prefixes="loc f xs css"
+exclude-result-prefixes="loc f xs css c"
 xmlns=""
 xmlns:c="http://xmlspectrum.colors.org"
 xmlns:f="internal">
 
-<!-- import xsl just for self-testing -->
-<xsl:import href="dummy.xsl"/>
-<xsl:include href="sub/dummy2.xsl"/>
-
+<xsl:param name="color-theme" select="'dark'"/>
+<xsl:variable name="resolved-theme" as="xs:string"
+select="if ($color-theme eq 'light') then 'solarized-light'
+else if ($color-theme eq 'dark') then 'solarized-dark'
+else $color-theme"/>
 <!-- override these variables -->
 <xsl:variable name="w3c-xpath-functions-uri"
 select="'http://www.w3.org/TR/xpath-functions/'"/>
 <xsl:variable name="font-name" select="'std'"/>
 <xsl:variable name="theme-doc-uri" select="'data/color-themes.xml'"/>
+<xsl:variable name="css-inline" select="'no'"/>
+<xsl:variable name="css-doc" select="doc(resolve-uri($theme-doc-uri, static-base-uri()))"/>
+<xsl:variable name="color-theme-data" as="element(c:theme)"
+select="$css-doc/c:themes/c:theme[@name eq f:get-theme($resolved-theme)]"/>
+<xsl:variable name="color-modes" as="element(colors)*"
+select="f:get-inline-colors($color-theme-data)"/>
+
 
 <!-- override if xml document type is not included here -->
 <xsl:variable name="xsd-names" as="element()">
@@ -587,7 +595,7 @@ return ' ','')"/>
 
 <!--
 XSLT function signature: 
-    f:get-css(color-theme)
+    f:get-css()
 
 description:
 
@@ -599,16 +607,17 @@ params:
     color-theme: xs:string - name of color theme to use 
 
 -->
-<xsl:function name="f:get-css">
+
+<xsl:function name="f:get-theme">
 <xsl:param name="input-theme" as="xs:string"/>
-<xsl:variable name="theme" select="if ($input-theme eq 'light') then 'solarized-light'
+<xsl:sequence select="if ($input-theme eq 'light') then 'solarized-light'
 else if ($input-theme eq 'dark') then 'solarized-dark'
 else $input-theme"/>
-<xsl:apply-templates select="document('')/xsl:stylesheet/css:theme" mode="css">
-<xsl:with-param name="theme" as="element(c:theme)"
- select="doc(resolve-uri($theme-doc-uri, static-base-uri()))
- /c:themes/c:theme[@name eq $theme]" tunnel="yes"/>
-</xsl:apply-templates>
+
+</xsl:function>
+
+<xsl:function name="f:get-css">
+<xsl:apply-templates select="$css-doc/c:themes/css:boiler-plate" mode="css"/>
 </xsl:function>
 
 <xsl:function name="f:prefixed-name" as="xs:string*">
@@ -647,6 +656,19 @@ else $input-theme"/>
 <xsl:value-of select="exists($fnames[@name = $element and @attribute = $attribute])"/>
 </xsl:function>
 
+<xsl:function name="f:inline-css-main" as="xs:string">
+<xsl:variable name="css-text" as="xs:string*">
+<xsl:apply-templates select="$css-doc/c:themes/css:boiler-plate/css:main" mode="css"/>
+</xsl:variable>
+<xsl:sequence select="string-join($css-text, '')"/>
+</xsl:function>
+
+<xsl:function name="f:inline-css-toc" as="xs:string">
+<xsl:variable name="css-text" as="xs:string*">
+<xsl:apply-templates select="$css-doc/c:themes/css:boiler-plate/css:toc" mode="css"/>
+</xsl:variable>
+<xsl:sequence select="string-join($css-text, '')"/>
+</xsl:function>
 
 <xsl:template match="css:font" mode="css">
 <xsl:value-of select="if ($font-name eq 'scp') then @scp else ''"/>
@@ -681,11 +703,43 @@ $color-value,
 
 </xsl:template>
 
+<!--
+Sample output:
+<colors>
+<color name="yellow" value="b58900" property="background-color">
+<class>yellow</class>
+<class>op</class>
+<class>type-op</class>
+</color>
+...
+</colors>
+
+-->
+<xsl:function name="f:get-inline-colors" as="element(colors)+">
+<xsl:param name="theme" as="element(c:theme)"/>
+<xsl:variable name="color-map" select="$theme/../c:color-map" as="element(c:color-map)"/>
+<colors>
+<xsl:for-each select="$theme/c:color">
+<color>
+<xsl:copy-of select="@*"/>
+<xsl:variable name="color-key" select="@name"/>
+<xsl:variable name="color" as="element(c:color)"
+select="$color-map/c:color[@name eq $color-key]"/>
+<xsl:if test="$color/@property">
+<xsl:attribute name="property" select="$color/@property"/>
+</xsl:if>
+<xsl:for-each select="tokenize(normalize-space($color), '\s+')">
+<class><xsl:value-of select="."/></class>
+</xsl:for-each>
+</color>
+</xsl:for-each>
+</colors>
+</xsl:function>
+
 
 <xsl:template match="css:color" mode="css">
-<xsl:param name="theme" as="element(c:theme)" tunnel="yes"/>
 <xsl:variable name="color" select="@name"/>
-<xsl:value-of select="concat('#', $theme/c:color[@name eq $color]/@value)"/>
+<xsl:value-of select="concat('#', $color-theme-data/c:color[@name eq $color]/@value)"/>
 </xsl:template>
 
 
@@ -1158,56 +1212,13 @@ then 'fname' else 'av'"/>
 </xsl:analyze-string>
 </xsl:function>
 
-<!-- css dark-theme: background color #002b36 = base 03 
- light-theme #fdf6e3 = base 3-->
-
-<css:theme>
-<css:font scp="@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);"/>
-p.spectrum, pre.spectrum {
-    margin:0px;
-    font-family: <css:font scp="'Source Code Pro', "/>monospace;
-    <css:font scp="font-size: 0.8em;"/>
-    white-space: pre-wrap;
-    display: block;
-    border: none thin;
-    border-color: #405075;
-    background-color:<css:color name="base03"/>;
-padding: 2px;
-margin-bottom:5px;
-}
-
-div.spectrum-toc {
-    font-family: <css:font scp="'Source Code Pro', "/>monospace;
-    <css:font scp="font-size: 0.8em;"/>
-    display: block;
-    border: none thin;
-    border-color: #405075;
-    background-color: <css:color name="base03"/>;
-    padding: 2px;
-}
-
-ul.base1, ul.spectrum-toc {
-    color:<css:color name="base1"/>;
-}
-
-.spectrum span {
-    white-space: pre-wrap;
-}
-
-<css:map element="span"/>
-
-a.solar {
-    text-decoration:none;
-}
-</css:theme>
-
-<!-- xpath-colorer -->
+<!-- ///////////////////////// xpath-colorer /////////////////////////////////////////////// -->
 
 <xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; // := ! || { }'"/>
 <xsl:variable name="aOps" select="'or and eq ne lt le gt ge is to div idiv mod union intersect except in return satisfies then else as map'"/>
 <xsl:variable name="hOps" select="'for some every let'"/>
 <xsl:variable name="nodes" select="'attribute comment document-node namespace-node element node processing-instruction text'"/>
-<xsl:variable name="types" select="'empty empty-sequence function item node schema-attribute schema-element type'"/>
+<xsl:variable name="types" select="'empty-sequence function item node schema-attribute schema-element type'"/>
 
 <xsl:variable name="ambiguousOps" select="tokenize($aOps,'\s+')" as="xs:string*"/>
 <xsl:variable name="simpleOps" select="tokenize($ops,'\s+')" as="xs:string*"/>
@@ -1248,11 +1259,40 @@ select="($blocks[name() = ('literal','comment')])"/>
 <xsl:sequence select="loc:getTokens($chunk, $omitPairs, $pbPairs)"/>
 </xsl:variable>
 
+<xsl:choose>
+<xsl:when test="$css-inline eq 'no'">
 <xsl:call-template name="plain">
 <xsl:with-param name="para" select="$tokens"/>
 </xsl:call-template>
+</xsl:when>
+<xsl:otherwise>
+<xsl:variable name="spans" as="node()*">
+<xsl:call-template name="plain">
+<xsl:with-param name="para" select="$tokens"/>
+</xsl:call-template>
+</xsl:variable>
+<xsl:sequence select="f:style-spans($spans)"/>
+</xsl:otherwise>
+</xsl:choose>
+</xsl:function>
 
-
+<xsl:function name="f:style-spans" as="node()*">
+<xsl:param name="spans" as="node()*"/>
+<xsl:for-each select="$spans">
+<xsl:message select="'color-key', @class"/>
+<xsl:variable name="color-key" select="@class"/>
+<xsl:variable name="color-mode" as="element(color)"
+select="$color-modes/color[class = $color-key]"/>
+<xsl:variable name="property" select="if ($color-mode/@property)
+then $color-mode/@property
+else 'color'"/>
+<xsl:copy>
+<xsl:copy-of select="@*"/>
+<xsl:attribute name="style"
+select="concat($property, ': #', $color-mode/@value)"/>
+<xsl:value-of select="."/>
+</xsl:copy>
+</xsl:for-each>
 </xsl:function>
 
 
@@ -1610,7 +1650,6 @@ select="loc:createTokens($chunk, $omitPairs, 1, 1)"/>
 <!-- when closed, a probable operator is a QName instead -->
 
 <xsl:variable name="token" select="$tokens[$index]" as="element()?"/>
-<xsl:message select="'type:',string($token/@type), 'value:', string($token/@value)"/>
 <xsl:variable name="isQuantifier" select="$quantifierExpected and $token/@value = ('?','*','+')"/>
 <xsl:variable name="is-wildcard" as="xs:boolean"
 select="not($isQuantifier) and not($prevIsClosed) and $token/@value eq '*'"/>
@@ -1628,11 +1667,10 @@ select="$is-wildcard or $isQuantifier or not($token/@type) or ($token/@value = (
 </xsl:if>
 </xsl:when>
 <xsl:when test="$is-wildcard">
-<xsl:message>place-holder</xsl:message>
 <!--
 <xsl:attribute name="type" select="'any'"/>
-
---></xsl:when>
+-->
+</xsl:when>
 <xsl:when test="$token/@type = ('function','if', 'node') or $token/@value = ('(','[')">
 <xsl:variable name="pair" select="$pbPairs[@start = $token/@end]"/>
 <xsl:choose>
