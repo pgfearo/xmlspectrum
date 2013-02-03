@@ -41,7 +41,7 @@ xmlns:f="internal">
 </h3>
 <p class="av">
 <xsl:variable name="epath" select="($globals/file)[1]/@path"/>
-<a class="solar" href="{concat($epath,'.html')}">
+<a class="solar" href="{concat($epath,'.html')}" style="text-decoration:none">
 <span class="av">Entry file: <xsl:value-of select="$epath"/></span>
 </a>
 </p>
@@ -59,7 +59,7 @@ xmlns:f="internal">
 <xsl:template match="file" mode="toc">
 
 <li>
-<a class="solar" href="{concat(@path,'.html')}">
+<a class="solar" href="{concat(@path,'.html')}" style="text-decoration:none">
 <span class="blue">File: <xsl:value-of select="@path"/>
 </span>
 </a>
@@ -111,7 +111,7 @@ xmlns:f="internal">
 <xsl:variable name="char" select="substring(local-name(..),1, 1)"/>
 <xsl:variable name="name" select="f:resolve-clark-name(.)"/>
 <li>
-<a class="solar" href="{concat($path, '.html', '#',$char,'?', string(.))}">
+<a class="solar" href="{concat($path, '.html', '#',$char,'?', string(.))}" style="text-decoration:none">
 <span class="atn"><xsl:value-of select="$name"/></span>
 </a>
 </li>

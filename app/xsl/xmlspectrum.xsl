@@ -195,7 +195,15 @@ else concat($root-prefix-a, ':')"/>
 <xsl:variable name="tokens" select="if (normalize-space($tokens-a[1]) eq '') then subsequence($tokens-a, 2) else $tokens-a"/>
 <xsl:variable name="spans" select="f:iterateTokens(0, $tokens,1,'n',0, 0, $doctype, $root-prefix)" as="element()*"/>
 
+<xsl:choose>
+<xsl:when test="$css-inline eq 'no'">
 <xsl:sequence select="$spans"/>
+</xsl:when>
+<xsl:otherwise>
+<xsl:sequence select="f:style-spans($spans)"/>
+</xsl:otherwise>
+</xsl:choose>
+
 </xsl:function>
 
 <!-- 
@@ -379,6 +387,9 @@ else ()"/>
 <xsl:choose>
 <xsl:when test="exists($href)">
 <a href="{$href}" class="solar">
+<xsl:if test="$css-inline ne 'no'">
+<xsl:attribute name="style" select="'text-decoration:none'"/>
+</xsl:if>
 <xsl:copy-of select="."/>
 </a>
 </xsl:when>
@@ -675,14 +686,12 @@ else $input-theme"/>
 </xsl:template>
 
 <xsl:template match="css:map" mode="css">
-<xsl:param name="theme" as="element(c:theme)" tunnel="yes"/>
 <xsl:variable name="element" select="@element"/>
-
-<xsl:for-each select="$theme/c:color">
+<xsl:for-each select="$color-theme-data/c:color">
 <xsl:variable name="color" select="@name"/>
 <xsl:variable name="color-value" select="@value"/>
 <xsl:variable name="color-selectors" as="element(c:color)"
-select="$theme/../c:color-map/c:color[@name eq $color]"/>
+select="$color-theme-data/../c:color-map/c:color[@name eq $color]"/>
 <xsl:variable name="css-prop" select="($color-selectors/@property, 'color')[1]"/>
 <xsl:variable name="selectors" select="normalize-space($color-selectors)"/>
 <xsl:variable name="selector-tokens" select="tokenize($selectors, '\s')" as="xs:string+"/>
@@ -1279,17 +1288,22 @@ select="($blocks[name() = ('literal','comment')])"/>
 <xsl:function name="f:style-spans" as="node()*">
 <xsl:param name="spans" as="node()*"/>
 <xsl:for-each select="$spans">
-<xsl:message select="'color-key', @class"/>
 <xsl:variable name="color-key" select="@class"/>
-<xsl:variable name="color-mode" as="element(color)"
+<xsl:variable name="color-mode1" as="element(color)?"
 select="$color-modes/color[class = $color-key]"/>
-<xsl:variable name="property" select="if ($color-mode/@property)
-then $color-mode/@property
+<!-- use the yellow color mode if none defined for class -->
+<xsl:variable name="color-mode2" as="element(color)"
+select="if (exists($color-mode1))
+then $color-mode1
+else $color-modes/color[@name = 'yellow']"/>
+
+<xsl:variable name="property" select="if ($color-mode2/@property)
+then $color-mode2/@property
 else 'color'"/>
 <xsl:copy>
 <xsl:copy-of select="@*"/>
 <xsl:attribute name="style"
-select="concat($property, ': #', $color-mode/@value)"/>
+select="concat($property, ': #', $color-mode2/@value)"/>
 <xsl:value-of select="."/>
 </xsl:copy>
 </xsl:for-each>

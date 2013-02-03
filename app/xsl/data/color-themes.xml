@@ -71,7 +71,7 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 </c:color>
 <c:color name="base0">base0 txt cd</c:color>
 <c:color name="base1">base1 literal</c:color>
-<c:color name="yellow">yellow op type-op if higher step whitespace
+<c:color name="yellow">yellow op type-op if higher step whitespace quantifier
 </c:color>
 <c:color name="orange">orange function
 </c:color>
