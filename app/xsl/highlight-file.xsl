@@ -120,25 +120,28 @@ select="f:doctype-from-xmlns(*/namespace-uri())"/>
 </xsl:variable>
 
 <xsl:message>
-<xsl:value-of select="'processing', count($all-spans), 'tokens for', base-uri()"/>
+<xsl:value-of select="'processing', count($all-spans), 'tokens for', base-uri(), 'css-inline:', $css-inline"/>
 </xsl:message>
 
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
 <html>
 <head>
 <title><xsl:value-of select="'XMLSpectrum output'"/></title>
-<style type="text/css">
-<xsl:sequence select="f:get-css()"/>
-</style>
+<xsl:if test="$css-inline eq 'no'">
+<style type="text/css"><xsl:sequence select="normalize-space(f:get-css())"/></style>
+</xsl:if>
 </head>
 <body>
 <div>
-<p class="spectrum">
+<pre class="spectrum">
+<xsl:if test="$css-inline eq 'yes'">
+<xsl:attribute name="style" select="f:inline-css-main()"/>
+</xsl:if>
 <!-- Call to imported functions returns sequence of span elements
      with class attribute values used to colorise with CSS
 -->
 <xsl:sequence select="$all-spans"/>
-</p>
+</pre>
 </div>
 </body>
 </html>
