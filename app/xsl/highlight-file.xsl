@@ -128,7 +128,7 @@ select="f:doctype-from-xmlns(*/namespace-uri())"/>
 <head>
 <title><xsl:value-of select="'XMLSpectrum output'"/></title>
 <xsl:if test="$css-inline eq 'no'">
-<style type="text/css"><xsl:sequence select="normalize-space(f:get-css())"/></style>
+<style type="text/css"><xsl:sequence select="f:get-css()"/></style>
 </xsl:if>
 </head>
 <body>
