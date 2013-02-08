@@ -66,7 +66,7 @@ xmlns:f="internal">
 <xsl:output indent="no" method="html"/>
 <xsl:param name="sourcepath" as="xs:string" select="''"/>
 <!--  by default - rely on original indentation -->
-<xsl:param name="indent" as="xs:string" select="'-1'"/>
+<xsl:param name="indent" as="xs:string" select="'2'"/>
 
 <xsl:param name="color-theme" select="'dark'"/>
 <xsl:param name="css-path" select="''"/>
@@ -74,7 +74,7 @@ xmlns:f="internal">
 <xsl:param name="link-names" select="'no'"/>
 <xsl:param name="output-path" select="'output/'"/>
 <!-- set value to 'scp' for source-code-pro font -->
-<xsl:param name="font-name" select="'std'"/>
+<xsl:param name="font-name" select="'scp'"/>
 <!-- set value to 'xml' or 'xhtml' for use in XProc step -->
 <xsl:param name="output-method" select="'html'"/>
 <!-- set value to 'yes' to embed css inline with element -->
