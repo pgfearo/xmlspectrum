@@ -1440,46 +1440,57 @@ return $padChar,''))"/>
 </xsl:if>
 </xsl:function>
 
-<xsl:template name="plain">
-<xsl:param name="para" as="element()*"/>
+<xsl:function name="f:iterateParas" as="element()*">
+<xsl:param name="paras" as="element()*"/>
+<xsl:param name="index" as="xs:integer"/>
+<xsl:param name="init-color" as="xs:boolean"/>
 
-<xsl:variable name="total" select="count($para)" as="xs:integer"/>
-<xsl:for-each select="1 to $total">
-<xsl:variable name="index" select="."/>
-<xsl:for-each select="$para[$index]">
+<xsl:variable name="total" select="count($paras)" as="xs:integer"/>
+
+<xsl:variable name="para" select="$paras[$index]" as="element()?"/>
+<xsl:variable name="pValue" select="$para/@value"/>
+<xsl:variable name="pType" select="$para/@type"/>
+
 <xsl:variable name="isJoined" as="xs:boolean"
-select="string-length(@value) gt 1 and ends-with(@value, '(')"/>
-<xsl:variable name="isLiteral" as="xs:boolean" select="if (empty(@type)) then false() else @type eq 'literal'"/>
-<xsl:variable name="literalQuote" select="substring(@value, 1, 1)"/>
+select="string-length($pValue) gt 1 and ends-with($pValue, '(')"/>
+<xsl:variable name="isLiteral" as="xs:boolean" select="if (empty($pType)) then false() else $pType eq 'literal'"/>
+<xsl:variable name="literalQuote" select="substring($pValue, 1, 1)"/>
 <xsl:if test="$isLiteral">
 <span class="op">
 <xsl:value-of select="$literalQuote"/>
 </span>
 </xsl:if>
+<xsl:variable name="prev" select="$paras[$index - 1] "/>
+<xsl:variable name="toggle-color" as="xs:boolean"
+select="if ($document-type eq 'deltaxml' and empty($pType)) then
+($index gt 1 and $prev/@value eq '!=')
+else false()"/>
+
+<xsl:variable name="color-state" as="xs:boolean"
+select="if ($toggle-color) then not($init-color) else $init-color"/>
+
 <span>
 
-<xsl:if test="@type eq 'variable' and $index + 2 lt $total">
-<xsl:if test="$para[$index + 1]/@type eq 'whitespace' and $para[$index + 2]/@value eq 'in'">
-<xsl:attribute name="id" select="concat('rng-',@value)"/>
+<xsl:if test="$pType eq 'variable' and $index + 2 lt $total">
+<xsl:if test="$paras[$index + 1]/@type eq 'whitespace' and $paras[$index + 2]/@value eq 'in'">
+<xsl:attribute name="id" select="concat('rng-', $pValue)"/>
 </xsl:if>
 </xsl:if>
 
 <xsl:variable name="className">
 <xsl:choose>
-<xsl:when test="$document-type eq 'deltaxml' and empty(@type)">
-<xsl:variable name="prev" select="$para[$index - 1] "/>
-<xsl:value-of select="if ($index eq 1 or $prev/@value eq '=') then 'orange' else 'magenta'"/>
+<xsl:when test="$document-type eq 'deltaxml' and empty($pType)">
+<xsl:value-of select="if ($color-state) then 'orange' else 'magenta'"/>
 </xsl:when>
-<xsl:when test="exists(@type)">
-<xsl:value-of select="if (@type eq 'literal' and
-matches(@value ,'select[\s\p{Zs}]*=[\s\p{Zs}]*[&quot;&apos;&apos;]'))
+<xsl:when test="exists($pType)">
+<xsl:value-of select="if ($pType eq 'literal' and
+matches($pValue ,'select[\s\p{Zs}]*=[\s\p{Zs}]*[&quot;&apos;&apos;]'))
 then 'select'
-else @type"/>
+else $pType"/>
 </xsl:when>
 <xsl:otherwise>
-<xsl:variable name="p" select="$para[$index - 1] "/>
-<xsl:value-of select="if ($p/@type eq 'literal' and
-matches($p/@value ,'name[\s\p{Zs}]*=[\s\p{Zs}]*[&quot;&apos;&apos;]'))
+<xsl:value-of select="if ($prev/@type eq 'literal' and
+matches($prev/@value ,'name[\s\p{Zs}]*=[\s\p{Zs}]*[&quot;&apos;&apos;]'))
 then 'external'
 else 'qname'"/>
 </xsl:otherwise>
@@ -1489,22 +1500,22 @@ else 'qname'"/>
 <xsl:attribute name="class" select="$className"/>
 
 <xsl:if test="$className eq 'external'">
-<xsl:attribute name="id" select="concat('ext-',@value)"/>
+<xsl:attribute name="id" select="concat('ext-', $pValue)"/>
 </xsl:if>
 
-<xsl:attribute name="start" select="@start"/>
+<xsl:attribute name="start" select="$para/@start"/>
 
-<xsl:if test="(@value = ('(','[') or @type eq 'function') and not(@pair-end)">
+<xsl:if test="($pValue = ('(','[') or $pType eq 'function') and not($para/@pair-end)">
 <xsl:attribute name="style" select="'color: pink;'"/>
 </xsl:if>
 
-<xsl:if test="@pair-end">
-<xsl:attribute name="pair-end" select="@pair-end"/>
+<xsl:if test="$para/@pair-end">
+<xsl:attribute name="pair-end" select="$para/@pair-end"/>
 </xsl:if>
 
-<xsl:if test="not(@type) or 
-(@type = ('function','filter','parenthesis','variable','node')) and (not(@value = (')',']'))) or
-(@value eq '*' and $para[$index - 1]/@class eq 'axis')">
+<xsl:if test="not($pType) or 
+($pType = ('function','filter','parenthesis','variable','node')) and (not($pValue = (')',']'))) or
+($pValue eq '*' and $prev/@class eq 'axis')">
 <xsl:attribute name="select" select="'quick'"/>
 </xsl:if>
 
@@ -1529,12 +1540,12 @@ else @value" regex="\n">
 -->
 
 <xsl:choose>
-<xsl:when test="@type = ('literal','comment')">
-<xsl:value-of select="if ($isLiteral) then substring(@value, 2, string-length(@value) - 2)
-else @value"/>
+<xsl:when test="$pType = ('literal','comment')">
+<xsl:value-of select="if ($isLiteral) then substring($pValue, 2, string-length($pValue) - 2)
+else $pValue"/>
 </xsl:when>
 <xsl:otherwise>
-<xsl:value-of select="if ($isJoined) then substring(@value, 1, string-length(@value) - 1) else @value"/>
+<xsl:value-of select="if ($isJoined) then substring($pValue, 1, string-length($pValue) - 1) else $pValue"/>
 </xsl:otherwise>
 </xsl:choose>
 
@@ -1553,8 +1564,14 @@ else @value"/>
 </span>
 </xsl:if>
 
-</xsl:for-each>
-</xsl:for-each>
+<xsl:if test="$index + 1 le $total">
+<xsl:sequence select="f:iterateParas($paras, $index + 1, $color-state)"/>
+</xsl:if>
+</xsl:function>
+
+<xsl:template name="plain">
+<xsl:param name="para" as="element()*"/>
+<xsl:sequence select="f:iterateParas($para, 1, true())"/>
 </xsl:template>
 
 <xsl:template match="token" mode="plainLine">
