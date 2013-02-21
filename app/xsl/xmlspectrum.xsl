@@ -69,7 +69,7 @@ select="f:get-inline-colors($color-theme-data)"/>
 <ns>http://www.w3.org/2001/XMLSchema</ns>
 <xpath-names>
 <element name="assert"><att>test</att></element>
-<element name="alternative"><att>test</att><element>
+<element name="alternative"><att>test</att></element>
 <element name="field"><att>xpath</att></element>
 <element name="selector"><att>xpath</att></element>
 </xpath-names>
@@ -87,6 +87,16 @@ select="f:get-inline-colors($color-theme-data)"/>
 <element name="report"><att>test</att></element>
 <element name="rule"><att>context</att></element>
 <element name="value-of"><att>select</att></element>
+</xpath-names>
+<highlight-names>
+<element name="pattern" attribute="name"/>
+<element name="key" attribute="name"/>
+</highlight-names>
+</document-type>
+<document-type name="deltaxml">
+<ns>http://www.deltaxml.com/ns/well-formed-delta-v1</ns>
+<xpath-names>
+<attribute name="deltaV2"/>
 </xpath-names>
 <highlight-names>
 <element name="pattern" attribute="name"/>
@@ -152,7 +162,7 @@ select="($xsd-names/document-type[ns = $xmlns]/@name, '')[1]"/>
 <xsl:function name="f:xsd-xpath-names" as="element()*">
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:sequence
-select="$xsd-names/document-type[@name eq $doctype]/xpath-names/*"/>
+select="$xsd-names/document-type[@name eq $doctype]/xpath-names"/>
 </xsl:function>
 
 <xsl:function name="f:xsd-highlight-names" as="element()*">
@@ -532,9 +542,6 @@ as="xs:integer"/>
 <xsl:when test="$nextClass ne 'ez'
 or $prevClass eq 'ec'">
 <nl/>
-<xsl:if test="$prevClass eq 'ec'">
-<xsl:message select="'ec', string($span)"></xsl:message>
-</xsl:if>
 </xsl:when>
 </xsl:choose>
 </xsl:when>
@@ -713,15 +720,28 @@ else $input-theme"/>
 </xsl:for-each>
 </xsl:function>
 
-<xsl:function name="f:get-xsd-names" as="element()*">
+<xsl:function name="f:get-xsd-element-names" as="element()*">
 <xsl:param name="prefix" as="xs:string"/>
 <xsl:param name="doctype" as="xs:string"/>
-<xsl:for-each select="f:xsd-xpath-names($doctype)">
-<element name="{concat($prefix, @name)}">
+<xsl:for-each select="f:xsd-xpath-names($doctype)/element">
+<xsl:copy>
+<xsl:attribute name="name" select="concat($prefix, @name)"/>
 <xsl:copy-of select="*"/>
-</element>
+</xsl:copy>
 </xsl:for-each>
 </xsl:function>
+
+<xsl:function name="f:get-xsd-attribute-names" as="element()*">
+<xsl:param name="prefix" as="xs:string"/>
+<xsl:param name="doctype" as="xs:string"/>
+<xsl:for-each select="f:xsd-xpath-names($doctype)/attribute">
+<xsl:copy>
+<xsl:attribute name="name" select="concat($prefix, @name)"/>
+<xsl:copy-of select="*"/>
+</xsl:copy>
+</xsl:for-each>
+</xsl:function>
+
 
 <xsl:function name="f:get-xsd-fnames" as="element()*">
 <xsl:param name="prefix" as="xs:string"/>
@@ -1165,11 +1185,19 @@ else 'z'"/>
 </xsl:variable>
 
 <xsl:variable name="att-name" select="$attSpans[@class eq 'atn']"/>
-<xsl:variable name="xsd-xpath-elements" select="f:get-xsd-names($root-prefix, $doctype)" as="element()*"/>
+<xsl:variable name="xsd-xpath-elements" select="f:get-xsd-element-names($root-prefix, $doctype)" as="element()*"/>
+<xsl:variable name="xsd-xpath-attributes" select="f:get-xsd-attribute-names($root-prefix, $doctype)" as="element()*"/>
+
 <xsl:sequence select="$attSpans"/>
 <xsl:variable name="isXPath" as="xs:boolean"
 select="if ($is-xsl-element)
 then $att-name = ('select','test', 'match')
+
+else if (exists($xsd-xpath-attributes)) then
+
+($is-xsd and exists( 
+$xsd-xpath-attributes[@name = $att-name])) 
+
 else
 
 ($is-xsd and exists( 
@@ -1438,6 +1466,10 @@ select="string-length(@value) gt 1 and ends-with(@value, '(')"/>
 
 <xsl:variable name="className">
 <xsl:choose>
+<xsl:when test="$document-type eq 'deltaxml' and empty(@type)">
+<xsl:variable name="prev" select="$para[$index - 1] "/>
+<xsl:value-of select="if ($index eq 1 or $prev/@value eq '=') then 'orange' else 'magenta'"/>
+</xsl:when>
 <xsl:when test="exists(@type)">
 <xsl:value-of select="if (@type eq 'literal' and
 matches(@value ,'select[\s\p{Zs}]*=[\s\p{Zs}]*[&quot;&apos;&apos;]'))

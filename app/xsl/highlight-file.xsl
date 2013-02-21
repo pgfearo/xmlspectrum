@@ -79,6 +79,9 @@ xmlns:f="internal">
 <xsl:param name="output-method" select="'html'"/>
 <!-- set value to 'yes' to embed css inline with element -->
 <xsl:param name="css-inline" select="'no'"/>
+<!-- identifies xslt/schematron/xproc etc - not required if root namespace can be used -->
+<xsl:param name="document-type" select="''"/>
+<xsl:param name="document-type-prefix" select="''"/>
 <!-- 
 w3c-xpath-functions-uri is use to add hyperlinks to built-in
 xpath functions when 'link-names' = 'yes'
@@ -106,7 +109,9 @@ else concat($c, '/')
 <xsl:variable name="root-prefix" select="(prefix-from-QName($root-qname), '')[1]"/>
 <xsl:variable name="root-namespace" select="namespace-uri-from-QName($root-qname)"/>
 <xsl:variable name="doctype" as="xs:string"
-select="f:doctype-from-xmlns(*/namespace-uri())"/>
+select="if ($document-type ne '') then
+$document-type
+else f:doctype-from-xmlns(*/namespace-uri())"/>
 
 
 <xsl:variable name="all-spans" as="node()*">
@@ -115,7 +120,8 @@ select="f:doctype-from-xmlns(*/namespace-uri())"/>
 <xsl:with-param name="is-xml" select="true()" as="xs:boolean"/>
 <xsl:with-param name="doctype" select="$doctype" as="xs:string"/>
 <xsl:with-param name="indent-size" select="$indent-size" as="xs:integer"/>
-<xsl:with-param name="root-prefix" select="$root-prefix"/>
+<xsl:with-param name="root-prefix" select="if ($document-type-prefix ne '') then $document-type-prefix
+else $root-prefix"/>
 </xsl:call-template>
 </xsl:variable>
 
@@ -159,13 +165,17 @@ select="f:doctype-from-xmlns(*/namespace-uri())"/>
 <xsl:variable name="root-element" select="if ($is-xml) then doc($corrected-uri)/* else ()"/>
 <xsl:variable name="root-qname" select="if ($is-xml) then node-name($root-element) else ()" as="xs:QName?"/>
 
-<xsl:variable name="root-prefix" select="if ($is-xml) 
+<xsl:variable name="root-prefix" select="if ($document-type-prefix ne '') then
+$document-type-prefix
+else if ($is-xml) 
 then ((prefix-from-QName($root-qname), '')[1]) 
 else ''"/>
 <xsl:variable name="root-namespace" select="if ($is-xml) then namespace-uri-from-QName($root-qname) else ()"/>
 
 <xsl:variable name="doctype" as="xs:string"
-select="if ($is-xml) then
+select="if ($document-type ne '') then
+$document-type
+else if ($is-xml) then
 f:doctype-from-xmlns($root-namespace)
 else ''"/>
 
