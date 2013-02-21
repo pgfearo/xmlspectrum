@@ -39,6 +39,9 @@ xmlns:c="http://xmlspectrum.colors.org"
 xmlns:f="internal">
 
 <xsl:param name="color-theme" select="'dark'"/>
+<xsl:param name="force-newline" select="'no'"/>
+<xsl:variable name="insert-newlines" select="$force-newline eq 'yes'" as="xs:boolean"/>
+<xsl:variable name="max-newline-length" as="xs:integer" select="80"/>
 <xsl:variable name="resolved-theme" as="xs:string"
 select="if ($color-theme eq 'light') then 'solarized-light'
 else if ($color-theme eq 'dark') then 'solarized-dark'
@@ -237,6 +240,7 @@ parameters:
 <xsl:with-param name="av-offset" as="xs:integer" select="0"/>
 <xsl:with-param name="multi-line" as="xs:boolean" select="false()"/>
 <xsl:with-param name="auto-trim" as="xs:boolean" select="$auto-trim"/>
+<xsl:with-param name="mixed-level" as="xs:integer" select="0"/>
 </xsl:call-template>
 </xsl:function>
 
@@ -249,6 +253,7 @@ parameters:
 <xsl:param name="av-offset" as="xs:integer"/>
 <xsl:param name="multi-line" as="xs:boolean"/>
 <xsl:param name="auto-trim" as="xs:boolean"/>
+<xsl:param name="mixed-level" as="xs:integer"/>
 
 <xsl:variable name="span" select="$spans[$index]"/>
 <xsl:variable name="class" select="$span/@class"/>
@@ -258,6 +263,11 @@ parameters:
 <xsl:variable name="level2" select="if ($class eq 'scx') then $level + 1
 else if ($class eq 'ez') then $level - 1
 else $level"/>
+<xsl:variable name="mixed-level2" select="if ($mixed-level eq 0) then 0
+else if ($class eq 'scx') then $mixed-level + 1
+else if ($class eq 'ez') then $mixed-level - 1
+else $mixed-level"/>
+
 <xsl:variable name="outdent" as="xs:boolean"
 select="if ($index lt count($spans)) then
 $spans[$index + 1]/@class eq 'ez'
@@ -267,7 +277,7 @@ else false()"/>
 
 <xsl:variable name="indentOutput" select="f:indentTextSpan(
 $span, $level, $margin, $an-offset, $av-offset, $outdent,
-$nextClass, $prevClass, $multi-line, $auto-trim
+$nextClass, $prevClass, $multi-line, $auto-trim, $mixed-level2
 )"/>
 
 <xsl:sequence select="$indentOutput/span"/>
@@ -280,6 +290,7 @@ $nextClass, $prevClass, $multi-line, $auto-trim
 <xsl:with-param name="av-offset" as="xs:integer" select="$indentOutput/av-offset"/>
 <xsl:with-param name="multi-line" as="xs:boolean" select="$indentOutput/multi-line"/>
 <xsl:with-param name="auto-trim" as="xs:boolean" select="$auto-trim"/>
+<xsl:with-param name="mixed-level" as="xs:integer" select="xs:integer($indentOutput/mixed-level)"/>
 </xsl:call-template>
 </xsl:if>
 
@@ -476,10 +487,66 @@ and $span/@class ne 'scx'">
 <xsl:param name="prevClass" as="xs:string?"/>
 <xsl:param name="multi-line" as="xs:boolean"/>
 <xsl:param name="auto-trim" as="xs:boolean"/>
+<xsl:param name="mixed-level" as="xs:integer"/>
 
 <xsl:variable name="class" select="$span/@class"/>
 
+<xsl:variable name="is-mixed" as="xs:boolean"
+select="$mixed-level gt 0
+or (
+    $class eq 'txt' and $nextClass = ('es','esx') and string-length($span) gt 0
+)"/>
+
+<xsl:variable name="new-mixed-level"
+select="if ($mixed-level eq 0 and $is-mixed) then
+1 else $mixed-level"
+as="xs:integer"/>
+
 <xsl:variable name="line-parts" as="element()*">
+<xsl:choose>
+<xsl:when test="$insert-newlines">
+<xsl:choose>
+<!-- check to see if newline must be inserted after text content (even if empty) -->
+<xsl:when test="$class eq 'z' and $nextClass eq 'atn' and $level eq 0">
+<tt/><nl/>
+</xsl:when>
+<xsl:when test="$class eq 'txt'">
+<tt>
+<xsl:value-of select="$span"/>
+</tt>
+<!-- must somehow avoid inserting newlines within mixed content
+     but string-length($span) eq 0 will not be good test -->
+<!-- ez = '</' starg of a close tag: </close> 
+        ec = '>' at end of a close tag: </close>
+        example <open>this day</open> -->
+
+<xsl:choose>
+<!-- if next tag is open tag (es/esx) and it is preceded by text-content
+     don't add a new line, eg <p>my name<p> -->
+<xsl:when test="$is-mixed">
+</xsl:when>
+<!-- add new line after text-content if:
+     1. next tag is not a close tag
+     2. next tag *is* a close tag and prev tag was a close tag also
+      -->
+<xsl:when test="$nextClass ne 'ez'
+or $prevClass eq 'ec'">
+<nl/>
+<xsl:if test="$prevClass eq 'ec'">
+<xsl:message select="'ec', string($span)"></xsl:message>
+</xsl:if>
+</xsl:when>
+</xsl:choose>
+</xsl:when>
+<xsl:otherwise>
+<tt>
+<xsl:value-of select="$span"/>
+</tt>
+</xsl:otherwise>
+</xsl:choose>
+
+</xsl:when>
+<xsl:otherwise>
 <xsl:analyze-string select="$span" regex="(\r?)\n.*">
 <xsl:matching-substring>
 <xsl:variable name="r-length" as="xs:integer" select="string-length(regex-group(1))"/>
@@ -496,6 +563,8 @@ else $text"/>
 </tt>
 </xsl:non-matching-substring>
 </xsl:analyze-string>
+</xsl:otherwise>
+</xsl:choose>
 </xsl:variable>
 
 <xsl:variable name="firstLine" as="element()?"
@@ -574,6 +643,7 @@ concat('&#10;', $last-indent, $indented-lines[$line-count])
 else if ($multi-line and $offset gt 0) then
 concat($indent, string($line-parts[1]))
 else string($line-parts[1])"/>
+
 <output>
 <span>
 <xsl:copy-of select="$span/@*"/>
@@ -588,6 +658,9 @@ else string($line-parts[1])"/>
 <multi-line>
 <xsl:value-of select="exists($indented-lines)"/>
 </multi-line>
+<mixed-level>
+<xsl:value-of select="$new-mixed-level"/>
+</mixed-level>
 </output>
 
 </xsl:function>
