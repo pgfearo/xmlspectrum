@@ -57,6 +57,7 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 select="$css-doc/c:themes/c:theme[@name eq f:get-theme($resolved-theme)]"/>
 <xsl:variable name="color-modes" as="element(colors)*"
 select="f:get-inline-colors($color-theme-data)"/>
+<xsl:variable name="document-type" select="''"/>
 
 
 <!-- override if xml document type is not included here -->
