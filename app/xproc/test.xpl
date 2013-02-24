@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
     xproc file for running XMLSpectrum XSLT transform
-    this file offers no benefits to using the command-line
-    but does add the capability to use within another XProc pipeline
+    this file offers no real benefits to using the command-line
+    or a batch file or shell script, however it
+    does add the capability to use within another XProc pipeline
 
     no CSS file is generated using this method, because the output-method
     param is set to 'xml' - this prevents non-XML issues in XProc steps
@@ -35,10 +36,8 @@ version="2">
 <p:input port="stylesheet">
 <p:document href="../xsl/highlight-file.xsl"/>
 </p:input>
-<p:with-param name="light-theme" select="'yes'"/>
-<!--
-<p:with-param name="output-path" select="'file:/c:/xproc-out/'"/>
--->
+<p:with-param name="color-theme" select="'dark'"/>
+<p:with-param name="css-inline" select="'yes'"/>
 <p:with-param name="sourcepath" select="'../samples/xpathcolorer-x.xsl'"/>
 <!-- output must be XML for an XProc step -->
 <p:with-param name="output-method" select="'xml'"/>

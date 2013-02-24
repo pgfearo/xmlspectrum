@@ -35,7 +35,7 @@ version="2">
 <p:input port="stylesheet">
 <p:document href="../xsl/highlight-file.xsl"/>
 </p:input>
-<p:with-param name="light-theme" select="'yes'"/>
+<p:with-param name="light-theme" select="'dark'"/>
 <p:with-param name="link-names" select="'yes'"/>
 <!--
 <p:with-param name="output-path" select="'file:/c:/xproc-out/'"/>
