@@ -299,8 +299,9 @@
     <xsl:when test="$awaiting=''">
      <xsl:value-of
                    select="if($char = ('&apos;&apos;','&quot;'))
-                           then $char 
-                           else if ($char = '(' and $nChar = ':') then ':)' 
+                            then $char 
+                           else if ($char = '(' and $nChar = ':') then 
+                            ':)' 
                            else ''"
      />
     </xsl:when>
@@ -570,11 +571,11 @@
       <xsl:variable name="splitToken" as="xs:string*" select="tokenize($token, '[\n\p{Zs}]+')"/>
       <xsl:value-of
        select="if (count($splitToken) ne 2) 
-               then false()
+                then false()
                else if ($splitToken[1] eq 'instance' and $splitToken[2] eq 'of') 
-               then true()
+                then true()
                else if ($splitToken[1] = ('cast','castable','treat') and $splitToken[2] eq 'as')
-               then true() else false()"/>
+                then true() else false()"/>
      </xsl:otherwise>
     </xsl:choose>
    </xsl:variable>

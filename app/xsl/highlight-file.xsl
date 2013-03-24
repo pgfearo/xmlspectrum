@@ -129,7 +129,9 @@ else $root-prefix"/>
 <xsl:value-of select="'processing', count($all-spans), 'tokens for', base-uri(), 'css-inline:', $css-inline"/>
 </xsl:message>
 
+<xsl:if test="$output-method eq 'html'">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
+</xsl:if>
 <html>
 <head>
 <title><xsl:value-of select="'XMLSpectrum output'"/></title>
@@ -286,7 +288,8 @@ else uri"/>
 
 <xsl:call-template name="output-html-doc">
 <xsl:with-param name="result-spans" select="$result-spans"/>
-<xsl:with-param name="filename" select="$file-only"/>
+<xsl:with-param name="filename" select="if ($file-only ne '') then $file-only
+else 'xms-output'"/>
 <xsl:with-param name="css-link"
 select="if ($css-path eq '') then 
 $css-name
@@ -572,8 +575,8 @@ method="{$output-method}" indent="no">
 <xsl:variable name="fixed-uri" select="f:path-to-uri($input-uri)"/>
 <xsl:message><xsl:value-of select="'input-uri', $fixed-uri"/></xsl:message>
 <xsl:variable name="file-content" as="xs:string" select="unparsed-text($fixed-uri)"/>
-<xsl:variable name="file-only" select="f:file-from-uri($input-uri)"/>
-
+<xsl:variable name="pre-file-only" select="f:file-from-uri($input-uri)"/>
+<xsl:variable name="file-only" select="if ($pre-file-only ne '') then $pre-file-only else 'xms-output'"/>
 <xsl:choose>
 <xsl:when test="$is-xml and $indent-size lt 0 and not($do-trim)">
 <!-- for case where XPath is embedded in XML text -->

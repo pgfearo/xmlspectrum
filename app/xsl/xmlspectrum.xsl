@@ -97,13 +97,30 @@ select="f:get-inline-colors($color-theme-data)"/>
 <document-type name="deltaxml">
 <ns>http://www.deltaxml.com/ns/well-formed-delta-v1</ns>
 <xpath-names>
-<attribute name="deltaV2"/>
+<attribute name="merge"/>
 </xpath-names>
 <highlight-names>
 <element name="pattern" attribute="name"/>
 <element name="key" attribute="name"/>
 </highlight-names>
 </document-type>
+<document-type name="mergexml">
+<ns>http://www.deltaxml.com/ns/merge</ns>
+<xpath-names>
+<element name="textValue"><att>owner</att></element>
+<element name="attributeValue"><att>owner</att></element>
+<element name="element"><att>owner</att></element>
+<element name="text"><att>owner</att></element>
+<element name="delete"><att>owner</att></element>
+<element name="add"><att>owner</att></element>
+<element name="merge"><att>owner</att></element>
+</xpath-names>
+<highlight-names>
+<element name="element" attribute="change-type"/>
+</highlight-names>
+
+</document-type>
+
 <document-type name="xproc">
 <ns>http://www.w3.org/ns/xproc</ns>
 <xpath-names>
@@ -252,6 +269,9 @@ parameters:
 <xsl:with-param name="multi-line" as="xs:boolean" select="false()"/>
 <xsl:with-param name="auto-trim" as="xs:boolean" select="$auto-trim"/>
 <xsl:with-param name="mixed-level" as="xs:integer" select="0"/>
+<xsl:with-param name="preserved" as="xs:integer" select="0"/>
+<xsl:with-param name="nl-attribute" as="xs:boolean" select="false()"/>
+
 </xsl:call-template>
 </xsl:function>
 
@@ -265,6 +285,8 @@ parameters:
 <xsl:param name="multi-line" as="xs:boolean"/>
 <xsl:param name="auto-trim" as="xs:boolean"/>
 <xsl:param name="mixed-level" as="xs:integer"/>
+<xsl:param name="preserved" as="xs:integer"/>
+<xsl:param name="nl-attribute" as="xs:boolean"/>
 
 <xsl:variable name="span" select="$spans[$index]"/>
 <xsl:variable name="class" select="$span/@class"/>
@@ -288,7 +310,7 @@ else false()"/>
 
 <xsl:variable name="indentOutput" select="f:indentTextSpan(
 $span, $level, $margin, $an-offset, $av-offset, $outdent,
-$nextClass, $prevClass, $multi-line, $auto-trim, $mixed-level2
+$nextClass, $prevClass, $multi-line, $auto-trim, $mixed-level2, $preserved, $nl-attribute
 )"/>
 
 <xsl:sequence select="$indentOutput/span"/>
@@ -302,6 +324,9 @@ $nextClass, $prevClass, $multi-line, $auto-trim, $mixed-level2
 <xsl:with-param name="multi-line" as="xs:boolean" select="$indentOutput/multi-line"/>
 <xsl:with-param name="auto-trim" as="xs:boolean" select="$auto-trim"/>
 <xsl:with-param name="mixed-level" as="xs:integer" select="xs:integer($indentOutput/mixed-level)"/>
+<xsl:with-param name="preserved" as="xs:integer" select="xs:integer($indentOutput/preserved)"/>
+<xsl:with-param name="nl-attribute" as="xs:boolean" select="($indentOutput/nl-attribute eq 'yes')"/>
+
 </xsl:call-template>
 </xsl:if>
 
@@ -499,8 +524,18 @@ and $span/@class ne 'scx'">
 <xsl:param name="multi-line" as="xs:boolean"/>
 <xsl:param name="auto-trim" as="xs:boolean"/>
 <xsl:param name="mixed-level" as="xs:integer"/>
+<xsl:param name="preserved" as="xs:integer"/>
+<xsl:param name="nl-attribute" as="xs:boolean"/>
 
 <xsl:variable name="class" select="$span/@class"/>
+
+<xsl:variable name="all-preserved" as="xs:integer"
+select="if ($nl-attribute) then
+($preserved + $av-offset)
+else
+($preserved + $an-offset + $av-offset)"/>
+
+
 
 <xsl:variable name="is-mixed" as="xs:boolean"
 select="$mixed-level gt 0
@@ -518,7 +553,8 @@ as="xs:integer"/>
 <xsl:when test="$insert-newlines">
 <xsl:choose>
 <!-- check to see if newline must be inserted after text content (even if empty) -->
-<xsl:when test="$class eq 'z' and $nextClass eq 'atn' and $level eq 0">
+<xsl:when test="$class eq 'z' and $nextClass eq 'atn' 
+and ($level eq 0 or $document-type eq 'mergexml' and $level eq 1)">
 <tt/><nl/>
 </xsl:when>
 <xsl:when test="$class eq 'txt'">
@@ -558,11 +594,11 @@ or $prevClass eq 'ec'">
 <xsl:analyze-string select="$span" regex="(\r?)\n.*">
 <xsl:matching-substring>
 <xsl:variable name="r-length" as="xs:integer" select="string-length(regex-group(1))"/>
-<nl>
 <xsl:variable name="text" select="substring(., 2 + $r-length)" as="xs:string"/>
-<xsl:value-of select="if ($auto-trim)
-then f:left-trim($text)
-else $text"/>
+<nl>
+
+<!-- Only trim minimum necessary from attribute values -->
+<xsl:value-of select="$text"/>
 </nl>
 </xsl:matching-substring>
 <xsl:non-matching-substring>
@@ -578,10 +614,32 @@ else $text"/>
 <xsl:variable name="firstLine" as="element()?"
 select="$line-parts[1]"/>
 
+<xsl:variable name="nl-elements" as="element()*"
+select="$line-parts[name(.) eq 'nl']"/>
+
+
+
 <xsl:variable name="indented-lines" as="xs:string*">
-<xsl:sequence select="for $a in $line-parts[name(.) eq 'nl'] return
-string($a)"/>
+<xsl:sequence select="if ($nl-elements and $auto-trim) then
+    if ($class = ('whitespace','av')) then
+        f:autotrim($nl-elements, 1, $all-preserved)
+    else if ($class = ('txt')) then
+        f:autotrim-txt($nl-elements, 1, 0)
+    else if ($class = ('cm')) then
+        f:autotrim-comment($nl-elements, 1, 0)
+    else
+        for $trim in $nl-elements return f:left-trim($trim)
+else
+    for $a in $nl-elements return string($a)"/>
 </xsl:variable>
+
+<xsl:variable name="trim-width" as="xs:integer?"
+select="if ($nl-elements and $auto-trim) then
+    string-length($nl-elements[1]) - string-length($indented-lines[1])
+else
+    ()
+    "/>
+
 
 <xsl:variable name="flat-part" as="element()?"
 select="$line-parts[name(.) eq 'tt']"/>
@@ -628,8 +686,10 @@ select="if ($prevClass = ('en','enxsl'))
     then $compact
 else if ($nextClass eq 'atn') 
     then $an-outOffset
-else if ($nextClass = 'av' or $class eq 'whitespace')
+else if ($class = ('whitespace', 'comment'))
     then $an-outOffset + $av-outOffset
+else if ($class eq 'av')
+    then $an-offset + $av-offset
 else 0"/>
 
 <xsl:variable name="indent" select="f:createIndent(($level * $margin) + $offset)"/>
@@ -638,6 +698,24 @@ else 0"/>
 
 
 <xsl:variable name="line-count" select="count($indented-lines)" as="xs:integer"/>
+<xsl:variable name="new-preserved" as="xs:integer"
+select="if (exists($trim-width)
+    and (
+        ($class eq 'txt' and $nextClass = ('es','esx'))
+        or ($class eq 'z' and $nextClass eq 'atn')
+    )
+) then
+    $trim-width
+else $preserved" />
+
+<xsl:variable name="new-nl-attribute" as="xs:boolean"
+select="if ($class eq 'txt' and $nextClass = ('es','esx')) then
+false()
+else if ($class eq 'z' and $nextClass eq 'atn' and $line-count gt 0) then
+true()
+else
+$nl-attribute"/>
+
 
 <xsl:variable name="span-text" as="xs:string"
 select="if (exists($indented-lines))
@@ -651,6 +729,17 @@ concat('&#10;', $last-indent, $indented-lines[$line-count])
 else if ($multi-line and $offset gt 0) then
 concat($indent, string($line-parts[1]))
 else string($line-parts[1])"/>
+
+
+<!--
+<xsl:variable name="span-text" select="if (exists($indented-lines)) then
+concat($span-text-1, ' ', $an-outOffset, ' ', $av-outOffset)
+else $span-text-1"/>
+
+-->
+
+
+
 
 <output>
 <span>
@@ -669,14 +758,112 @@ else string($line-parts[1])"/>
 <mixed-level>
 <xsl:value-of select="$new-mixed-level"/>
 </mixed-level>
+<preserved>
+<xsl:value-of select="$new-preserved"/>
+</preserved>
+<nl-attribute>
+<xsl:value-of select="if ($new-nl-attribute) then
+    'yes'
+else
+    'no'"/>
+</nl-attribute>
+
 </output>
 
 </xsl:function>
+
+<xsl:function name="f:autotrim">
+<xsl:param name="newline-elements" as="element()*"/>
+<xsl:param name="index" as="xs:integer"/>
+<xsl:param name="preserve-size" as="xs:integer"/>
+<xsl:variable name="text" select="$newline-elements[$index]" as="xs:string*"/>
+<xsl:variable name="trimmed-text" select="f:left-trim($text)" as="xs:string"/>
+<xsl:variable name="trim-size" as="xs:integer"
+select="(string-length($text) - string-length($trimmed-text), 0)[1]"/>
+
+<!--
+<xsl:sequence select="concat('[', $preserve-size, ' ', $trim-size, ']')"/>
+-->
+<xsl:sequence select="if ($trim-size gt $preserve-size) then
+    substring($text, $preserve-size + 1)
+else
+    $trimmed-text
+"/>
+<xsl:if test="$index lt count($newline-elements)">
+<xsl:sequence select="f:autotrim($newline-elements, $index + 1, $preserve-size)"/>
+</xsl:if>
+
+</xsl:function>
+
+<xsl:function name="f:autotrim-txt">
+<xsl:param name="newline-elements" as="element()*"/>
+<xsl:param name="index" as="xs:integer"/>
+<xsl:param name="preserve-size" as="xs:integer"/>
+<xsl:variable name="text" select="$newline-elements[$index]" as="xs:string*"/>
+<xsl:variable name="trimmed-text" select="f:left-trim($text)" as="xs:string"/>
+<xsl:variable name="trim-size" as="xs:integer"
+select="(string-length($text) - string-length($trimmed-text), 0)[1]"/>
+
+<xsl:variable name="result" select="if ($trim-size gt $preserve-size and $index gt 1) then
+substring($text, $preserve-size + 1)
+else
+$trimmed-text
+"/>
+<xsl:variable name="count" select="count($newline-elements)" as="xs:integer"/>
+<xsl:variable name="new-trim-size" select="if ($index eq 1) then $trim-size else $preserve-size" as="xs:integer"/>
+<xsl:choose>
+<xsl:when test="$index eq $count">
+<xsl:sequence select="f:right-trim($result)"/>
+</xsl:when>
+<xsl:when test="$index lt $count">
+<xsl:sequence select="$result"/>
+<xsl:sequence select="f:autotrim-txt($newline-elements, $index + 1, $new-trim-size)"/>
+</xsl:when>
+</xsl:choose>
+</xsl:function>
+
+<xsl:function name="f:autotrim-comment">
+<xsl:param name="newline-elements" as="element()*"/>
+<xsl:param name="index" as="xs:integer"/>
+<xsl:param name="preserve-size" as="xs:integer"/>
+<xsl:variable name="text" select="$newline-elements[$index]" as="xs:string*"/>
+<xsl:variable name="trimmed-text" select="f:left-trim($text)" as="xs:string"/>
+<xsl:variable name="trim-size" as="xs:integer"
+select="(string-length($text) - string-length($trimmed-text), 0)[1]"/>
+
+<xsl:variable name="result-a" select="if ($trim-size gt $preserve-size and $index gt 1) then
+substring($text, $preserve-size + 1)
+else
+$trimmed-text
+"/>
+<xsl:variable name="result" select="concat('     ', $result-a)"/>
+<xsl:variable name="count" select="count($newline-elements)" as="xs:integer"/>
+<xsl:variable name="new-trim-size" select="if ($index eq 1) then $trim-size else $preserve-size" as="xs:integer"/>
+<xsl:choose>
+
+<xsl:when test="$index eq $count">
+<xsl:sequence select="f:right-trim($result)"/>
+</xsl:when>
+
+<xsl:when test="$index le $count">
+<xsl:sequence select="$result"/>
+<xsl:sequence select="f:autotrim-comment($newline-elements, $index + 1, $new-trim-size)"/>
+</xsl:when>
+</xsl:choose>
+</xsl:function>
+
+
 
 <xsl:function name="f:left-trim" as="xs:string">
 <xsl:param name="text"/>
 <xsl:value-of select="replace($text, '^\s+', '')"/>
 </xsl:function>
+
+<xsl:function name="f:right-trim" as="xs:string">
+<xsl:param name="text"/>
+<xsl:value-of select="replace($text, '\s+$', '')"/>
+</xsl:function>
+
 
 <xsl:function name="f:createIndent" as="xs:string?">
 <xsl:param name="padCount" as="xs:integer"/>
@@ -1463,7 +1650,7 @@ select="string-length($pValue) gt 1 and ends-with($pValue, '(')"/>
 </xsl:if>
 <xsl:variable name="prev" select="$paras[$index - 1] "/>
 <xsl:variable name="toggle-color" as="xs:boolean"
-select="if ($document-type eq 'deltaxml' and empty($pType)) then
+select="if ($document-type = 'deltaxml' and empty($pType)) then
 ($index gt 1 and $prev/@value eq '!=')
 else false()"/>
 
@@ -1480,7 +1667,7 @@ select="if ($toggle-color) then not($init-color) else $init-color"/>
 
 <xsl:variable name="className">
 <xsl:choose>
-<xsl:when test="$document-type eq 'deltaxml' and empty($pType)">
+<xsl:when test="$document-type = ('deltaxml','mergexml') and empty($pType)">
 <xsl:value-of select="if ($color-state) then 'orange' else 'magenta'"/>
 </xsl:when>
 <xsl:when test="exists($pType)">

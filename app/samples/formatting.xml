@@ -1,0 +1,70 @@
+<xsl:otherwise xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:analyze-string select="$span" regex="(\r?)\n.*">
+        <xsl:matching-substring>
+            <xsl:variable name="r-length" as="xs:integer" select="string-length(regex-group(1))"/>
+            <xsl:variable name="text" select="substring(., 2 + $r-length)" as="xs:string"/>
+            <xsl:variable name="trimmed-text" select="f:left-trim($text)" as="xs:string"/>
+
+            <xsl:variable name="trim-size" as="xs:integer"
+                select="(string-length($text) - string-length($trimmed-text), 0)[1]"/>
+            <nl>
+
+                <!-- TODO: Only trim minimum 
+                     necessary 
+                     from attribute 
+                            values
+                            also
+                            good
+                 -->
+                <xsl:value-of select="if ($auto-trim) then
+                                      (: comments may be nested
+                                      (: phil's tokenizer must
+                                      handle quotes also :)
+                                      like this :)
+
+                                      if ($class eq 'whitespace' and $trim-size gt $preserved) then
+                                            concat('', substring($text, $preserved + 1))
+                                         else
+                                            concat('', $trimmed-text)
+                                      else $text"
+                />
+            </nl>
+            <pr>
+                <xsl:variable name="tgesting" as="xs:boolean" 
+                              select="function1(
+                                         function2(
+                                            function3(new)
+                                         )
+                                      )"/>
+
+                <xsl:variable
+                      select="function1(
+                                 function2(
+                                    function3(new)
+                                 )
+                              )"/>
+            </pr>
+        </xsl:matching-substring>
+        <xsl:non-matching-substring>
+            <tt>
+                <xsl:value-of select="."/>
+            </tt>
+            <para>the quic kbrown fox juod umpe ocver the lazy dog
+               <bold>newer text </bold>now is the time for all good people to 
+                                                                               come to the aid
+            </para>
+            <new-text>
+                 one    two     three
+                        alpha   bravo
+                        charlie delta
+                 echo
+            </new-text>
+            <new-attribute 
+                        myatt="  four   five    six
+                                 one    two     three
+                                        alpha   bravo
+                                        charlie delta
+                                 echo"/>
+        </xsl:non-matching-substring>
+    </xsl:analyze-string>
+</xsl:otherwise>

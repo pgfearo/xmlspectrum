@@ -49,7 +49,7 @@ xmlns:css="css-defs.com">
 <c:theme name="roboticket">
 <c:color name="base" value="bdd8f2"/>
 <c:color name="base01" value="afbfcf"/>
-<c:color name="base03" value="f5f5f5"/>
+<c:color name="base03" value="ffffff"/><!-- f5f5f5 -->
 <c:color name="base0" value="ad95af"/>
 <c:color name="base1" value="585858"/>
 
