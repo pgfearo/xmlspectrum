@@ -138,6 +138,10 @@ else $root-prefix"/>
 <xsl:if test="$css-inline eq 'no'">
 <style type="text/css"><xsl:sequence select="f:get-css()"/></style>
 </xsl:if>
+<xsl:if test="$font-name eq 'scp' and $css-inline eq 'yes'">
+<style>
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);</style>
+</xsl:if>
 </head>
 <body>
 <div>

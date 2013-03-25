@@ -16,6 +16,12 @@
                             also
                             good
                  -->
+                <?pre abc def
+                      def ghi
+                          jkl
+
+
+                ?>
                 <xsl:value-of select="if ($auto-trim) then
                                       (: comments may be nested
                                       (: phil's tokenizer must

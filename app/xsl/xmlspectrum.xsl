@@ -625,7 +625,7 @@ select="$line-parts[name(.) eq 'nl']"/>
         f:autotrim($nl-elements, 1, $all-preserved)
     else if ($class = ('txt','cd')) then
         f:autotrim-txt($nl-elements, 1, 0)
-    else if ($class = ('cm')) then
+    else if ($class = ('cm','pi')) then
         f:autotrim-comment($nl-elements, 1, 0)
     else
         for $trim in $nl-elements return f:left-trim($trim)
@@ -899,6 +899,11 @@ else $input-theme"/>
 <xsl:function name="f:get-css">
 <xsl:apply-templates select="$css-doc/c:themes/css:boiler-plate" mode="css"/>
 </xsl:function>
+
+<xsl:function name="f:get-css-font">
+<xsl:apply-templates select="$css-doc/c:themes/css:boiler-plate/css:font" mode="css"/>
+</xsl:function>
+
 
 <xsl:function name="f:prefixed-name" as="xs:string*">
 <xsl:param name="prefix" as="xs:string"/>

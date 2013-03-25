@@ -46,10 +46,10 @@ xmlns:css="css-defs.com">
 <c:color name="cyan" value="2aa198"/>
 <c:color name="green" value="859900"/>
 </c:theme>
-<c:theme name="roboticket">
+<c:theme name="roboticket-grey">
 <c:color name="base" value="bdd8f2"/>
 <c:color name="base01" value="afbfcf"/>
-<c:color name="base03" value="ffffff"/><!-- f5f5f5 -->
+<c:color name="base03" value="f5f5f5"/>
 <c:color name="base0" value="ad95af"/>
 <c:color name="base1" value="585858"/>
 
@@ -62,6 +62,40 @@ xmlns:css="css-defs.com">
 <c:color name="cyan" value="566874"/>
 <c:color name="green" value="55aa55"/>
 </c:theme>
+<c:theme name="roboticket-white">
+<c:color name="base" value="bdd8f2"/>
+<c:color name="base01" value="afbfcf"/>
+<c:color name="base03" value="ffffff"/>
+<c:color name="base0" value="ad95af"/>
+<c:color name="base1" value="585858"/>
+
+<c:color name="yellow" value="ddad60"/>
+<c:color name="orange" value="885d3b"/>
+<c:color name="red" value="ab2525"/>
+<c:color name="magenta" value="ad95af"/>
+<c:color name="violet" value="b05a65"/>
+<c:color name="blue" value="295f94"/>
+<c:color name="cyan" value="566874"/>
+<c:color name="green" value="55aa55"/>
+</c:theme>
+<c:theme name="tomorrow-night">
+<c:color name="base" value="282a2e"/>
+<c:color name="base01" value="616161"/>
+<c:color name="base03" value="1d1f21"/>
+<c:color name="base0" value="c5c8c6"/>
+<c:color name="base1" value="969896"/>
+
+<c:color name="yellow" value="f0c674"/>
+<c:color name="orange" value="de935f"/>
+<c:color name="red" value="cc6666"/>
+<c:color name="magenta" value="ad95af"/>
+<c:color name="violet" value="b294bb"/>
+<c:color name="blue" value="81a2be"/>
+<c:color name="cyan" value="8abeb7"/>
+<c:color name="green" value="b5bd68"/>
+</c:theme>
+
+
 <c:color-map name="main">
 <c:color name="base" property="background-color">ww</c:color>
 <c:color name="base01">base01 eq-equ z sc scx ec es ez atneq
