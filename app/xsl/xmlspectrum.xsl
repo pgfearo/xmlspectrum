@@ -623,7 +623,7 @@ select="$line-parts[name(.) eq 'nl']"/>
 <xsl:sequence select="if ($nl-elements and $auto-trim) then
     if ($class = ('whitespace','av')) then
         f:autotrim($nl-elements, 1, $all-preserved)
-    else if ($class = ('txt')) then
+    else if ($class = ('txt','cd')) then
         f:autotrim-txt($nl-elements, 1, 0)
     else if ($class = ('cm')) then
         f:autotrim-comment($nl-elements, 1, 0)

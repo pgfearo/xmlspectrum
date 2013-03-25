@@ -59,6 +59,17 @@
                         charlie delta
                  echo
             </new-text>
+<cdata>
+<![CDATA[
+<this>
+    <could>
+        <p name="phil">
+            This is a test
+                    of formatting
+                    in cdata</p>
+    </could>
+</this>]]>
+</cdata>
             <new-attribute 
                         myatt="  four   five    six
                                  one    two     three
