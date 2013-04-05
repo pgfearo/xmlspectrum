@@ -220,7 +220,6 @@ else concat($root-prefix-a, ':')"/>
 
 <xsl:variable name="tokens-a" as="xs:string*" select="tokenize($xmlText, '&lt;')"/>
 <xsl:message>
-<xsl:text>doctype: </xsl:text><xsl:value-of select="$doctype"/>
 <xsl:text>rendering </xsl:text>
 <xsl:value-of select="concat(string(count($tokens-a)),' ')"/>
 <xsl:value-of select="$doctype"/>
@@ -1877,6 +1876,9 @@ $level + 1 else $level - 1"/>
 <xsl:value-of select="if($char = '(' and $nChar = ':') then $level + 1
 else if ($char = ')' and $pChar = ':' and $level gt 0) then $level -1
 else $level"/>
+</xsl:when>
+<xsl:when test="$awaiting eq '/>'">
+<xsl:value-of select="if ($char = ('&lt;', '&quot;') then $level + 1"/>
 </xsl:when>
 <xsl:otherwise>
 <xsl:value-of select="$level"/>
