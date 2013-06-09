@@ -40,6 +40,8 @@ xmlns:f="internal">
 
 <xsl:param name="color-theme" select="'dark'"/>
 <xsl:param name="force-newline" select="'no'"/>
+<xsl:param name="format-mixed-content" select="'no'"/>
+<xsl:variable name="ignore-mc" as="xs:boolean" select="$format-mixed-content eq 'yes'"/>
 <xsl:variable name="insert-newlines" select="$force-newline eq 'yes'" as="xs:boolean"/>
 <xsl:variable name="max-newline-length" as="xs:integer" select="80"/>
 <xsl:variable name="resolved-theme" as="xs:string"
@@ -540,7 +542,7 @@ else
 
 
 <xsl:variable name="is-mixed" as="xs:boolean"
-select="$mixed-level gt 0
+select="$mixed-level gt 0 and not($ignore-mc)
 or (
     $class eq 'txt' and $nextClass = ('es','esx') and string-length($span) gt 0
 )"/>

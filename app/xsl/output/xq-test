@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<result xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:f="urn:internal-function"
+        xmlns:xq="com.qutoric.xq.functions">
+   <xml-open-tag pos="18"/>
+   <x-tag-end pos="22" length="2"/>
+   <start-xquery pos="24" level="top"/>
+   <xml-open-tag pos="48"/>
+   <x-tag-end pos="52" length="2"/>
+   <start-xquery pos="54" level="top"/>
+   <xml-open-tag pos="61"/>
+   <xml-name-end pos="65"/>
+   <x-equals pos="70"/>
+   <xml-att-quote pos="71"/>
+   <nested-query pos="72"/>
+   <start-xquery pos="73" level="nested"/>
+   <comment start="77" end="83"/>
+   <comment start="89" end="96"/>
+   <comment start="98" end="104"/>
+   <literal type="39" start="119" end="123"/>
+   <literal type="39" start="135" end="140"/>
+   <unnested-xquery pos="141"/>
+   <xml-att-quote pos="142"/>
+   <x-tag-end pos="143" length="1"/>
+   <nested-query pos="144"/>
+   <start-xquery pos="145" level="nested"/>
+   <xml-tag pos="267" type="x-comment" length="4"/>
+   <x-tag-end pos="288" length="3"/>
+   <start-xquery pos="291" level="top"/>
+   <xml-open-tag pos="297"/>
+   <x-tag-end pos="303" length="2"/>
+   <xml-close-tag pos="312"/>
+   <x-tag-end pos="317" length="1"/>
+   <start-xquery pos="318" level="top"/>
+   <terminate-xquery/>
+   <tokens>
+      <span class="open"/>
+      <span xq="yes" start="1" prev-is-closed="false" class="if">if</span>
+      <span xq="yes" start="3" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="4" prev-is-closed="false" class="parenthesis">(</span>
+      <span xq="yes" start="5" prev-is-closed="false" class="function">true</span>
+      <span class="parenthesis">(</span>
+      <span xq="yes" start="10" prev-is-closed="false" class="parenthesis">)</span>
+      <span xq="yes" start="11" prev-is-closed="true" class="parenthesis">)</span>
+      <span xq="yes" start="12" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="13" prev-is-closed="true" class="op">then</span>
+      <span xq="yes" start="17" prev-is-closed="false" class="whitespace"> </span>
+      <span pos="18" class="es">&lt;</span>
+      <span name="xml-open-tag" pos="19" class="en">div</span>
+      <span name="x-tag-end" pos="22" class="z">/&gt;</span>
+      <span class="open"/>
+      <span xq="yes" start="1" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="2" prev-is-closed="true" class="op">else</span>
+      <span xq="yes" start="6" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="7" prev-is-closed="false" class="if">if</span>
+      <span xq="yes" start="9" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="10" prev-is-closed="false" class="parenthesis">(</span>
+      <span xq="yes" start="11" prev-is-closed="false" class="function">false</span>
+      <span class="parenthesis">(</span>
+      <span xq="yes" start="17" prev-is-closed="false" class="parenthesis">)</span>
+      <span xq="yes" start="18" prev-is-closed="true" class="parenthesis">)</span>
+      <span xq="yes" start="19" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="20" prev-is-closed="true" class="op">then</span>
+      <span xq="yes" start="24" prev-is-closed="false" class="whitespace"> </span>
+      <span pos="48" class="es">&lt;</span>
+      <span name="xml-open-tag" pos="49" class="en">mod</span>
+      <span name="x-tag-end" pos="52" class="z">/&gt;</span>
+      <span class="open"/>
+      <span xq="yes" start="1" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="2" prev-is-closed="true" class="op">else</span>
+      <span xq="yes" start="6" prev-is-closed="false" class="whitespace">&#xD;
+</span>
+      <span pos="61" class="es">&lt;</span>
+      <span name="xml-open-tag" pos="62" class="en">abc</span>
+      <span name="xml-name-end" pos="65" class="atn"> test</span>
+      <span name="x-equals" pos="70" class="atneq">=</span>
+      <span name="xml-att-quote" pos="71" class="z">"</span>
+      <span name="nested-query" pos="72" class="op">{</span>
+      <span class="open"/>
+      <span xq="yes" start="1" prev-is-closed="true" class="numeric">5</span>
+      <span xq="yes" start="2" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="3" prev-is-closed="true" class="op">&lt;</span>
+      <span xq="yes" start="4" prev-is-closed="false" class="whitespace"> </span>
+      <span class="comment" pos="77" xq="yes">(:old:)</span>
+      <span xq="yes" start="1" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="2" prev-is-closed="false" class="qname">div</span>
+      <span xq="yes" start="5" prev-is-closed="true" class="whitespace"> </span>
+      <span class="comment" pos="89" xq="yes">(:test:)</span>
+      <span xq="yes" start="1" prev-is-closed="true" class="whitespace"> </span>
+      <span class="comment" pos="98" xq="yes">(:new:)</span>
+      <span class="open"/>
+      <span xq="yes" start="1" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="2" prev-is-closed="true" class="op">and</span>
+      <span xq="yes" start="5" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="6" prev-is-closed="false" class="qname">modest</span>
+      <span xq="yes" start="12" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="13" prev-is-closed="true" class="op">=</span>
+      <span xq="yes" start="14" prev-is-closed="false" class="whitespace"> </span>
+      <span class="op">'</span>
+      <span class="literal" pos="119" xq="yes">abc</span>
+      <span class="op">'</span>
+      <span class="open"/>
+      <span xq="yes" start="1" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="2" prev-is-closed="true" class="op">and</span>
+      <span xq="yes" start="5" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="6" prev-is-closed="false" class="qname">quest</span>
+      <span xq="yes" start="11" prev-is-closed="true" class="op">=</span>
+      <span class="op">'</span>
+      <span class="literal" pos="135" xq="yes">true</span>
+      <span class="op">'</span>
+      <span name="unnested-xquery" pos="141" class="op">}</span>
+      <span name="xml-att-quote" pos="142" class="z">"</span>
+      <span name="x-tag-end" pos="143" class="z">&gt;</span>
+      <span name="nested-query" pos="144" class="op">{</span>
+      <span class="open"/>
+      <span xq="yes" start="1" prev-is-closed="true" class="whitespace">&#xD;
+</span>
+      <span xq="yes" start="3" prev-is-closed="true" class="higher">let</span>
+      <span xq="yes" start="6" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="7" prev-is-closed="false" class="variable">$ab</span>
+      <span xq="yes" start="10" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="11" prev-is-closed="true" class="op">:=</span>
+      <span xq="yes" start="13" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="14" prev-is-closed="false" class="type">function</span>
+      <span class="parenthesis">(</span>
+      <span xq="yes" start="23" prev-is-closed="false" class="variable">$n</span>
+      <span xq="yes" start="25" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="26" prev-is-closed="true" class="op">as</span>
+      <span xq="yes" start="28" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="29" prev-is-closed="false" class="node-type">element</span>
+      <span class="parenthesis">(</span>
+      <span xq="yes" start="37" prev-is-closed="false" class="qname">new</span>
+      <span xq="yes" start="40" prev-is-closed="true" class="parenthesis">)</span>
+      <span xq="yes" start="41" prev-is-closed="true" class="parenthesis">)</span>
+      <span xq="yes" start="42" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="43" prev-is-closed="true" class="op">{</span>
+      <span xq="yes" start="44" prev-is-closed="false" class="numeric">5</span>
+      <span xq="yes" start="45" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="46" prev-is-closed="true" class="op">+</span>
+      <span xq="yes" start="47" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="48" prev-is-closed="false" class="numeric">5</span>
+      <span xq="yes" start="49" prev-is-closed="true" class="op">}</span>
+      <span xq="yes" start="50" prev-is-closed="true" class="whitespace">&#xD;
+ </span>
+      <span xq="yes" start="53" prev-is-closed="true" class="op">return</span>
+      <span xq="yes" start="59" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="60" prev-is-closed="false" class="qname">def</span>
+      <span xq="yes" start="63" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="64" prev-is-closed="true" class="op">+</span>
+      <span xq="yes" start="65" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="66" prev-is-closed="false" class="qname">kbc</span>
+      <span xq="yes" start="69" prev-is-closed="true" class="filter">[</span>
+      <span xq="yes" start="70" prev-is-closed="false" class="axis">@</span>
+      <span xq="yes" start="71" prev-is-closed="false" class="qname">name</span>
+      <span xq="yes" start="75" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="76" prev-is-closed="true" class="op">&lt;</span>
+      <span xq="yes" start="77" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="78" prev-is-closed="false" class="qname">testing</span>
+      <span xq="yes" start="85" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="86" prev-is-closed="true" class="filter">]</span>
+      <span xq="yes" start="87" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="88" prev-is-closed="true" class="op">+</span>
+      <span xq="yes" start="89" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="90" prev-is-closed="false" class="function">count</span>
+      <span class="parenthesis">(</span>
+      <span xq="yes" start="96" prev-is-closed="false" class="qname">testing</span>
+      <span xq="yes" start="103" prev-is-closed="true" class="parenthesis">)</span>
+      <span xq="yes" start="104" prev-is-closed="true" class="op">,</span>
+      <span xq="yes" start="105" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="106" prev-is-closed="false" class="if">if</span>
+      <span xq="yes" start="108" prev-is-closed="false" class="whitespace"> </span>
+      <span xq="yes" start="109" prev-is-closed="false" class="parenthesis">(</span>
+      <span xq="yes" start="110" prev-is-closed="false" class="function">true</span>
+      <span class="parenthesis">(</span>
+      <span xq="yes" start="115" prev-is-closed="false" class="parenthesis">)</span>
+      <span xq="yes" start="116" prev-is-closed="true" class="parenthesis">)</span>
+      <span xq="yes" start="117" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="118" prev-is-closed="true" class="op">then</span>
+      <span xq="yes" start="122" prev-is-closed="false" class="whitespace"> </span>
+      <span name="xml-tag" pos="267" class="z">&lt;!--</span>
+      <span pos="271" class="cm"> abc t -&gt; esting </span>
+      <span name="x-tag-end" pos="288" class="z">--&gt;</span>
+      <span class="open"/>
+      <span xq="yes" start="1" prev-is-closed="true" class="whitespace"> </span>
+      <span xq="yes" start="2" prev-is-closed="true" class="op">else</span>
+      <span xq="yes" start="6" prev-is-closed="false" class="whitespace"> </span>
+      <span pos="297" class="es">&lt;</span>
+      <span name="xml-open-tag" pos="298" class="en">trial</span>
+      <span name="x-tag-end" pos="303" class="z">/&gt;</span>
+      <span pos="305" class="txt"> &#xD;
+}&#xD;
+ </span>
+      <span pos="312" class="sc">&lt;/</span>
+      <span name="xml-close-tag" pos="314" class="xml-close-tag">abc</span>
+      <span name="x-tag-end" pos="317" class="z">&gt;</span>
+   </tokens>
+</result>
