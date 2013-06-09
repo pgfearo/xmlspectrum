@@ -1,7 +1,7 @@
 XMLSpectrum
 ===========================
 
-***Syntax-highlighter and formatter for XQuery, XPath 2.0 - 3.0, XSLT 2.0 and any hosting XML
+###Syntax-highlighter and formatter for XQuery, XPath 2.0 - 3.0, XSLT 2.0 and any hosting XML
 
 ###Why
 1. Many syntax-highlighters fail to accurately render XPath 2.0, whether it is standalone or embedded in XML, such as XSLT, XSD, Schemtron etc. 
