@@ -21,6 +21,7 @@ XMLSpectrum comprises a principal XSLT 2.0 stylesheet and supporting stylesheets
 
 ***Built-in language support***
 
+- XQuery 1.0
 - XPath 1.0, 2.0, 3.0
 - XSLT 1.0, 2.0, 3.0
 - XSD 1.1
