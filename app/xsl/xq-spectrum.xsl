@@ -33,8 +33,9 @@
     <xsl:variable name="xxAnyTagEnd" as="xs:integer*" select="6, 7"/>
     <xsl:variable name="xxCloseTagEnd" as="xs:integer" select="8"/>
 
+    <!-- this 'main' template used only for debug purposes. f:show-xquery is the entry-point function -->
     <xsl:template name="main" match="/">
-        <!-- template used only for debug purposes -->
+
 <!--        <xsl:variable name="doc-text" as="xs:string" select="unparsed-text(resolve-uri('../samples/devtest.xql'))"/>-->
 <!--        <xsl:variable name="doc-text" as="xs:string" select="unparsed-text(resolve-uri('../samples/xpath-text.txt'))"/>-->
 <!--            <xsl:variable name="doc-text" as="xs:string" select="unparsed-text(resolve-uri('Untitled2.xquery'))"/>-->
@@ -178,10 +179,10 @@
                 </xsl:when>-->
                 <xsl:when test="exists($start)">
                     <xsl:if test="$isClose">
-                        <span pos="{$start}" class="sc">&lt;/</span>
+                        <span class="sc">&lt;/</span>
                     </xsl:if>
                     <xsl:if test="$isOpen">
-                        <span pos="{$start}" class="es">&lt;</span>
+                        <span class="es">&lt;</span>
                     </xsl:if>
                     <xsl:choose>
                         <xsl:when test="$name eq 'start-xquery'">
@@ -195,20 +196,20 @@
                                 <xsl:when test="$name = 'literal'">
                                     <xsl:variable name="quote" select="codepoints-to-string($block/@type)"/>
                                     <span class="op"><xsl:value-of select="$quote"/></span>
-                                     <span class="{$name}" pos="{$shiftStart}" xq="yes">
+                                     <span class="{$name}">
                                          <xsl:sequence select="substring($text, 2, string-length($text) - 2)"/>                               
                                     </span>
                                     <span class="op"><xsl:value-of select="$quote"/></span>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <span class="{$name}" pos="{$shiftStart}" xq="yes">
+                                    <span class="{$name}">
                                          <xsl:sequence select="$text"/>                               
                                     </span>                                   
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:when>
                         <xsl:otherwise>
-                             <span name="{$name}" pos="{$shiftStart}"
+                             <span
                                    class="{if ($name = ('x-tag-end','xml-tag')) 
                                         then 'z' else f:getClassFromName($name)}">                                      
                                 <xsl:sequence select="$text"/>
@@ -223,8 +224,7 @@
                          <xsl:sequence select="$xq-token"/>                     
                     </xsl:when>
                     <xsl:when test="$name = ('x-tag-end', 'xml-tag')">
-                         <span pos="{$followingStart}" 
-                                    class="{if ($name eq 'xml-tag') then f:getClassFromType($newType) else 'txt'}">
+                         <span class="{if ($name eq 'xml-tag') then f:getClassFromType($newType) else 'txt'}">
                          <xsl:sequence select="$following-string"/>
                         </span>                                          
                     </xsl:when>
@@ -339,9 +339,6 @@
                 <xsl:when test="$awaiting = $xxAnyTagEnd and $char eq $xEquals">
                       <x-equals pos="{$index}"/>                
                 </xsl:when>
-    <!--            <xsl:otherwise>
-                    <otherwise pos="{$index}" char="{codepoints-to-string($char)}" awaiting="{$awaiting}"/>
-                </xsl:otherwise>-->
             </xsl:choose>
         </xsl:variable>
  
@@ -426,10 +423,10 @@
                     <xml-name-end pos="{$index}"/>
                 </xsl:when>
                 <xsl:when test="$isOpenTag">
-                    <xml-open-tag pos="{if ($char eq $cTagStart) then $index else $index - 1}"  xxq-fnlevel="{string($xq-fnlevel)}"/>                    
+                    <xml-open-tag pos="{if ($char eq $cTagStart) then $index else $index - 1}"/>                    
                 </xsl:when>
                 <xsl:when test="$isEmptyTag">
-                    <x-tag-end pos="{$index}" length="2" level="{$level}" xq-fnlevel="{$xq-fnlevel}"/>
+                    <x-tag-end pos="{$index}" length="2" level="{$level}"/>
                 </xsl:when>
                 <xsl:when test="$isCloseTag">
                     <xml-close-tag pos="{$index}"/>
@@ -467,7 +464,7 @@
                 <xsl:variable name="offset" as="xs:integer"
                         select="if ($isEmptyTag) then 1 else $limit"/>
                 <xsl:variable name="end" as="element()">
-                 <start-xquery pos="{$index + $offset + 1}" xml-exit-level="{$newLevel}" xq-fnLevel="{$xq-fnlevel}"/>                     
+                 <start-xquery pos="{$index + $offset + 1}"/>                     
                 </xsl:variable>
                 <xsl:variable name="popped-stack" as="xs:integer*" 
                               select="subsequence($xml-stack, 1, count($xml-stack) - 1)"/>
@@ -476,7 +473,7 @@
             <xsl:when test="$isEmbeddedXQuery">
                 <xsl:variable name="end" as="element()+">
                     <nested-query pos="{$index}"/>
-                    <start-xquery pos="{$index + 1}" xq-fnLevel="{$newXqFnLevel}"/>
+                    <start-xquery pos="{$index + 1}"/>
                 </xsl:variable>
                 <xsl:sequence select="f:createXqBlocks($chars, false(), $index + 1, (), 0, 0, $newXqFnLevel, $newLevel,
                                       $nowAwaiting, $xml-stack, ($xq-stack, $newXqFnLevel), ($final-result, $end))"/>               
@@ -640,7 +637,7 @@
                     </xsl:when>
                     <xsl:when test="$xmlStarts">
                         <xsl:variable name="end" as="element()">
-                            <xml-constructor pos="{$index}" stack="{concat(string-join((for $x in $xml-stack return string($x)), ':'), '+', $xLevel)}"/>
+                            <xml-constructor pos="{$index}"/>
                         </xsl:variable>
                         <xsl:sequence select="f:createXmlBlocks($chars, $index + 1, (), $index, $xLevel,
                                                                 $newFnLevel, ($xml-stack, $xLevel), $xq-stack, ($final-result, ()))"/>                       

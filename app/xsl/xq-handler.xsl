@@ -124,9 +124,7 @@
       
     <xsl:variable name="result1" as="element()+">       
         <xsl:element name="span">
-          <xsl:attribute name="xq" select="'yes'"/>
-          <xsl:attribute name="start" select="$token/@start"/>
-          <xsl:attribute name="prev-is-closed" select="string($prevIsClosed)"/>
+<!--          <xsl:attribute name="start" select="$token/@start"/>-->
           <xsl:attribute name="class" select="$class"/>
           <xsl:variable name="value" select="$token/@value"/>         
           <xsl:value-of select="if ($class = ('type', 'node-type','function')) then substring($value, 1, string-length($value) - 1) else $value"/>
