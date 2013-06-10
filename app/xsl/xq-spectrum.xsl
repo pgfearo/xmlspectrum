@@ -452,7 +452,7 @@
         </xsl:variable>
         
         <xsl:variable name="final-result" as="element()*" select="($result, $result1, $result2)"/>
-        <xsl:variable name="xml-stack-level" as="xs:integer" select="$xml-stack[last()]"/>
+        <xsl:variable name="xml-stack-level" as="xs:integer" select="if (exists($xml-stack)) then $xml-stack[last()] else 0"/>
                
         <xsl:choose>
             <xsl:when test="$index ge count($chars)">                
