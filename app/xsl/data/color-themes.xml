@@ -87,13 +87,46 @@ xmlns:css="css-defs.com">
 
 <c:color name="yellow" value="f0c674"/>
 <c:color name="orange" value="de935f"/>
-<c:color name="red" value="cc6666"/>
-<c:color name="magenta" value="ad95af"/>
-<c:color name="violet" value="b294bb"/>
+<c:color name="red" value="ce94da"/>
+<c:color name="violet" value="ad95af"/>
+<c:color name="magenta" value="cc6666"/>
 <c:color name="blue" value="81a2be"/>
 <c:color name="cyan" value="8abeb7"/>
 <c:color name="green" value="b5bd68"/>
 </c:theme>
+<c:theme name="xms">
+<c:color name="base" value="f0f0f0"/>
+<c:color name="base01" value="304050"/>
+<c:color name="base03" value="e0e3d8"/>
+<c:color name="base0" value="ad95af"/>
+<c:color name="base1" value="585858"/>
+
+<c:color name="yellow" value="082341"/>
+<c:color name="orange" value="12349a"/>
+<c:color name="red" value="15365B"/>
+<c:color name="violet" value="638C84"/>
+<c:color name="magenta" value="ea3E02"/>
+<c:color name="blue" value="5020ba"/>
+<c:color name="cyan" value="ca8080"/>
+<c:color name="green" value="509a70"/>
+</c:theme>
+<c:theme name="github">
+<c:color name="base" value="ececec"/>
+<c:color name="base01" value="924F99"/>
+<c:color name="base03" value="ffffff"/>
+<c:color name="base0" value="445588"/>
+<c:color name="base1" value="dd1144"/>
+
+<c:color name="yellow" value="1549b1"/>
+<c:color name="orange" value="885d3b"/>
+<c:color name="red" value="DB7093"/>
+<c:color name="magenta" value="333333"/>
+<c:color name="violet" value="990000"/>
+<c:color name="blue" value="445588"/>
+<c:color name="cyan" value="008080"/>
+<c:color name="green" value="999988"/>
+</c:theme>
+
 
 
 <c:color-map name="main">
