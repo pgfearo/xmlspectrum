@@ -34,8 +34,9 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:loc="com.qutoric.sketchpath.functions"
 xmlns:css="css-defs.com"
 exclude-result-prefixes="loc f xs css c"
-xmlns=""
 xmlns:c="http://xmlspectrum.colors.org"
+xmlns="http://www.w3.org/1999/xhtml"
+xpath-default-namespace="http://www.w3.org/1999/xhtml"
 xmlns:f="internal">
 
 <xsl:param name="color-theme" select="'dark'"/>

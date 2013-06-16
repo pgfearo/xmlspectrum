@@ -2,17 +2,15 @@
 <xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"                
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 xmlns:loc="com.qutoric.xq.functions"
-                xmlns:css="css-defs.com"
-                exclude-result-prefixes="loc f xs"
-                xmlns=""
-                xmlns:f="com.qutoric.xq.internal">
-  
-  <xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; // := ! || { }'"/>
-  <xsl:variable name="aOps" select="'or and eq ne lt le gt ge is to div idiv mod union intersect except in return satisfies then else as map'"/>
+                exclude-result-prefixes="loc xs">
+  <xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; // := ! || { } ; ~'"/>
+  <xsl:variable name="aOps" select="'or and eq ne lt le gt ge is to div idiv mod union intersect except in return satisfies then else as map where start previous next when end at'"/>
   <xsl:variable name="hOps" select="'for some every let'"/>
   <xsl:variable name="nodes" select="'attribute comment document-node namespace-node element node processing-instruction text'"/>
-  <xsl:variable name="types" select="'empty-sequence function item node schema-attribute schema-element type'"/>
+  <xsl:variable name="types" select="'empty-sequence function item document node schema-attribute schema-element type'"/>
   
   <xsl:variable name="ambiguousOps" select="tokenize($aOps,'\s+')" as="xs:string*"/>
   <xsl:variable name="simpleOps" select="tokenize($ops,'\s+')" as="xs:string*"/>
@@ -39,27 +37,20 @@
   </xsl:function>
    
   
-  <!-- top-level call - marks up tokens with their type -->
-  <xsl:function name="loc:getTokens">
-    <xsl:param name="chunk" as="xs:string"/>
-    <xsl:param name="omitPairs" as="element()*"/>
-    <xsl:param name="pbPairs" as="element()*"/>
-    <xsl:variable name="tokens" as="element()*"
-                  select="loc:createXqTokens($chunk)"/>
-    
-    <xsl:sequence select="loc:rationalizeTokens($tokens, 1, false(), $pbPairs, false(), false(), ())"/>
-    
-  </xsl:function> 
-  
+  <!-- top-level call - marks up tokens with their type -->  
   <xsl:function name="loc:createXqTokens" as="element()*">
     <xsl:param name="part" as="xs:string"/>
-   
+    <xsl:param name="preceding-is-closed" as="xs:boolean"/>  
     <xsl:if test="string-length($part) gt 0">
-      <xsl:variable name="tokens" as="xs:string*"
+      <xsl:variable name="rawTokens" as="xs:string*"
                     select="loc:rawTokens($part)"/>
       
       <!-- The XSLT that generates the tokens -->
-      <xsl:sequence select="loc:processXqTokens($tokens, 1, 1, ())"/>
+      <xsl:variable name="processedTokens" as="element()*"
+        select="loc:processXqTokens($rawTokens, 1, 1, ())"/>
+      
+      <xsl:sequence select="loc:rationalizeTokens($processedTokens, 1, $preceding-is-closed, false(), false(), ())"/>
+<!--          <span class="test" closed="{string($preceding-is-closed)}"><xsl:value-of select="$part"/></span>-->
     </xsl:if>    
   </xsl:function>
   
@@ -67,7 +58,6 @@
     <xsl:param name="tokens" as="element()*"/>
     <xsl:param name="index" as="xs:integer"/>
     <xsl:param name="prevIsClosed" as="xs:boolean"/>
-    <xsl:param name="pbPairs" as="element()*"/>
     <xsl:param name="typeExpected" as="xs:boolean"/>
     <xsl:param name="quantifierExpected" as="xs:boolean"/>
     <xsl:param name="result" as="element()*"/>
@@ -75,57 +65,110 @@
     <!-- when closed, a probable operator is a QName instead -->
     
     <xsl:variable name="token" select="$tokens[$index]" as="element()?"/>
+    <xsl:variable name="n1Token" select="$tokens[$index + 1]" as="element()?"/>
+    <xsl:variable name="n2Token" select="$tokens[$index + 2]" as="element()?"/>
     <xsl:variable name="isQuantifier" select="$quantifierExpected and $token/@value = ('?','*','+')"/>
     <xsl:variable name="is-wildcard" as="xs:boolean"
                   select="not($isQuantifier) and not($prevIsClosed) and $token/@value eq '*'"/>
     <xsl:variable name="currentIsClosed" as="xs:boolean"
                   select="$is-wildcard or $isQuantifier or not($token/@type) or ($token/@value = (')',']', '}') or ($token/@type = ('literal','numeric','variable', 'context')))"/>
-      
-    <xsl:variable name="result1" as="element()">       
-        <xsl:element name="token">
-          <xsl:attribute name="start" select="$token/@start"/>
-          <xsl:attribute name="end" select="$token/@end"/>
-          <xsl:attribute name="value" select="$token/@value"/>
-          
+    <xsl:variable name="empty-type" as="xs:boolean" select="empty($token/@type)"/>
+    <xsl:variable name="empty-next-type" as="xs:boolean" select="empty($n2Token/@type)"/>
+    <xsl:variable name="next-type" as="xs:string?" select="$n2Token/@type"/>
+    <xsl:variable name="token-value" as="xs:string" select="$token/@value"/>
+    <xsl:variable name="token-type" as="xs:string?" select="if ($token/@type) then $token/@type else ()"/>
+    <xsl:variable name="whitespace-follows" as="xs:boolean" select="if ($n1Token/@type) then $n1Token/@type eq 'whitespace' else false()"/>
+    <xsl:variable name="class">
           <xsl:choose>
-            <xsl:when test="$token/@type = 'probableOp'">
-              <xsl:if test="$prevIsClosed">
-                <xsl:attribute name="type" select="'op'"/>
-              </xsl:if>
+            <xsl:when test="$token-type = 'probableOp'">
+              <xsl:value-of select="if ($prevIsClosed) then 'op' else 'qname'"/>
+            </xsl:when>
+            <xsl:when test="$empty-type and $token-value = ('element','attribute','document','text')
+                            and exists($n2Token) and $whitespace-follows and ($empty-next-type or $n2Token/@value eq '{')">
+              <xsl:value-of select="'axis'"/>
+            </xsl:when>
+            <xsl:when test="($empty-type and $token-value eq '#') or $token-type eq 'pragma'">
+              <xsl:value-of select="'axis'"/>
+            </xsl:when>
+            <!-- discover functions with whitespace separating function-name and '(' char -->
+            <xsl:when test="$empty-type and $whitespace-follows and $n2Token/@value eq '('">
+              <xsl:value-of select="if ($token-value = ('switch','typeswitch','case')) then 'axis' else 'new-fn'"/>
+            </xsl:when>
+            <xsl:when test="$empty-type and $token-value = ('try','ordered','unordered')
+                            and exists($n2Token) 
+                            and ($n1Token/@value eq '{' 
+                              or ($whitespace-follows and $n2Token/@value eq '{'))">
+              <xsl:value-of select="'op'"/>
+            </xsl:when>
+            <!-- for following - assume that missing n2Token means that next token is a 'literal' token -->
+            <xsl:when test="$empty-type and empty($n2Token) and $whitespace-follows and $token-value = ('case','collation') ">
+              <xsl:value-of select="if ($token-value eq 'case') then 'axis' else 'op'"/>
+            </xsl:when>
+            <xsl:when test="$empty-type and $token-value eq 'catch'
+                            and exists($n2Token) and $whitespace-follows and ($empty-next-type or $n2Token/@value eq '*')">
+              <xsl:value-of select="'op'"/>
+            </xsl:when>
+            <!-- note that case for 'where' is exceptional - should not happen but does in incomplete w3c samples -->
+            <xsl:when test="$empty-type and $token-value = ('count','where')
+                            and exists($n2Token) and $whitespace-follows and $next-type eq 'variable'">
+              <xsl:value-of select="'op'"/>
+            </xsl:when>
+            <xsl:when test="$empty-type and $token-value eq 'default'
+                            and exists($n2Token) and $whitespace-follows and $n2Token/@value eq 'return'">
+              <xsl:value-of select="'axis'"/>
+            </xsl:when>
+            <xsl:when test="$empty-type and $token-value eq 'case'">
+              <xsl:value-of select="if (exists($n2Token) and $whitespace-follows 
+                                    and ($empty-next-type 
+                                      or $next-type = ('node','node-type', 'type-name','variable'))) then
+                                    'axis' else 'qname'"/>
+            </xsl:when>
+            <xsl:when test="$empty-type and $token-value = ('ascending','descending')
+                            and exists($n2Token) and $whitespace-follows and $n2Token/@value = ('return','where','count')">
+              <xsl:value-of select="'op'"/>
             </xsl:when>
             <xsl:when test="$is-wildcard">
-              <!--
-                   <xsl:attribute name="type" select="'any'"/>
-              -->
+              <xsl:text>op</xsl:text>
             </xsl:when>
-            <xsl:when test="$token/@type = ('function','if', 'node') or $token/@value = ('(','[')">
-              <xsl:variable name="pair" select="$pbPairs[@start = $token/@end]"/>
+            <xsl:when test="$token-type eq 'function' and $token-value = ('switch(','typeswitch(')">
+              <xsl:value-of select="$token-value"/>
+            </xsl:when>
+            <xsl:when test="$token-type = ('function','if', 'node') or $token/@value = ('(','[')">
               <xsl:choose>
-                <xsl:when test="$typeExpected and $token/@type = ('node', 'function')">
-                  <xsl:attribute name="type" select="'node-type'"/>
+                <xsl:when test="$typeExpected and $token-type = ('node', 'function')">
+                  <xsl:text>node-type</xsl:text>
                 </xsl:when>
                 <xsl:otherwise>
-                  <xsl:attribute name="type" select="$token/@type"/>
+                  <xsl:value-of select="$token-type"/>
                 </xsl:otherwise>
               </xsl:choose>
-              <xsl:if test="not(empty($pair))">
-                <xsl:if test="$pair/@end">
-                  <xsl:attribute name="pair-end" select="$pair/@end"/>
-                </xsl:if>
-                <xsl:attribute name="level" select="$pair/@level"/>
-              </xsl:if>
             </xsl:when>
             <xsl:when test="$typeExpected">
-              <xsl:attribute name="type" select="if ($token/@type) then $token/@type else 'type-name'"/>
+              <xsl:value-of select="if ($token-type) then $token-type else 'type-name'"/>
             </xsl:when>
             <xsl:when test="$isQuantifier">
-              <xsl:attribute name="type" select="'quantifier'"/>
+              <xsl:value-of select="'quantifier'"/>
             </xsl:when>
-            <xsl:when test="$token/@type">
-              <xsl:attribute name="type" select="$token/@type"/>
+            <xsl:when test="$token-type">
+              <xsl:value-of select="$token-type"/>
             </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>qname</xsl:text>
+            </xsl:otherwise>
           </xsl:choose>
-        </xsl:element>
+    </xsl:variable>
+      
+    <xsl:variable name="result1" as="element()+">       
+        <span class="{if ($class = ('typeswitch(','switch(')) then 
+            'axis'
+            else if ($class eq 'new-fn') then 'function'
+            else $class}">
+          <xsl:value-of select="if ($class = ('type', 'node-type','function','typeswitch(', 'switch(')) then
+                                    substring($token-value, 1, string-length($token-value) - 1) else $token-value"/>
+        </span>
+        <xsl:if test="$class = ('type', 'node-type','function','typeswitch(', 'switch(')">
+          <span class="parenthesis">(</span>          
+        </xsl:if>
     </xsl:variable>
       
     <xsl:variable name="ignorable" as="xs:boolean"
@@ -155,9 +198,12 @@
           
           
           <xsl:sequence select="loc:rationalizeTokens($tokens, $index + 1, $isNewClosed,
-                                $pbPairs, $newTypeExpected, $qExpected, ($result, $result1))"/>
+                                $newTypeExpected, $qExpected, ($result, $result1))"/>
         </xsl:when>
         <xsl:otherwise>
+            <xsl:if test="not($isNewClosed)">
+              <span class="open"/>
+            </xsl:if>
             <xsl:sequence select="($result, $result1)"/>
         </xsl:otherwise>
     </xsl:choose>
@@ -193,11 +239,14 @@
           <xsl:otherwise>
             <xsl:variable name="splitToken" as="xs:string*"
                           select="tokenize($token, '[\s\p{Zs}]+')"/>
+            <xsl:variable name="tk1" select="$splitToken[1]"/>
+            <xsl:variable name="tk2" select="$splitToken[2]"/>
+            <xsl:variable name="tkCount" select="count($splitToken)" as="xs:integer"/>
             <xsl:value-of
-                select="if (count($splitToken) ne 2) then false()
-                        else if ($splitToken[1] eq 'instance' and $splitToken[2] eq 'of') 
+                select="if ($tkCount ne 2) then false()
+                        else if ($tk1 eq 'instance' and $tk2 eq 'of') 
                         then true()
-                        else if ($splitToken[1] = ('cast','castable','treat') and $splitToken[2] eq 'as')
+                        else if ($tk1 = ('cast','castable','treat') and $tk2 eq 'as')
                         then true() else false()"/>
             
           </xsl:otherwise>
@@ -219,7 +268,7 @@
                 <xsl:text>if</xsl:text>
               </xsl:when>
               <xsl:when test="some $n in $nodeTests satisfies $n = $fnName">
-                <xsl:text>node</xsl:text>
+                <xsl:text>node-type</xsl:text>
               </xsl:when>
               <xsl:when test="some $x in $typeTests satisfies $x = $fnName">
                 <xsl:text>type</xsl:text>
@@ -241,6 +290,9 @@
         </xsl:when>
         <xsl:when test="ends-with($token, '::') or $token eq '@'">
           <xsl:attribute name="type" select="'axis'"/>
+        </xsl:when>
+        <xsl:when test="matches($token, '#\s+')">
+          <xsl:attribute name="type" select="'pragma'"/>
         </xsl:when>
         <xsl:when test="matches($token,'[\s\p{Zs}]+')">
           <xsl:attribute name="type" select="'whitespace'"/>
@@ -302,7 +354,7 @@
   <xsl:function name="loc:rawTokens" as="xs:string*">
     <xsl:param name="chunk" as="xs:string"/>
     <xsl:analyze-string
-        regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(Q\{{[^\{{\}}]*\}})|(instance[\s\p{{Zs}}]+of)|(cast[\s\p{{Zs}}]+as)|(:=)|(\|\|)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|((\$[\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-]*(:[\p{{L}}\p{{Nd}}\.\-\*]*)?(::)?:?(#\d+)?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
+        regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(Q\{{[^\{{\}}]*\}})|(only(\s)+end)|(instance[\s\p{{Zs}}]+of)|(for(\s)+(tumbling|sliding)(\s)+window)|(cast[\s\p{{Zs}}]+as)|(:=)|(\|\|)|((((stable(\s)+)?order)|group)[\s\p{{Zs}}]+by)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|(([\$#][\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-_]*(:[\p{{L}}\p{{Nd}}\.\-\*_]*)?(::)?:?(#\d+)?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
         select="$chunk">
       <xsl:matching-substring>
         <xsl:value-of select="string(.)"/>

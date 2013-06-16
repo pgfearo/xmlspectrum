@@ -126,6 +126,23 @@ xmlns:css="css-defs.com">
 <c:color name="cyan" value="008080"/>
 <c:color name="green" value="999988"/>
 </c:theme>
+<c:theme name="github-blue">
+<c:color name="base" value="ececec"/>
+<c:color name="base01" value="668B8B"/>
+<c:color name="base03" value="d5dee3"/>
+<c:color name="base0" value="445588"/>
+<c:color name="base1" value="dd1144"/>
+
+<c:color name="yellow" value="1549b1"/>
+<c:color name="orange" value="6876FF"/>
+<c:color name="red" value="DB7093"/>
+<c:color name="magenta" value="333333"/>
+<c:color name="violet" value="990000"/>
+<c:color name="blue" value="445588"/>
+<c:color name="cyan" value="008080"/>
+<c:color name="green" value="804080"/>
+</c:theme>
+
 
 
 

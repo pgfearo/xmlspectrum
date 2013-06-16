@@ -56,11 +56,13 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:loc="com.qutoric.sketchpath.functions"
 xmlns:css="css-defs.com"
-exclude-result-prefixes="loc f xs css"
+xmlns:xqf="urn:xq.internal-function"
+exclude-result-prefixes="loc f xs css xqf"
 xmlns=""
 xmlns:f="internal">
 
 <xsl:import href="xmlspectrum.xsl"/>
+<xsl:import href="xq-spectrum.xsl"/>
 <xsl:import href="make-toc.xsl"/>
 
 <xsl:output indent="no" method="html"/>
@@ -97,7 +99,7 @@ select="'http://www.w3.org/TR/xpath-functions/'"/>
 <xsl:variable name="css-name" select="'theme.css'"/>
 <xsl:variable name="do-output-path"
 select="for $c in f:path-to-uri($output-path) return
-if (ends-with($c, '/'))
+if (ends-with($c, '/') or ends-with($c, '\'))
 then $c
 else concat($c, '/')
 "/>
@@ -162,7 +164,6 @@ else $root-prefix"/>
 
 <xsl:template name="main">
 <xsl:param name="sourceuri" select="$sourcepath"/>
-
 <!-- if windows OS, convert path to URI -->
 <xsl:variable name="corrected-uri" select="replace($sourceuri,'\\','/')"/>
 
@@ -186,6 +187,8 @@ f:doctype-from-xmlns($root-namespace)
 else ''"/>
 
 <xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
+
+<xsl:message select="'output-path: ', $output-path, ' doctype: ', $doctype, ' root-prefix: ', $root-prefix"/>
 
 <xsl:choose>
 <xsl:when test="$is-xsl and $do-link">
@@ -359,7 +362,7 @@ concat(
 
 <xsl:variable name="span" select="$spans[$index]"/>
 
-<xsl:if test="$index mod 500 eq 0">
+<xsl:if test="$index mod 1500 eq 0">
 <xsl:message><xsl:value-of select="'token: ', $index"/></xsl:message>
 </xsl:if>
 
@@ -533,6 +536,7 @@ then $href-1
 else
 concat($href-1,'.', $output-method)"/>
 <xsl:message>writing: <xsl:value-of select="$href"/></xsl:message>
+<xsl:message>file: <xsl:value-of select="$filename"/></xsl:message>
 <xsl:result-document href="{$href}"
 method="{$output-method}" indent="no">
 
@@ -545,6 +549,10 @@ method="{$output-method}" indent="no">
 <title><xsl:value-of select="$file-only"/></title>
 <xsl:if test="$css-inline eq 'no'">
 <link rel="stylesheet" type="text/css" href="{$css-link}"/>
+</xsl:if>
+<xsl:if test="$font-name eq 'scp' and $css-inline eq 'yes'">
+<style>
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);</style>
 </xsl:if>
 </head>
 <body>
@@ -576,17 +584,23 @@ method="{$output-method}" indent="no">
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="indent-size" as="xs:integer"/>
 <xsl:param name="root-prefix" as="xs:string"/>
+<xsl:variable name="is-xml-new" as="xs:boolean" select="if ($is-xml) then
+true()
+else
+if ($doctype = ('xpath', 'xquery', '')) then
+false()
+else true()"/>
 <xsl:variable name="fixed-uri" select="f:path-to-uri($input-uri)"/>
 <xsl:message><xsl:value-of select="'input-uri', $fixed-uri"/></xsl:message>
 <xsl:variable name="file-content" as="xs:string" select="unparsed-text($fixed-uri)"/>
 <xsl:variable name="pre-file-only" select="f:file-from-uri($input-uri)"/>
 <xsl:variable name="file-only" select="if ($pre-file-only ne '') then $pre-file-only else 'xms-output'"/>
 <xsl:choose>
-<xsl:when test="$is-xml and $indent-size lt 0 and not($do-trim)">
+<xsl:when test="$is-xml-new and $indent-size lt 0 and not($do-trim)">
 <!-- for case where XPath is embedded in XML text -->
 <xsl:sequence select="f:render($file-content, $doctype, $root-prefix)"/>
 </xsl:when>
-<xsl:when test="$is-xml">
+<xsl:when test="$is-xml-new">
 <!-- for case where XPath is embedded in XML text and indentation required -->
 <xsl:variable name="spans" select="f:render($file-content, $doctype, $root-prefix)"/>
 <xsl:variable name="real-indent" select="if ($indent-size lt 0) then 0 else $indent-size"
@@ -595,7 +609,9 @@ as="xs:integer"/>
 </xsl:when>
 <xsl:otherwise>
 <!-- for case where XPath is standalone -->
-<xsl:sequence select="loc:showXPath($file-content)"/>
+<!--        <xsl:sequence select="loc:showXPath($file-content)"/>-->
+<xsl:variable name="xptokens" as="element()*" select="xqf:show-xquery($file-content)"/>
+<xsl:sequence select="if ($css-inline ne 'no') then f:style-spans($xptokens) else $xptokens"/>
 </xsl:otherwise>
 </xsl:choose>
 </xsl:template>

@@ -3,6 +3,8 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" 
     xmlns:f="urn:xq.internal-function"
     xmlns:xq="com.qutoric.xq.functions"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xpath-default-namespace="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="f xs xq">
     
     <xsl:output indent="yes"/>
@@ -31,48 +33,7 @@
     <xsl:variable name="xxInitTagEnd" as="xs:integer" select="6"/>
     <xsl:variable name="xxTagEnd" as="xs:integer" select="7"/>
     <xsl:variable name="xxAnyTagEnd" as="xs:integer*" select="6, 7"/>
-    <xsl:variable name="xxCloseTagEnd" as="xs:integer" select="8"/>
-
-    <!-- this 'main' template used only for debug purposes. f:show-xquery is the entry-point function -->
-    <xsl:template name="main" match="/">
-
-<!--        <xsl:variable name="doc-text" as="xs:string" select="unparsed-text(resolve-uri('../samples/devtest.xql'))"/>-->
-<!--        <xsl:variable name="doc-text" as="xs:string" select="unparsed-text(resolve-uri('../samples/xpath-text.txt'))"/>-->
-<!--            <xsl:variable name="doc-text" as="xs:string" select="unparsed-text(resolve-uri('Untitled2.xquery'))"/>-->
-<!--        <xsl:variable name="doc-text" as="xs:string" select="unparsed-text('../samples/xquery/XQueryML30.xq')"/>-->
-            <xsl:variable name="doc-text" as="xs:string" select="unparsed-text('../samples/xquery/search-ui.xqy')"/>
-        <xsl:variable name="text-points" as="xs:integer*" select="string-to-codepoints($doc-text)"/> 
-        <result>
-            <xsl:variable name="blocks" as="element()*">
-                 <xsl:sequence select="f:createXqBlocks($text-points)"/>
-            </xsl:variable>
-<!--            <xsl:for-each select="1 to (count($blocks) - 1)">
-                <xsl:variable name="block" select="$blocks[xs:integer(current())]" as="element()"/>
-                <xsl:variable name="nextBlock" select="$blocks[xs:integer(current() + 1)]" as="element()"/>
-                <xsl:variable name="start" select="($block/@start, $block/@pos)[1]"/>
-                <xsl:variable name="nextStart" select="($nextBlock/@start, $nextBlock/@pos)[1]"/>
-                <xsl:element name="{name($block)}">
-                    <xsl:apply-templates select="$block/@*"></xsl:apply-templates>
-                    <xsl:choose>
-                        <xsl:when test="exists($start) and exists($nextStart)">
-                            <xsl:value-of select="substring($doc-text, $start, $nextStart - $start)"/>                           
-                        </xsl:when>
-                        <xsl:otherwise>
-                             <xsl:value-of select="substring($doc-text, $start)"/>                           
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:element>
-            </xsl:for-each>-->
-            <xsl:sequence select="$blocks"/>
-            <tokens>
-                <xsl:sequence select="f:tokeniseBlocks($doc-text, $blocks)"/>
-            </tokens>
-        </result>
-    </xsl:template>
-    
-    <xsl:template match="@*">
-        <xsl:copy-of select="."/>
-    </xsl:template>
+    <xsl:variable name="xxCloseTagEnd" as="xs:integer" select="8"/>     
     
    <xsl:function name="f:show-xquery">
        <xsl:param name="doc-text" as="xs:string"/>
