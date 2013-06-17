@@ -58,7 +58,8 @@ xmlns:loc="com.qutoric.sketchpath.functions"
 xmlns:css="css-defs.com"
 xmlns:xqf="urn:xq.internal-function"
 exclude-result-prefixes="loc f xs css xqf"
-xmlns=""
+xpath-default-namespace="http://www.w3.org/1999/xhtml"
+xmlns="http://www.w3.org/1999/xhtml"
 xmlns:f="internal">
 
 <xsl:import href="xmlspectrum.xsl"/>
@@ -75,6 +76,7 @@ xmlns:f="internal">
 <xsl:param name="auto-trim" select="'no'"/>
 <xsl:param name="link-names" select="'no'"/>
 <xsl:param name="output-path" select="'output/'"/>
+<xsl:param name="format-mixed-content" select="'no'"/>
 <!-- set value to 'scp' for source-code-pro font -->
 <xsl:param name="font-name" select="'scp'"/>
 <!-- set value to 'xml' or 'xhtml' for use in XProc step -->

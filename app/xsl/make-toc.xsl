@@ -3,7 +3,8 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:loc="com.qutoric.sketchpath.functions"
 exclude-result-prefixes="loc f xs"
-xmlns=""
+xpath-default-namespace="http://www.w3.org/1999/xhtml"
+xmlns="http://www.w3.org/1999/xhtml"
 xmlns:f="internal">
 
 <!-- Creates a table of contents derived from globals result-tree -->
