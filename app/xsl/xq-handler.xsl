@@ -103,7 +103,7 @@
               <xsl:value-of select="'op'"/>
             </xsl:when>
             <!-- for following - assume that missing n2Token means that next token is a 'literal' token -->
-            <xsl:when test="$empty-type and empty($n2Token) and $whitespace-follows and $token-value = ('case','collation') ">
+            <xsl:when test="$empty-type and empty($n2Token) and $whitespace-follows and $token-value = ('case','collation','module') ">
               <xsl:value-of select="if ($token-value eq 'case') then 'axis' else 'op'"/>
             </xsl:when>
             <xsl:when test="$empty-type and $token-value eq 'catch'
@@ -360,7 +360,7 @@
   <xsl:function name="loc:rawTokens" as="xs:string*">
     <xsl:param name="chunk" as="xs:string"/>
     <xsl:analyze-string
-        regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(Q\{{[^\{{\}}]*\}})|(only(\s)+end)|(declare(\s)+(default(\s)+)?(function|variable|namespace|element)((\s)+namespace)?)|(declare(\s)+context(\s)+item(\s)+as)|(instance[\s\p{{Zs}}]+of)|(allowing(\s)+empty(\s)+(in|at))|(for(\s)+(tumbling|sliding)(\s)+window)|(cast[\s\p{{Zs}}]+as)|(:=)|(\|\|)|((((stable(\s)+)?order)|group)[\s\p{{Zs}}]+by)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|(([\$#][\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-_]*(:[\p{{L}}\p{{Nd}}\.\-\*_]*)?(::)?:?(#\d+)?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
+        regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(Q\{{[^\{{\}}]*\}})|(only(\s)+end)|((declare|define)(\s)+(default(\s)+)?(function|variable|namespace|element)((\s)+namespace)?)|(declare(\s)+context(\s)+item(\s)+as)|(instance[\s\p{{Zs}}]+of)|(allowing(\s)+empty(\s)+(in|at))|(for(\s)+(tumbling|sliding)(\s)+window)|(cast[\s\p{{Zs}}]+as)|(:=)|(\|\|)|((((stable(\s)+)?order)|group)[\s\p{{Zs}}]+by)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|(([\$#][\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-_]*(:[\p{{L}}\p{{Nd}}\.\-\*_]*)?(::)?:?(#\d+)?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
         select="$chunk">
       <xsl:matching-substring>
         <xsl:value-of select="string(.)"/>
