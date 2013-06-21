@@ -85,7 +85,7 @@
               <!-- precedes-variable check should not be required, but some code samples may be incomplete -->
               <xsl:value-of select="if ($prevIsClosed or $precedes-variable) then 'op' else 'qname'"/>
             </xsl:when>
-            <xsl:when test="$empty-type and $token-value = ('element','attribute','document','text')
+            <xsl:when test="$empty-type and $token-value = ('element','attribute','document','text','namespace')
                             and exists($n2Token) and $whitespace-follows and ($empty-next-type or $n2Token/@value eq '{')">
               <xsl:value-of select="'axis'"/>
             </xsl:when>
@@ -155,7 +155,11 @@
               <xsl:value-of select="$token-type"/>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:text>qname</xsl:text>
+              <xsl:sequence select="if ($empty-type  and exists($n2Token) and $whitespace-follows and $empty-next-type) then
+                                    'op' 
+                                    else if ($empty-type and $token-value eq 'external' and ($n1Token/@value = (';',':=') or $whitespace-follows and $n2Token/@value = (';',':='))) then 'op'
+                                    else if ($empty-type and $token-value eq 'function' and  $whitespace-follows and $next-type eq 'function') then 'op'
+                                    else 'qname'"/>
             </xsl:otherwise>
           </xsl:choose>
     </xsl:variable>
@@ -356,7 +360,7 @@
   <xsl:function name="loc:rawTokens" as="xs:string*">
     <xsl:param name="chunk" as="xs:string"/>
     <xsl:analyze-string
-        regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(Q\{{[^\{{\}}]*\}})|(only(\s)+end)|(instance[\s\p{{Zs}}]+of)|(for(\s)+(tumbling|sliding)(\s)+window)|(cast[\s\p{{Zs}}]+as)|(:=)|(\|\|)|((((stable(\s)+)?order)|group)[\s\p{{Zs}}]+by)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|(([\$#][\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-_]*(:[\p{{L}}\p{{Nd}}\.\-\*_]*)?(::)?:?(#\d+)?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
+        regex="(((-)?\d+)(\.)?(\d+([eE][\+\-]?)?\d*)?)|(\?)|(Q\{{[^\{{\}}]*\}})|(only(\s)+end)|(declare(\s)+(default(\s)+)?(function|variable|namespace|element)((\s)+namespace)?)|(declare(\s)+context(\s)+item(\s)+as)|(instance[\s\p{{Zs}}]+of)|(allowing(\s)+empty(\s)+(in|at))|(for(\s)+(tumbling|sliding)(\s)+window)|(cast[\s\p{{Zs}}]+as)|(:=)|(\|\|)|((((stable(\s)+)?order)|group)[\s\p{{Zs}}]+by)|(castable[\s\p{{Zs}}]+as)|(treat[\s\p{{Zs}}]+as)|(([\$#][\s\p{{Zs}}]*)?[\i\*][\p{{L}}\p{{Nd}}\.\-_]*(:[\p{{L}}\p{{Nd}}\.\-\*_]*)?(::)?:?(#\d+)?)(\()?|(\.\.)|((-)?\d?\.\d*)|-|([&lt;&gt;!]=)|(&gt;&gt;|&lt;&lt;)|(//)|([\s\p{{Zs}}]+)|(\C)"
         select="$chunk">
       <xsl:matching-substring>
         <xsl:value-of select="string(.)"/>
