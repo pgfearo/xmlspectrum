@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+	<!-- Basic Page Needs
+ ==================================================-->
+<meta charset="utf-8" />
+<title>XMLSpectrum-FX</title>
+<meta name="description" content="" />
+<meta name="author" content="" />
+
+<!-- Mobile Specific Metas
+ ==================================================-->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<!-- CSS
+ ==================================================-->
+<link rel="stylesheet" href="stylesheets/base.css" />
+<link rel="stylesheet" href="stylesheets/skeleton.css" />
+<link rel="stylesheet" href="stylesheets/layout.css" />
+
+	<!-- Favicons
+	==================================================-->
+<link rel="shortcut icon" href="images/favicon.ico" />
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png" />
+
+</head>
+<body>
+
+
+
+<!-- Primary Page Layout
+	==================================================-->
+
+<!-- Delete everything in this .container and get started on your own site! -->
+<div class="container">
+<div class="five columns">
+<h3 class="remove-bottom" style="margin-top: 40px">XMLSpectrum -FX</h3>
+<h5>Syntax-highlighting and formatting for XML-related standards.</h5>
+<p style="font-size:x-small">Version 0.4 from: <a href="http://qutoric.com">Phil Fearon</a></p>
+</div>
+<div class="five columns">
+<ul style="padding-top:50px">
+<li>- XSLT 2.0</li>
+<li>- XPath 2.0</li>
+<li>- XQuery 1.0</li>
+<li>- XML Schema 1.1</li>
+<li>- XProc... and more</li>
+</ul>
+</div>
+<div class="six columns">
+<div>
+<img src="images/micro-xms.png"></img>
+</div>
+
+</div>
+<hr />
+</div>
+
+<div class="container">
+<div class="one-third column">
+<h3>Introduction</h3>
+<p>XMLSpectrum-FX is a simple graphical front-end for controlling an XSLT transform that converts XPath and related languages to a form rendered in HTML. The application is coded in Java-FX 2.2</p>
+<p><em>The Saxon-HE XSLT 2.0 processor from <a href="http://www.saxonica.com" title="Saxonica">Saxonica</a> is discributed with this application.</em></p>
+<h4>Getting Started</h4>
+<h5>Installation</h5>
+<p>Download the <em>xmlspectrum-fx.zip</em> file, expand it and then copy it to your chosen install path.</p>
+<p>From the command-line run <code>java -version </code> to check that you have the latest version of Java installed on your machine - this should be at least Java 1.7.0_07-b11.</p>
+<h5>Launch</h5>
+<p>Using the command shell of your OS, navigate to the install path and run XMLSpectrum-FX with the following:</p>
+<p>
+<code><pre style="font-family:monospace;">java -jar XMLSpectrum-FX.jar</pre></code>
+
+</p>
+<p>Once launched, you will see the main XMLSpectrum-FX window. This comprises an embedded browser (Webkit) with a vertical control panel to the right of it. Above the browser you will find a text-box; enter the URL or path of a source file here, alternatively, drag-and-drop a local file from your file manager to this location.</p>
+<p>With the text-box populated with a valid URL or file-path, press the adjacent <em>Run</em> button. You should now see the source code rendered in the browser view in colorised form and formatted in accordance with the parameter settings in the control panel.</p>
+<h5>Using XMLSpectrum-FX</h5>
+<p>This product's main use is as a product demonstrator and graphical test-harness for the XMLSpectrum XSLT stylesheets which are really optimised for server-side document-processing. However, it may also prove useful as an ad-hoc tool for preparing XPath/XSLT code snippets ready for publishing on the web.</p>
+<h5>Asynchronous Processing</h5>
+<p>Large files or projects may take a while to process; to ensure UI responsiveness, all transforms are performed on a separate thread. The XMLSpectrum status bar below the HTML view is updated continusouly to show the progress of a transform </p>
+</div>
+<div class="one-third column">
+<h3>Settings</h3>
+<p>Settings for syntax-coloring and formatting are managed from the 2 vertical panels surrounding the browser view. The following settings are available:</p>
+<ul class="square">
+<li><strong>Source</strong> Choose whether to use existing a path to an existing file or copy and paste text from an editor.</li>
+<li><strong>Font</strong> Switch between Source Code Pro and the default monospaced font.</li>
+
+<li><strong>Color Theme</strong> Select from a range of pre-defined color themes.</li>
+<li><strong>Language</strong> For XML-based code snippets or fragments where no XML namespace is available, select the language of the source code as a hint to ensure it is rendered properly.</li>
+<li><strong>XSLT Project</strong> For modular XSLT projects: The processor traverses all imported files, creating hyperlinked content for public members and presents a Table of Contents for all files in the project.</li>
+<li><strong>Auto-Trim</strong> Removes leading spaces from XML to allow correction of the formatting. Leading spaces are trimmed, not removed entirely, to ensure text indentation is still maintained, but in a way that is consistent with the XML formatting.</li>
+<li><strong>Indent</strong> Set the number of characters to indent for each level of XML nesting.</li>
+<li><strong>Force NewLines</strong> Switch this on if the source XML has no existing linefeeds between elements. Linefeeds are inserted except where mixed-content is detected.</li>
+<li><strong>Documentation</strong> Select links to the documentation (this file) and bundled sample code for rendering in the browser.</li>
+</ul>
+<h3>Support</h3>
+<p>Please contact <a href="mailto:support@qutoric.com">support@qutoric.com</a> with any issues, queries or feature requests, I will do my best to give a timely reply but please bear in mind that this is a 'spare-time' project so there may be other priorities.</p>
+<h3>About</h3>
+<p>This product was developed by Phil Fearon, it is free and requires no registration. The XMLSpectrum XSLT included is open source and available on GitHub for download. The Java-FX source code will be made available on request, but the emphasis is on the XSLT, not the GUI.</p>
+<p>Also maintained by Phil Fearon: XMLQuire, an XML/XSLT editor for windows, PathEnq an online XPath 2.0 editor using Saxon-CE.</p>
+</div>
+<div class="one-third column">
+<h3>Download Here</h3>
+<p><a href="http://qutoric.com/xmlspectrum/xmlspectrum-fx.zip">xmlspectrum-fx.zip</a> </p>
+<p>XMLQuire-WE is free of cost, there's no registration.</p>
+<h4>Dependencies</h4>
+<p>This product is designed to be platform independent and requires Java 1.7 or later. There is a dependency also on a Saxon XSLT processor - Saxon-HE is included with the product distribution.</p>
+<h4>Latest Changes</h4>
+<ul class="square">
+<li>Asynchronous processing</li>
+<li>Continuously updated transform messages</li>
+<li>Support for multi-file XSLT projects</li>
+</ul>
+<h3>License</h3>
+<p>XMLSpectrum-FX is distributed under the Apache 2.0 license. By using this software you agree to license conditions included in the notices directory of the distribution for this product and other third-party libraries.</p>
+<p><b>You may:</b></p>
+<ul>
+<li>Use this software on any number of machines</li>
+<li>Redistribute free copies of this software</li>
+</ul>
+<p><b>You may not:</b></p>
+<ul>
+<li>Modify, translate, reverse engineer, decompile, disassemble
+(except to the extent applicable laws specifically prohibit such restriction), this application</li>
+<li>Create derivative works based on this software</li>
+<li>Rent, lease, transfer or otherwise transfer rights to the Software</li>  
+<li>Remove any proprietary notices or labels on the Software. </li>
+</ul>
+<h3>Disclaimer</h3>
+<p>THE DEVELOPER OF THIS SOFTWARE IS NOT RESPONSIBLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHARACTER INCLUDING, WITHOUT LIMITATION, 
+DAMAGES FOR LOSS OF GOODWILL, WORK STOPPAGE, COMPUTER FAILURE OR MALFUNCTION, OR ANY AND ALL OTHER COMMERCIAL DAMAGES OR LOSSES.</p>
+</div>
+
+</div><!-- container -->
+
+
+</body>
+</html>
+

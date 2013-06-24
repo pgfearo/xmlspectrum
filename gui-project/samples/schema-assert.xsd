@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- reproduced from Mukul Gandhi blog at:
+     http://mukulgandhi.blogspot.co.uk/2010/03/playing-again-with-xsd-11-assertions.html
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+   <xs:complexType name="Product">
+     <xs:sequence>
+       <xs:element name="shortName">
+         <xs:simpleType>
+           <xs:restriction base="xs:string">
+             <xs:maxLength value="20"/>
+           </xs:restriction>
+         </xs:simpleType>
+       </xs:element>
+       <xs:element name="description" type="xs:string"/>
+       <xs:element name="author" type="xs:string"/>
+       <xs:element name="price">
+         <xs:complexType>
+           <xs:sequence>
+             <xs:element name="value" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:double">
+                      <xs:attribute name="effective" type="xs:date" use="required"/>
+                      <xs:attribute name="freeware" type="xs:boolean"/>
+                      <xs:attribute name="format" use="required">
+                        <xs:simpleType>
+                          <xs:restriction base="xs:string">
+                            <xs:enumeration value="hard cover"/>
+                            <xs:enumeration value="pdf"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:attribute>
+                      <xs:assert test="@effective lt current-date()" />
+                      <xs:assert test="if (@freeware eq true()) then (@format eq 'pdf' and . eq 0)
+                                       else true()" />                    
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+             </xs:element>
+           </xs:sequence>
+           <xs:assert test="every $vl in value[position() lt last()] satisfies
+                            ($vl gt $vl/following-sibling::value[1]) and 
+                            ($vl/@effective lt $vl/following-sibling::value[1]/@effective)" />
+         </xs:complexType>
+       </xs:element>
+     </xs:sequence>
+     <xs:attribute name="ID" type="xs:positiveInteger" use="required"/>
+   </xs:complexType>
+   
+   <xs:element name="product" type="Product"/>
+
+</xs:schema>
