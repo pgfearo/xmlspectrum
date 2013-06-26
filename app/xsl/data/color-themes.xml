@@ -142,33 +142,60 @@ xmlns:css="css-defs.com">
 <c:color name="cyan" value="008080"/>
 <c:color name="green" value="804080"/>
 </c:theme>
+<c:theme name="pg-light">
+<c:color name="base" value="FFFFFF"/>
+<c:color name="base01" value="006C51"/>
+<c:color name="base03" value="FFFFFF"/>
+<c:color name="base0" value="00685A"/>
+<c:color name="base1" value="1049a9"/>
 
-
+<c:color name="yellow" value="534ed9"/>
+<c:color name="orange" value="EC0033"/>
+<c:color name="red" value="a66b00"/>
+<c:color name="magenta" value="7608aa"/>
+<c:color name="violet" value="4c036e"/>
+<c:color name="blue" value="052c6e"/>
+<c:color name="cyan" value="920031"/>
+<c:color name="green" value="8a8a8a"/>
+</c:theme>
 
 
 <c:color-map name="main">
+<!-- highlighted background -->
 <c:color name="base" property="background-color">ww</c:color>
+<!-- xml 'punctuation' marks tag start/end attribute = char etc -->
 <c:color name="base01">base01 eq-equ z sc scx ec es ez atneq
 </c:color>
+<!-- the normal background -->
 <c:color name="base03" property="background-color">
 base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)  
 </c:color>
+<!-- xml text and cdata text -->
 <c:color name="base0">base0 txt cd</c:color>
+<!-- xpath literal text -->
 <c:color name="base1">base1 literal</c:color>
+<!-- xpath operators -->
 <c:color name="yellow">yellow op type-op if higher step whitespace quantifier
 </c:color>
+<!-- functions -->
 <c:color name="orange">orange function
 </c:color>
+<!-- declared fn and template names -->
 <c:color name="red">red fname tname
 </c:color>
+<!-- variable names -->
 <c:color name="magenta">magenta vname variable external
 </c:color>
+<!-- qnames -->
 <c:color name="violet">violet qname type-name unclosed en cl href tcall
 </c:color>
+<!-- parenthesis and highlighted element names -->
 <c:color name="blue">blue enxsl clxsl enx filter parenthesis node
 </c:color>
+<!-- attribute names + axis -->
 <c:color name="cyan">cyan atn numeric pi dt axis context bracedq
 </c:color>
+<!-- xml and xpath comments -->
 <c:color name="green">green cm comment av type node-type
 </c:color>
 </c:color-map>

@@ -38,7 +38,11 @@ public class HTMLRender {
         
         proc = new Processor(false);
         XsltCompiler comp = proc.newXsltCompiler();
-        exp = comp.compile(new StreamSource(new File("../app/xsl/highlight-file.xsl")));
+        File file = new File("../app/xsl/highlight-file.xsl");
+        if (!file.exists()){
+            file = new File("xslt/highlight-file.xsl");
+        }
+        exp = comp.compile(new StreamSource(file));
         trans = exp.load();
     }
     

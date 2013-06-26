@@ -477,10 +477,16 @@ public class WebViewBrowser extends Application {
             RadioButton crb4 = new RadioButton("Tomorrow-Night");
             crb4.setUserData("tomorrow-night");
             crb4.setToggleGroup(colorGroup);
+            
+            RadioButton crb7 = new RadioButton("PG-Light");
+            crb7.setUserData("pg-light");
+            crb7.setToggleGroup(colorGroup);
+            
             vbox.getChildren().add(crb1);
             vbox.getChildren().add(crb2);
             vbox.getChildren().add(crb5);
             vbox.getChildren().add(crb6);
+            vbox.getChildren().add(crb7);
             vbox.getChildren().add(crb3);
             vbox.getChildren().add(crb4);
             vbox.getChildren().add(new Separator());
