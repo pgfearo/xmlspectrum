@@ -95,6 +95,9 @@ select="if ($toggle-color) then not($init-color) else $init-color"/>
 <xsl:when test="$document-type = ('deltaxml','mergexml') and empty($pType)">
 <xsl:value-of select="if ($color-state) then 'orange' else 'magenta'"/>
 </xsl:when>
+<xsl:when test="$document-type = ('dita') and empty($pType)">
+<xsl:value-of select="if ($pValue eq  'new') then 'yellow' else if ($pValue eq 'unchanged') then 'red' else 'magenta'"/>
+</xsl:when>
 <xsl:when test="exists($pType)">
 <xsl:value-of select="if ($pType eq 'literal' and
 matches($pValue ,'select[\s\p{Zs}]*=[\s\p{Zs}]*[&quot;&apos;&apos;]'))
