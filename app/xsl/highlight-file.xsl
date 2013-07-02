@@ -451,17 +451,35 @@ else (f:min-common-item($common-path, $current-file))"/>
 <xsl:function name="f:get-all-files" as="xs:string*">
 <xsl:param name="new-uri" as="xs:string*"/>
 <xsl:param name="uri-list" as="xs:string*"/>
+<xsl:variable name="uri-parts" as="xs:string*" select="tokenize($new-uri[1],'/|\\')"/>
+<xsl:variable name="first-uri" as="xs:string*" 
+select="string-join(
+(subsequence($uri-parts, 1, count($uri-parts) - 1),'')
+,'/')
+"/>
+<xsl:sequence select="f:get-all-files($first-uri, $new-uri, $uri-list)"/>
+
+</xsl:function>
+
+<xsl:function name="f:get-all-files" as="xs:string*">
+<xsl:param name="first-uri" as="xs:string"/>
+<xsl:param name="new-uri" as="xs:string*"/>
+<xsl:param name="uri-list" as="xs:string*"/>
 
 <xsl:variable name="add-uri" as="xs:string*"
 select="for $file in $new-uri return
-if ($file = ($uri-list)) then () else $file"/>
+if ($file = ($uri-list)) then () else f:fix-uri($first-uri, $file)"/>
 
 <xsl:variable name="new-externals" as="xs:string*">
 <xsl:for-each select="$add-uri">
+<xsl:message select="'uri----------------',."/>
+<xsl:variable name="has-protocol" as="xs:boolean" select="contains(.,':')"/>
+<xsl:if test="($has-protocol and not(contains(.,'plugin:'))) or not($has-protocol)">
 <xsl:variable name="doc" select="doc(.)"/>
 <xsl:for-each select="$doc/*/xsl:import/@href|$doc/*/xsl:include/@href">
 <xsl:value-of select="resolve-uri(., base-uri($doc))"/>
 </xsl:for-each>
+</xsl:if>
 </xsl:for-each>
 </xsl:variable>
 
@@ -469,13 +487,21 @@ if ($file = ($uri-list)) then () else $file"/>
 
 <xsl:choose>
 <xsl:when test="exists($new-externals)">
-<xsl:sequence select="f:get-all-files($new-externals, $concat-sequence)"/>
+<xsl:sequence select="f:get-all-files($first-uri, $new-externals, $concat-sequence)"/>
 </xsl:when>
 <xsl:otherwise>
 <xsl:sequence select="$concat-sequence"/>
 </xsl:otherwise>
 </xsl:choose>
 
+</xsl:function>
+
+<xsl:function name="f:fix-uri" as="xs:string">
+<xsl:param name="first-uri" as="xs:string"/>
+<xsl:param name="uri"/>
+<xsl:sequence select="if(contains($uri, 'plugin:'))
+then concat($first-uri, substring-after($uri, '/'))
+else $uri"/>
 </xsl:function>
 
 <!--
