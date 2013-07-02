@@ -99,6 +99,18 @@ xmlns:f="internal">
 </ul>
 </li>
 </xsl:if>
+<xsl:if test="exists(params/item)">
+<li>
+<span class="vname">Parameters</span>
+<ul>
+<xsl:apply-templates select="params/item" mode="toc">
+<xsl:sort select="f:resolve-clark-name(.)"/>
+<xsl:with-param name="path" select="@path"/>
+</xsl:apply-templates>
+</ul>
+</li>
+</xsl:if>
+
 <xsl:if test="not(exists(*/item))">
 <li><span>[None]</span></li>
 </xsl:if>

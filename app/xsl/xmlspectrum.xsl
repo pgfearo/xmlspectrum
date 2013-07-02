@@ -630,10 +630,12 @@ select="f:get-av-class($is-xsl-element, $doctype, $is-xsd,
 <xsl:param name="elementName"/>
 <xsl:param name="att-name"/>
 <xsl:param name="root-prefix"/>
+<xsl:variable name="vp-name" as="xs:string*" select="f:prefixed-name($root-prefix, ('variable', 'param'))"/>
+<xsl:variable name="p-name" as="xs:string" select="$vp-name[2]"/>
 <xsl:value-of
 select="if ($is-xsl-element) then
-if ($elementName = f:prefixed-name($root-prefix, ('variable', 'param'))
-    and $att-name eq 'name') then 'vname'
+if ($elementName = $vp-name
+    and $att-name eq 'name') then if ($elementName eq $p-name) then 'pname' else 'vname'
 else if ($elementName = f:prefixed-name($root-prefix, ('import', 'include'))
     and $att-name eq 'href') then 'href'
 else if ($elementName = f:prefixed-name($root-prefix, ('call-template'))

@@ -159,7 +159,7 @@ else ." as="xs:string"/>
 <xsl:variable name="id" select="f:gen-id(@class, $clark-name)"/>
 
 <xsl:choose>
-<xsl:when test="@class = ('fname', 'tname', 'vname')">
+<xsl:when test="@class = ('fname', 'tname', 'vname','pname')">
 <xsl:copy>
 <xsl:copy-of select="@*"/>
 <xsl:attribute name="id" select="$id"/>
@@ -447,9 +447,9 @@ select="if ($prevClass = ('en','enxsl'))
     then 0
 else if ($class eq 'atn' and $multi-line)
     then $lineOffset 
-else if ($prevClass eq 'atneq' or $class = ('atneq','atn','vname','av')
-    or ($class eq 'z' and $nextClass = ('atneq','atn','vname','av'))
-or ($class eq 'z' and $prevClass = ('vname','av')))
+else if ($prevClass eq 'atneq' or $class = ('atneq','atn','vname','av','pname')
+    or ($class eq 'z' and $nextClass = ('atneq','atn','vname','av','pname'))
+or ($class eq 'z' and $prevClass = ('vname','av','pname')))
     then $av-offset + $lineOffset
 else $av-offset"/>
 

@@ -178,7 +178,7 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 <c:color name="yellow">yellow op type-op if higher step whitespace quantifier
 </c:color>
 <!-- functions -->
-<c:color name="orange">orange function
+<c:color name="orange">orange function pname
 </c:color>
 <!-- declared fn and template names -->
 <c:color name="red">red fname tname

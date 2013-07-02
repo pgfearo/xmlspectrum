@@ -502,8 +502,11 @@ sample globals elements:
 <xsl:apply-templates select="$doc/*/xsl:function" mode="globals"/>
 </functions>
 <variables>
-<xsl:apply-templates select="$doc/*/(xsl:variable|xsl:param)" mode="globals"/>
+<xsl:apply-templates select="$doc/*/(xsl:variable)" mode="globals"/>
 </variables>
+<params>
+<xsl:apply-templates select="$doc/*/(xsl:param)" mode="globals"/>
+</params>
 
 </xsl:function>
 
