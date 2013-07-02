@@ -472,7 +472,6 @@ if ($file = ($uri-list)) then () else f:fix-uri($first-uri, $file)"/>
 
 <xsl:variable name="new-externals" as="xs:string*">
 <xsl:for-each select="$add-uri">
-<xsl:message select="'uri----------------',."/>
 <xsl:variable name="has-protocol" as="xs:boolean" select="contains(.,':')"/>
 <xsl:if test="($has-protocol and not(contains(.,'plugin:'))) or not($has-protocol)">
 <xsl:variable name="doc" select="doc(.)"/>

@@ -182,16 +182,19 @@ and (ends-with(., 'stylesheet')
 
 <xsl:variable name="global-refs" as="element()*"
 select="if (@class eq 'variable') then
-    $globals/file/variables
+    $globals/file/(variables|params)
 else if (@class eq 'tcall') then
     $globals/file/templates
 else if (@class eq 'function') then
     $globals/file/functions
 else ()"/>
+<xsl:variable name="found-item" as="element()?" select="($global-refs/item[string(.) eq $clark-name])[1]"/>
+<xsl:variable name="item-is-param" as="xs:boolean" select="exists($found-item/parent::params)"/>
 <xsl:variable name="resolved-ref" as="xs:string?"
-select="if (exists($global-refs)) then
-    ($global-refs/item[string(.) eq $clark-name])[1]/../parent::file/@path
-else ()"/>
+select="$found-item/../parent::file/@path"/>
+<xsl:variable name="href-id" select="if (@class eq 'variable' and $item-is-param)
+then concat('p', substring($id, 2))
+else $id"/>
 
 <xsl:variable name="href" as="xs:string?"
 select="if (@class eq 'href') then
@@ -202,7 +205,7 @@ else if (exists($resolved-ref)) then
     concat(
     $path-length,
     $resolved-ref,
-    '.html', '#', $id)
+    '.html', '#', $href-id)
 else ()"/>
 <xsl:choose>
 <xsl:when test="exists($href)">
