@@ -21,6 +21,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -51,31 +53,33 @@ public class HTMLRender {
     private XsltTransformer trans = null;
     
     public static String getFileContent(String path){
-        FileInputStream stream;
+        FileInputStream stream = null;
+        String result = "";
         try {
             File f = new File(path.substring(8));
             System.out.println("exists: " + f.exists());
             stream = new FileInputStream(f);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(HTMLRender.class.getName()).log(Level.SEVERE, null, ex);
-            return "";
         }
         try {
           FileChannel fc = stream.getChannel();
           MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
           /* Instead of using default, pass in a decoder. */
-          return Charset.defaultCharset().decode(bb).toString();
+          result = Charset.defaultCharset().decode(bb).toString();
         }
         catch (IOException ex) {
             Logger.getLogger(HTMLRender.class.getName()).log(Level.SEVERE, null, ex);
-            return "";
         } 
         finally {
             try {
-                stream.close();
+                if (stream != null){
+                    stream.close();
+                }
             } catch (IOException ex) {
                 Logger.getLogger(HTMLRender.class.getName()).log(Level.SEVERE, null, ex);
             }
+            return result;
         }
     }
        

@@ -61,6 +61,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
@@ -289,7 +291,19 @@ public class WebViewBrowser extends Application {
                                 if (pfx.equals("[")){
                                     statusField.appendText(outPath + "\n");
                                 }else {
-                                    eng.load("file:///" + outPath);
+                                    String fullHTMLString = "";
+                                    try {
+                                    final Clipboard clipboard = Clipboard.getSystemClipboard();
+                                    final ClipboardContent content = new ClipboardContent();
+                                    fullHTMLString = HTMLRender.getFileContent("file:///" + outPath);
+                                    int start = fullHTMLString.indexOf("<pre");
+                                    int end = fullHTMLString.lastIndexOf("</pre>") + 6;
+                                    String preString = fullHTMLString.substring(start, end);
+                                    content.putString(preString);
+                                    clipboard.setContent(content);
+                                    } catch (Exception e){}
+                                    eng.loadContent(fullHTMLString);
+                                    //eng.load("file:///" + outPath);
                                 }
                         }
                     }

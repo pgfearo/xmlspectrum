@@ -189,7 +189,7 @@ f:doctype-from-xmlns($root-namespace)
 else ''"/>
 
 <xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
-
+<xsl:message select="'auto-trim: ', $auto-trim, ' indent: ', $indent"/>
 <xsl:message select="'output-path: ', $output-path, ' doctype: ', $doctype, ' root-prefix: ', $root-prefix"/>
 
 <xsl:choose>
@@ -594,7 +594,10 @@ method="{$output-method}" indent="no">
 <!-- Call to imported functions returns sequence of span elements
      with class attribute values used to colorise with CSS
 -->
-<xsl:sequence select="$result-spans"/>
+<xsl:sequence select="if ($css-inline eq 'yes') then
+f:add-nbsp($result-spans)
+else $result-spans"/>
+
 </pre>
 </div>
 </body>

@@ -513,9 +513,6 @@ else $span-text-1"/>
 
 -->
 
-
-
-
 <output>
 <span>
 <xsl:copy-of select="$span/@*"/>
@@ -545,6 +542,24 @@ else
 
 </output>
 
+</xsl:function>
+
+<xsl:function name="f:add-nbsp">
+<xsl:param name="spans" as="element()*"/>
+<xsl:for-each select="$spans">
+<xsl:copy>
+<xsl:copy-of select="@*"/>
+<xsl:variable name="f-nl" select="replace(.,'\n', '&#160;&#10;')"/>
+<xsl:value-of select="replace($f-nl, ' ', '&#160;')"/>
+</xsl:copy>
+</xsl:for-each>
+</xsl:function>
+
+<!-- add nbsp for wordpress etc -->
+<xsl:function name="f:space-fix" as="xs:string">
+<xsl:param name="text"/>
+<xsl:variable name="f-nl" select="replace($text,'\n', '&#160;&#10;')"/>
+<xsl:sequence select="replace($f-nl, ' ', '&#160;')"/>
 </xsl:function>
 
 <xsl:function name="f:autotrim">
