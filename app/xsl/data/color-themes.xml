@@ -204,7 +204,7 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 p.spectrum, pre.spectrum {
 <css:main>
     margin:0px;
-    font-family:<css:font scp="'Source Code Pro', "/>monospace;
+    font-family:<css:font scp="'Source Code Pro', "/>Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
     <css:font scp="font-size: 0.8em;"/>
     white-space: pre-wrap;
     display: block;
@@ -218,7 +218,7 @@ p.spectrum, pre.spectrum {
 
 div.spectrum-toc {
 <css:toc>
-    font-family:<css:font scp="'Source Code Pro', "/>monospace;
+    font-family:<css:font scp="'Source Code Pro', "/>Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
     <css:font scp="font-size: 0.8em;"/>
     display: block;
     border: none thin;
