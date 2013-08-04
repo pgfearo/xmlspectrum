@@ -295,10 +295,12 @@ public class WebViewBrowser extends Application {
                                     try {
                                     final Clipboard clipboard = Clipboard.getSystemClipboard();
                                     final ClipboardContent content = new ClipboardContent();
-                                    fullHTMLString = HTMLRender.getFileContent("file:///" + outPath);
-                                    int start = fullHTMLString.indexOf("<pre");
+                                    // br fix required because html output-method seems to be affected by xhtml namespace
+                                    fullHTMLString = HTMLRender.getFileContent("file:///" + outPath).replace("<br></br>", "<br />");                                    
+                                    int start = fullHTMLString.indexOf("style=") + 7;
                                     int end = fullHTMLString.lastIndexOf("</pre>") + 6;
-                                    String preString = fullHTMLString.substring(start, end);
+                                    String divString = "<pre style=\"white-space: nowrap; ";
+                                    String preString = divString + fullHTMLString.substring(start, end);
                                     content.putString(preString);
                                     clipboard.setContent(content);
                                     } catch (Exception e){}

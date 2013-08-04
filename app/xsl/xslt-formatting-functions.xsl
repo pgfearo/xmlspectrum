@@ -4,7 +4,7 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:loc="com.qutoric.sketchpath.functions"
 xmlns:css="css-defs.com"
 xmlns:dt="http://qutoric.com.xmlspectrum.document-types"
-exclude-result-prefixes="loc f xs css c"
+exclude-result-prefixes="loc f xs css c dt"
 xmlns:c="http://xmlspectrum.colors.org"
 xmlns="http://www.w3.org/1999/xhtml"
 xpath-default-namespace="http://www.w3.org/1999/xhtml"
@@ -544,13 +544,31 @@ else
 
 </xsl:function>
 
+<!-- add nbsp for wordpress etc -->
 <xsl:function name="f:add-nbsp">
 <xsl:param name="spans" as="element()*"/>
 <xsl:for-each select="$spans">
 <xsl:copy>
 <xsl:copy-of select="@*"/>
+<!--
 <xsl:variable name="f-nl" select="replace(.,'\n', '&#160;&#10;')"/>
 <xsl:value-of select="replace($f-nl, ' ', '&#160;')"/>
+-->
+<xsl:analyze-string select="." regex="\s">
+<xsl:matching-substring>
+<xsl:choose>
+<xsl:when test=". eq '&#10;'">
+<br/>
+</xsl:when>
+<xsl:otherwise>
+<xsl:value-of select="'&#160;'"/>
+</xsl:otherwise>
+</xsl:choose>
+</xsl:matching-substring>
+<xsl:non-matching-substring>
+<xsl:value-of select="."/>
+</xsl:non-matching-substring>
+</xsl:analyze-string>
 </xsl:copy>
 </xsl:for-each>
 </xsl:function>

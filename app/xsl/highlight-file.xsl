@@ -169,7 +169,8 @@ else $root-prefix"/>
 <!-- if windows OS, convert path to URI -->
 <xsl:variable name="corrected-uri" select="replace($sourceuri,'\\','/')"/>
 
-<xsl:variable name="is-xml" select="doc-available($corrected-uri)" as="xs:boolean"/>
+<xsl:variable name="is-xml" as="xs:boolean"
+select="doc-available($corrected-uri) and not($document-type = ('xquery','xpath'))"/>
 
 <xsl:variable name="root-element" select="if ($is-xml) then doc($corrected-uri)/* else ()"/>
 <xsl:variable name="root-qname" select="if ($is-xml) then node-name($root-element) else ()" as="xs:QName?"/>
@@ -573,7 +574,7 @@ method="{$output-method}" indent="no">
 <xsl:if test="$output-method eq 'html'">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
 </xsl:if>
-
+<xsl:message select="'output-method', $output-method"/>
 <html>
 <head>
 <title><xsl:value-of select="$file-only"/></title>
