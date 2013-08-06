@@ -11,7 +11,10 @@ XMLSpectrum
 XMLSpectrum aims to remedy these problems.
 
 ###What
-XMLSpectrum comprises a principal XSLT 2.0 stylesheet and supporting stylesheets  designed specially to convert XQuery or XPath and any host XML code (such as XSLT) to HTML with syntax highlighting. Rendered code may be standalone and complete or embedded as samples which may have a missing 'root' element and/or missing namespace declarations.
+XMLSpectrum comprises a **principal XSLT 2.0 stylesheet** and supporting stylesheets  
+designed specially to convert XQuery or XPath and any host XML code (such as XSLT) to
+HTML with syntax highlighting. There's also a **GUI application** XMLSPectrum-FX to provide a
+convenient front-end for the XSLT
 
 ***Main Roles***
 
