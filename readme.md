@@ -46,7 +46,7 @@ By default,  *all* formatting is preserved exactly as-is - with trim and formatt
 - Processes plain-text or XML-text (complete or otherwise)
 - Optionally processes xsl:include and xsl:import referenced XSLT
 - Uses standard XSLT 2.0 - no extensions required (tested on Saxon-HE)
-- Use [Solarized](http://ethanschoonover.com/solarized) light/dark, [Tomorrow Night](https://github.com/ChrisKempson/Tomorrow-Theme) or [Roboticket](http://eclipsecolorthemes.org/?view=theme&id=93) color themes - or define your own
+- Complete with 6 color themes including: [Solarized](http://ethanschoonover.com/solarized) light/dark, [Tomorrow Night](https://github.com/ChrisKempson/Tomorrow-Theme) or [Roboticket](http://eclipsecolorthemes.org/?view=theme&id=93) color themes - or define your own
 - Generates CSS file if required - or embeds CSS styling within content
 - Option to use the new Adobe [Source Code Pro](http://blogs.adobe.com/typblography/2012/09/source-code-pro.html) font
 - Extensible for any XML format containing embedded XPath
