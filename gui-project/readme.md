@@ -12,3 +12,6 @@ A console area shows xsl:message and error output in real time for monitoring pr
 Saxon-HE included
 Runs on OSX, Linux or Windows
 Requires Java 1.7SE or later
+
+This project is set up to be built most conveniently from the NetBeans IDE,
+xmlspectrum-fx-dist.zip contains the latest stable build.
