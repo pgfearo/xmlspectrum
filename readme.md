@@ -116,7 +116,9 @@ Recursively processes all XSLT modules from a top-level stylesheet in a multi-fi
 
 ##XMLSpectrum in use
 
-_XMLSpectrum-FX_  - A Java GUI app included in this repository (latest build at gui-project/xmlspectrum-fx-dist.zip)
+_XMLSpectrum-FX_  - A simple Java app included in this repository (latest build at gui-project/xmlspectrum-fx-dist.zip).
+This provides a front-end useful for showcasing the XSLT, clipboard and drag and drop functionality make
+it useful in its own right for highlighting code snippets for blogging etc.
 
 ![Screenshot](http://www.qutoric.com/xmlspectrum/xmlspectrum-small.png)
 
