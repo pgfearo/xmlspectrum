@@ -165,7 +165,7 @@ public class WebViewBrowser extends Application {
 
         public WebViewPane() {
             VBox.setVgrow(this, Priority.ALWAYS);
-            ((Pane)this).setStyle("-fx-background-color:#daeafa;");
+            ((Pane)this).setStyle("-fx-background-color:#757575; -fx-text-fill:#eaeaea"); //was daeafa
 
             setMaxWidth(Double.MAX_VALUE);
             setMaxHeight(Double.MAX_VALUE);
@@ -188,18 +188,34 @@ public class WebViewBrowser extends Application {
             locationField = new TextField("");
             locationField.setMaxHeight(25);
             locationField.setPromptText("Enter URL or local path or drag and drop files here");
-            locationField.setStyle("-fx-background-color:white; -fx-text-fill:black; border-width:1px; margin:2px");
+            locationField.setStyle("-fx-background-color:#454545; -fx-text-fill:#959595; border-width:1px; margin:2px");
             statusField = new TextArea("");
             statusField.setMaxHeight(36);
             statusField.setText("Status: Ready");
             statusField.setEditable(false);
-            statusField.setStyle("-fx-text-fill: #2030a0;"+
-                "-fx-background-color: #cadaea;"+
+            statusField.setStyle("-fx-text-fill: #ffffff;"+
+                "-fx-background-color: #959595;"+
                 "-fx-font-family: 'Monospaced';");
             final VBox vBox = addVBox();
             final VBox vBoxRight = addVBoxRight();
             textVBox = addTextVBox();            
-            Button goButton = new Button("Run");
+            Button goButton = new Button("Transform");
+            goButton.prefHeight(Double.MAX_VALUE);
+            goButton.setStyle("    -fx-background-color:" +
+        "linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%)," +
+        "linear-gradient(#020b02, #3a3a3a)," +
+        "linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%)," +
+        "linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%)," +
+        "linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);" +
+    "=fx-background-insets: 0,1,4,5,6;" +
+    "=fx-background-radius: 9,8,5,4,3;" +
+    "=fx-padding: 15 30 15 30;" +
+    "=fx-font-family: 'Helvetica';" +
+    "=fx-font-size: 18px;" +
+    "=fx-font-weight: bold;" +
+    "=fx-text-fill: white;" +
+    "=fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) ," +
+                "1, 0.0 , 0 , 1);");
             goButton.setPrefWidth(100);
             goButton.setDefaultButton(true);
             EventHandler<ActionEvent> goAction;
@@ -218,7 +234,7 @@ public class WebViewBrowser extends Application {
                 }
             });
 
-            Label title1 = new Label("  XMLSpectrum");
+            Label title1 = new Label("XMLSpectrum-FX");
             Label title2 = new Label("");
             title1.setFont(Font.font("Arial", FontWeight.BOLD, 16));
             title2.setFont(Font.font("Arial", FontWeight.NORMAL, 16));
@@ -227,9 +243,9 @@ public class WebViewBrowser extends Application {
             title1.setAlignment(Pos.CENTER);
             title1.setPrefHeight(USE_PREF_SIZE);
             title1.setMinWidth(150);
-            title1.setGraphic(new ImageView(image));
-            title1.setTextFill(Color.web("#6a9aba"));
-            title2.setTextFill(Color.web("#6a9aba"));
+            //title1.setGraphic(new ImageView(image));
+            title1.setTextFill(Color.web("#d0c0ff"));
+            title2.setTextFill(Color.web("#fafafa"));
 
             //
             GridPane grid = new GridPane();
@@ -243,7 +259,7 @@ public class WebViewBrowser extends Application {
             GridPane.setConstraints(view, 1, 2, 2, 1, HPos.CENTER, VPos.CENTER, Priority.ALWAYS, Priority.SOMETIMES); 
             GridPane.setConstraints(vBox, 0, 1, 1, 2, HPos.CENTER, VPos.CENTER, Priority.ALWAYS, Priority.SOMETIMES);
             GridPane.setConstraints(vBoxRight, 3, 1, 1, 2, HPos.CENTER, VPos.CENTER, Priority.ALWAYS, Priority.SOMETIMES);
-            GridPane.setConstraints(statusField, 0, 3, 3, 1, HPos.CENTER, VPos.CENTER, Priority.ALWAYS, Priority.ALWAYS);
+            GridPane.setConstraints(statusField, 0, 3, 4, 1, HPos.CENTER, VPos.CENTER, Priority.ALWAYS, Priority.ALWAYS);
             grid.getColumnConstraints().addAll(
                     new ColumnConstraints(200,200,200, Priority.NEVER, HPos.RIGHT, true),
                     new ColumnConstraints(100, 100, Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true),
@@ -296,7 +312,8 @@ public class WebViewBrowser extends Application {
                                     final Clipboard clipboard = Clipboard.getSystemClipboard();
                                     final ClipboardContent content = new ClipboardContent();
                                     // br fix required because html output-method seems to be affected by xhtml namespace
-                                    fullHTMLString = HTMLRender.getFileContent("file:///" + outPath).replace("<br></br>", "<br />");                                    
+                                    fullHTMLString = HTMLRender.getFileContent("file:///" + outPath).replace("<br></br>", "<br />");
+                                    fullHTMLString = fullHTMLString.replace("<body>", "<body style=\"background-color:#454545;\">");
                                     int start = fullHTMLString.indexOf("style=") + 7;
                                     int end = fullHTMLString.lastIndexOf("</pre>") + 6;
                                     String divString = "<pre style=\"white-space: nowrap; ";
@@ -394,8 +411,8 @@ public class WebViewBrowser extends Application {
                     .build();
 
               area.setStyle("-fx-text-fill: white;"+
-                "-fx-text-fill: black;"+
-                "-fx-background-color: white;"+
+                "-fx-text-fill: #eaeaea;"+
+                "-fx-background-color: #454545;"+
                 "-fx-font-family: 'Monospaced';");
               textArea = area;
               //VBox vBox = new VBox();
@@ -410,7 +427,7 @@ public class WebViewBrowser extends Application {
         
         private VBox addVBox() {
             VBox vbox = new VBox();
-            vbox.setStyle("-fx-background-color:#daeafa;");
+            vbox.setStyle("-fx-background-color:#757575; -fx-text-fill:#eaeaea");
             vbox.setPadding(new Insets(10));
             vbox.setSpacing(7);
             
@@ -421,6 +438,7 @@ public class WebViewBrowser extends Application {
             rbUseFileSource.setSelected(true);
             rbUseFileSource.setToggleGroup(OGroup);
             addBlueTitle(vbox, "Transform Settings");
+            vbox.getChildren().add(new Separator());
             addTitle(vbox, "Source");
             vbox.getChildren().add(rbUseTextArea);
             vbox.getChildren().add(rbUseFileSource);
@@ -435,7 +453,7 @@ public class WebViewBrowser extends Application {
                         //textVBox.setStyle("-fx-background-color:blue;");
                         row2.setPrefHeight(USE_COMPUTED_SIZE);
                         locationField.setEditable(false);
-                        locationField.setStyle("-fx-background-color:#ececec; -fx-text-fill:black; border-width:1");                        
+                        locationField.setStyle("-fx-background-color:#757575; -fx-text-fill:#f1f1f1; border-width:1");                        
                         textArea.prefHeightProperty().bind(textVBox.prefHeightProperty());
                         useTextArea = true;
                     }
@@ -448,7 +466,7 @@ public class WebViewBrowser extends Application {
                         row2.setMinHeight(0);
                         row2.setMaxHeight(0);
                         locationField.setEditable(true);
-                        locationField.setStyle("-fx-background-color:white; -fx-text-fill:black; border-width:1");
+                        locationField.setStyle("-fx-background-color:#454545; -fx-text-fill:#f1f1f1; border-width:1");
                         useTextArea = false;
                     }
                 });
@@ -495,9 +513,13 @@ public class WebViewBrowser extends Application {
             crb4.setToggleGroup(colorGroup);
             
             RadioButton crb7 = new RadioButton("PG-Light");
+
             crb7.setUserData("pg-light");
             crb7.setToggleGroup(colorGroup);
             
+
+            crb1.setStyle("-fx-background-color:#757575; -fx-text-fill:#eaeaea;");
+
             vbox.getChildren().add(crb1);
             vbox.getChildren().add(crb2);
             vbox.getChildren().add(crb5);
@@ -506,6 +528,10 @@ public class WebViewBrowser extends Application {
             vbox.getChildren().add(crb3);
             vbox.getChildren().add(crb4);
             vbox.getChildren().add(new Separator());
+            
+//            for (Node n : vbox.getChildren()){
+//                n.setStyle("-fx-background-color:#757575; -fx-text-fill:#eaeaea;");
+//            }
             
             //
             addTitle(vbox, "Language");
@@ -546,7 +572,7 @@ public class WebViewBrowser extends Application {
             vbox.getChildren().add(drb6);
             vbox.getChildren().add(drb7);
             vbox.getChildren().add(new Separator());
-            //
+
             addTitle(vbox, "XSLT Project");
             RadioButton tocrb1 = new RadioButton("Yes");
             tocrb1.setUserData("yes");
@@ -558,12 +584,16 @@ public class WebViewBrowser extends Application {
             tocrb2.setSelected(true);
             vbox.getChildren().add(tocrb1);
             vbox.getChildren().add(tocrb2);
+            
+            for (Node n : vbox.getChildren()){
+                n.setStyle("-fx-background-color:#757575; -fx-text-fill:#eaeaea;");
+            }
           
             return vbox;
         }
         private VBox addVBoxRight() {
             VBox vbox = new VBox();
-            vbox.setStyle("-fx-background-color:#daeafa;");
+            vbox.setStyle("-fx-background-color:#757575; -fx-text-fill:#eaeaea");
             vbox.setPadding(new Insets(10));
             vbox.setSpacing(7);            
             
@@ -576,12 +606,13 @@ public class WebViewBrowser extends Application {
             trb2.setUserData("no");
             trb2.setToggleGroup(trimGroup);
             addBlueTitle(vbox, "XML/XSLT Formatting");
-            addTitle(vbox, "XML: Auto-Trim");
+            vbox.getChildren().add(new Separator());
+            addTitle(vbox, "Auto-Trim");
             vbox.getChildren().add(trb1);
             vbox.getChildren().add(trb2);
             vbox.getChildren().add(new Separator());
             
-            addTitle(vbox, "XML Indent (Chars)");
+            addTitle(vbox, "Indent (Chars)");
             RadioButton irb1 = new RadioButton("-1 (No alignment)");
             irb1.setUserData("-1");
             irb1.setToggleGroup(indentGroup);
@@ -613,7 +644,7 @@ public class WebViewBrowser extends Application {
             nrb2.setUserData("no");
             nrb2.setToggleGroup(NLGroup);
             
-            addTitle(vbox, "XML: Force NewLines");
+            addTitle(vbox, "Force NewLines");
             vbox.getChildren().add(nrb1);
             vbox.getChildren().add(nrb2);
             vbox.getChildren().add(new Separator());
@@ -627,10 +658,14 @@ public class WebViewBrowser extends Application {
             mrb2.setUserData("no");
             mrb2.setToggleGroup(MCGroup);
             
-            addTitle(vbox, "XML: Indent Mixed-Content");
+            addTitle(vbox, "Indent Mixed-Content");
             vbox.getChildren().add(mrb1);
             vbox.getChildren().add(mrb2);
             vbox.getChildren().add(new Separator());
+            
+            for (Node n : vbox.getChildren()){
+                n.setStyle("-fx-background-color:#757575; -fx-text-fill:#eaeaea;");
+            }
             
             String classPath = new java.io.File("").getAbsolutePath().replace('\\', '/');
             addBlueTitle(vbox, "Documentation");
@@ -647,7 +682,7 @@ public class WebViewBrowser extends Application {
         
         private Hyperlink newHyperlink(VBox vbox, String label, String path, Boolean isUrl){
             Hyperlink hl1 = new Hyperlink(label);
-            hl1.setStyle("-fx-text-fill: #6a9aba;");
+            hl1.setStyle("-fx-text-fill: #f5f5f5;");
             hl1.setUserData("file:///" + path);
             VBox.setMargin(hl1, new Insets(0, 0, 0, 8));
             vbox.getChildren().add(hl1);
@@ -689,12 +724,13 @@ public class WebViewBrowser extends Application {
         public void addTitle(VBox vbox, String titleText) {
             Text title = new Text(titleText);
             title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+            title.setFill(Color.web("#f0f0f0"));
             vbox.getChildren().add(title);
         }
         public void addBlueTitle(VBox vbox, String titleText) {
             Label title = new Label(titleText);
             title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-            title.setTextFill(Color.web("#6a9aba"));
+            title.setTextFill(Color.web("#ffffff"));
             vbox.getChildren().add(title);
         }
                     
