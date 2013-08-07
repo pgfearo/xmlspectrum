@@ -122,7 +122,7 @@ it useful in its own right for highlighting code snippets for blogging etc. Test
 into WordPress and Blogger HTML text editors - (Blogger requires a surround div element with an overflow:auto style
 attribute.)
 
-![Screenshot](http://www.qutoric.com/xmlspectrum/xmlspectrum-small.png)
+![Screenshot](http://www.qutoric.com/xmlspectrum/xmlspectrum-grey-s.png)
 
 ###Sample Output from XMLSpectrum transforms
 
