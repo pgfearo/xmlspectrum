@@ -314,7 +314,8 @@ public class WebViewBrowser extends Application {
                                     // br fix required because html output-method seems to be affected by xhtml namespace
                                     fullHTMLString = HTMLRender.getFileContent("file:///" + outPath).replace("<br></br>", "<br />");
                                     fullHTMLString = fullHTMLString.replace("<body>", "<body style=\"background-color:#454545;\">");
-                                    int start = fullHTMLString.indexOf("style=") + 7;
+                                    int initStart = fullHTMLString.indexOf("style=") + 1;
+                                    int start = fullHTMLString.indexOf("style=", initStart) + 7;
                                     int end = fullHTMLString.lastIndexOf("</pre>") + 6;
                                     String divString = "<pre style=\"white-space: nowrap; ";
                                     String preString = divString + fullHTMLString.substring(start, end);
