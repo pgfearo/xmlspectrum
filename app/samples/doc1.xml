@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+<chapter id="1">
+<para>first para</para>
+<para new="yes">second para</para>
+</chapter>
+<chapter id="2">
+<para>first para</para>
+<para new="yes">second para</para>
+</chapter>
+</document>

@@ -124,7 +124,8 @@ else f:doctype-from-xmlns(*/namespace-uri())"/>
 <xsl:with-param name="is-xml" select="true()" as="xs:boolean"/>
 <xsl:with-param name="doctype" select="$doctype" as="xs:string"/>
 <xsl:with-param name="indent-size" select="$indent-size" as="xs:integer"/>
-<xsl:with-param name="root-prefix" select="if ($document-type-prefix ne '') then $document-type-prefix
+<xsl:with-param name="root-prefix" 
+select="if ($document-type-prefix ne '') then $document-type-prefix
 else $root-prefix"/>
 </xsl:call-template>
 </xsl:variable>
@@ -175,7 +176,8 @@ select="doc-available($corrected-uri) and not($document-type = ('xquery','xpath'
 <xsl:variable name="root-element" select="if ($is-xml) then doc($corrected-uri)/* else ()"/>
 <xsl:variable name="root-qname" select="if ($is-xml) then node-name($root-element) else ()" as="xs:QName?"/>
 
-<xsl:variable name="root-prefix" select="if ($document-type-prefix ne '') then
+<xsl:variable name="root-prefix" 
+select="if ($document-type-prefix ne '') then
 $document-type-prefix
 else if ($is-xml) 
 then ((prefix-from-QName($root-qname), '')[1]) 
@@ -618,7 +620,8 @@ else $result-spans"/>
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="indent-size" as="xs:integer"/>
 <xsl:param name="root-prefix" as="xs:string"/>
-<xsl:variable name="is-xml-new" as="xs:boolean" select="if ($is-xml) then
+<xsl:variable name="is-xml-new" as="xs:boolean" 
+select="if ($is-xml) then
 true()
 else
 if ($doctype = ('xpath', 'xquery', '')) then
