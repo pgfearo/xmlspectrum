@@ -77,7 +77,7 @@ select="$is-wildcard or $isQuantifier or not($token/@type) or ($token/@value = (
 <xsl:variable name="empty-next-type" as="xs:boolean" select="empty($n2Token/@type)"/>
 <xsl:variable name="next-type" as="xs:string?" select="$n2Token/@type"/>
 <xsl:variable name="token-value" as="xs:string" select="$token/@value"/>
-<xsl:variable name="next-token-value?" as="xs:string" select="$n2Token/@value"/>
+<xsl:variable name="next-token-value" as="xs:string?" select="$n2Token/@value"/>
 
 <xsl:variable name="token-type" as="xs:string?" select="if ($token/@type) then $token/@type else ()"/>
 <xsl:variable name="whitespace-follows" as="xs:boolean" select="if ($n1Token/@type) then $n1Token/@type eq 'whitespace' else false()"/>
