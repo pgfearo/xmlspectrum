@@ -296,10 +296,25 @@ else uri"/>
 </xsl:call-template>
 </xsl:variable>
 
+<xsl:variable name="spans" as="element()*">
+<xsl:choose>
+<xsl:when test="$do-link">
+<xsl:call-template name="wrap-spans-only">
+<xsl:with-param name="spans" as="node()*" select="$result-spans"/>
+<xsl:with-param name="index" select="1" as="xs:integer"/>
+</xsl:call-template>
+</xsl:when>
+<xsl:otherwise>
+<xsl:sequence select="$result-spans"/>
+</xsl:otherwise>
+</xsl:choose>
+</xsl:variable>
+
+
 <xsl:variable name="file-only" select="f:file-from-uri($corrected-uri)"/>
 
 <xsl:call-template name="output-html-doc">
-<xsl:with-param name="result-spans" select="$result-spans"/>
+<xsl:with-param name="result-spans" select="$spans"/>
 <xsl:with-param name="filename" select="if ($file-only ne '') then $file-only
 else 'xms-output'"/>
 <xsl:with-param name="css-link"
@@ -410,6 +425,56 @@ select="xs:integer(substring($span-children[last()]/@id, 3
 </xsl:otherwise>
 </xsl:choose>
 </xsl:template>
+
+<xsl:template name="wrap-spans-only">
+<xsl:param name="spans" as="node()*"/>
+<xsl:param name="index" as="xs:integer"/>
+
+<xsl:variable name="span" select="$spans[$index]"/>
+
+<xsl:if test="$index mod 1500 eq 0">
+<xsl:message><xsl:value-of select="'token: ', $index"/></xsl:message>
+</xsl:if>
+
+<xsl:choose>
+<xsl:when test="empty($span)"/>
+<xsl:when test="$span/@class eq 'es'">
+<xsl:variable name="span-children" as="node()*">
+<xsl:call-template name="wrap-spans-only">
+<xsl:with-param name="spans" select="$spans"/>
+<xsl:with-param name="index" select="$index + 1"/>
+</xsl:call-template>
+</xsl:variable>
+<span class="ww" id="w{$index}">
+<xsl:sequence select="$span"/>
+<xsl:sequence select="$span-children"/>
+</span>
+
+<xsl:variable name="prev-index"
+select="xs:integer(substring($span-children[last()]/@id, 3
+))"/>
+
+<xsl:call-template name="wrap-spans-only">
+<xsl:with-param name="spans" select="$spans"/>
+<xsl:with-param name="index" select="$prev-index + 1"/>
+</xsl:call-template>
+
+</xsl:when>
+<xsl:when test="$span/@class = ('sc', 'ec')">
+<span id="wx{$index}">
+<xsl:copy-of select="$span/@*|$span/node()"/>
+</span>
+</xsl:when>
+<xsl:otherwise>
+<xsl:sequence select="$span"/>
+<xsl:call-template name="wrap-spans-only">
+<xsl:with-param name="spans" select="$spans"/>
+<xsl:with-param name="index" select="$index + 1"/>
+</xsl:call-template>
+</xsl:otherwise>
+</xsl:choose>
+</xsl:template>
+
 
 <xsl:template name="get-common-root" as="xs:string*">
 <xsl:param name="all-files" as="xs:string*" tunnel="yes" />
