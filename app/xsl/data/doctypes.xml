@@ -48,6 +48,17 @@
 <element name="key" attribute="name"/>
 </highlight-names>
 </document-type>
+<document-type name="deltaxml21">
+<ns>http://www.deltaxml.com/ns/well-formed-delta-v1</ns>
+<xpath-names>
+<attribute name="deltaV2"/>
+<attribute name="merge"/>
+</xpath-names>
+<highlight-names>
+<element name="pattern" attribute="name"/>
+<element name="key" attribute="name"/>
+</highlight-names>
+</document-type>
 <document-type name="dita">
 <ns></ns>
 <xpath-names>
