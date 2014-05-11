@@ -34,14 +34,15 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:loc="com.qutoric.sketchpath.functions"
 xmlns:css="css-defs.com"
 xmlns:dt="http://qutoric.com.xmlspectrum.document-types"
-exclude-result-prefixes="loc f xs css c"
+exclude-result-prefixes="loc f xs css c qf dt"
 xmlns:c="http://xmlspectrum.colors.org"
 xmlns="http://www.w3.org/1999/xhtml"
 xpath-default-namespace="http://www.w3.org/1999/xhtml"
+xmlns:qf="urn:xq.internal-function"
 xmlns:f="internal">
 
 <xsl:include href="doctype-functions.xsl"/>
-<xsl:include href="xslt-xpathlexer-functions.xsl"/>
+<xsl:include href="xq-spectrum.xsl"/>
 <xsl:include href="xslt-formatting-functions.xsl"/>
 
 <xsl:param name="color-theme" select="'dark'"/>
@@ -104,7 +105,7 @@ else concat($root-prefix-a, ':')"/>
 <xsl:text> tokens ...</xsl:text>
 </xsl:message>
 <xsl:variable name="tokens" select="if (normalize-space($tokens-a[1]) eq '') then subsequence($tokens-a, 2) else $tokens-a"/>
-<xsl:variable name="spans" select="f:iterateTokens(0, $tokens,1,'n',0, 0, $doctype, $root-prefix)" as="element()*"/>
+<xsl:variable name="spans" select="f:iterateTokens(0, $tokens,1,'n',0, 0, $doctype, $root-prefix, false())" as="element()*"/>
 
 <xsl:choose>
 <xsl:when test="$css-inline eq 'no'">
@@ -265,6 +266,7 @@ else 1"/>
 <xsl:param name="level" as="xs:integer"/>
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="root-prefix" as="xs:string"/>
+<xsl:param name="expand-text-stack" as="xs:boolean*"/>
 <xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
 <xsl:variable name="is-xsd" select="not($is-xsl)" as="xs:boolean"/>
 
@@ -272,6 +274,8 @@ else 1"/>
 <xsl:variable name="prevToken" select="$tokens[$index + 1]" as="xs:string?"/>
 <xsl:variable name="nextToken" select="$tokens[$index - 1]" as="xs:string?"/>
 <xsl:variable name="awaiting" select="$expected ne 'n'" as="xs:boolean"/>
+
+<xsl:variable name="expand-text" as="xs:boolean?" select="$expand-text-stack[last()]"/>
 
 <!--
 <trace>
@@ -310,12 +314,18 @@ concat('&lt;', $tokens[$x]),
 "/>
 </span>
 <span class="z"><xsl:value-of select="$expected"/></span>
+<xsl:variable name="textNode" as="xs:string" select="substring($token, string-length($beforeFind) + string-length($expected) + 1)"/>
+<xsl:choose>
+<xsl:when test="$expand-text">
+<xsl:sequence select="qf:show-xsl-tvt($textNode)"/>
+</xsl:when>
+<xsl:otherwise>
 <span class="txt">
-<!--
-id="{js:getStackIndex()}">
--->
-<xsl:value-of select="substring($token, string-length($beforeFind) + string-length($expected) + 1)"/>
+<xsl:value-of select="$textNode"/>
 </span>
+
+</xsl:otherwise>
+</xsl:choose>
 </xsl:if>
 </xsl:if>
 </xsl:variable>
@@ -405,14 +415,18 @@ else 'cl'}">
 -->
 </xsl:if>
 <xsl:value-of select="$requiredClose"/></span>
+
+<xsl:variable name="textNode" as="xs:string" select="substring($token, string-length($beforeClose) + string-length($requiredClose) + 1)"/>
+<xsl:choose>
+<xsl:when test="$expand-text">
+<xsl:sequence select="qf:show-xsl-tvt($textNode)"/>
+</xsl:when>
+<xsl:otherwise>
 <span class="txt">
-<xsl:if test="$isElementClose">
-<!--
-<xsl:attribute name="id" select="js:getStackIndex()"/>
--->
-</xsl:if>
-<xsl:value-of select="substring($token, string-length($beforeClose) + string-length($requiredClose) + 1)"/>
+<xsl:value-of select="$textNode"/>
 </span>
+</xsl:otherwise>
+</xsl:choose>
 </xsl:when>
 <xsl:otherwise>
 <required>
@@ -434,7 +448,7 @@ else 'cl'}">
 </xsl:analyze-string>
 </xsl:variable>
 
-<xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $doctype, $new-root-prefix, '')"/>
+<xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $doctype, $new-root-prefix, '', $expand-text-stack[last()])"/>
 
 <!-- must be an open tag, so check for attributes -->
 
@@ -456,7 +470,6 @@ select="$awaiting and empty($expectedOutput)"/>
 
 <xsl:sequence select="$expectedOutput"/>
 
-
 <xsl:variable name="newExpected" as="xs:string"
 select="if ($index eq 1) then
 'n'
@@ -471,9 +484,62 @@ select="if ($stillAwaiting) then $beganAt else $index"/>
 
 <xsl:if test="$index le count($tokens)">
 <xsl:sequence select="f:iterateTokens($newCounter, $tokens, $index + 1,
-$newExpected, $newBeganAt, $newLevel, $doctype, $new-root-prefix)"/>
+$newExpected, $newBeganAt, $newLevel, $doctype, $new-root-prefix, 
+f:getNewExpandStack($parseStrings, $expand-text-stack) )"/>
 </xsl:if>
 </xsl:function>
+
+<xsl:function name="f:getNewExpandStack" as="xs:boolean*">
+<xsl:param name="parseStrings" as="element()*"/>
+<xsl:param name="expandStack" as="xs:boolean*"/>
+<!-- don't and empty tag value to stack -->
+<xsl:variable name="startXslTag" as="xs:boolean" 
+select="exists($parseStrings[@class eq 'enxsl']) and empty($parseStrings[@class eq 'sc'])"/>
+<xsl:variable name="closeXslTag" as="xs:boolean"
+select="exists($parseStrings[@class eq 'clxsl'])"/>
+<xsl:variable name="expandValue" as="xs:boolean?" 
+select="f:getExpandTextValue($parseStrings)"/>
+
+<xsl:sequence select="if(exists($expandValue)) then
+($expandStack, ($expandValue))
+else if($startXslTag) then
+($expandStack, $expandStack[last()])
+else if($closeXslTag) then
+subsequence($expandStack, 1, count($expandStack) - 1)
+else
+$expandStack"/>
+
+</xsl:function>
+
+<xsl:function name="f:getExpandTextValue" as="xs:boolean?">
+<xsl:param name="parseStrings" as="element()*"/>
+
+<xsl:variable name="expandValue" as="xs:string?" 
+select="if($parseStrings[@class eq 'enxsl']) then
+(for $i in 1 to count($parseStrings) return
+    if($parseStrings[$i][@class eq 'atn' and . eq 'expand-text'])
+    then $parseStrings[$i + 3]/text()
+    else ()
+)
+else ()"/>
+<xsl:sequence select="if($expandValue) then
+$expandValue eq 'yes'
+else ()"/>
+</xsl:function>
+
+<xsl:function name="f:checkExpandSpans" as="xs:boolean">
+<xsl:param name="spans" as="element()*"/>
+<xsl:param name="existing-expand-state" as="xs:boolean*"/>
+<xsl:variable name="expandValue" as="xs:string?" 
+select="for $i in 1 to count($spans) return
+    if($spans[$i][@class eq 'atn' and . eq 'expand-text'])
+    then $spans[$i + 3]/text()
+    else ()"/>
+<xsl:sequence select="if($expandValue) then
+$expandValue eq 'yes'
+else $existing-expand-state"/>
+</xsl:function>
+
 
 <xsl:function name="f:getAttributes" as="item()*">
 <xsl:param name="attToken" as="xs:string"/>
@@ -483,6 +549,7 @@ $newExpected, $newBeganAt, $newLevel, $doctype, $new-root-prefix)"/>
 <xsl:param name="doctype" as="xs:string"/>
 <xsl:param name="root-prefix" as="xs:string"/>
 <xsl:param name="ename" as="xs:string"/>
+<xsl:param name="expand-text" as="xs:boolean"/>
 <xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
 <xsl:variable name="is-xsd" select="not($is-xsl)" as="xs:boolean"/>
 
@@ -522,26 +589,26 @@ id="{js:stackPush($elementName)}">
 or string-length($pre-close) gt 0
 or starts-with($part1,'>')"
 as="xs:boolean"/>
+<xsl:variable name="spans" as="element()*">
 
 <xsl:choose>
 <xsl:when test="$isFinalPart">
 <!--  use sc class value to mark end of self-closed element -->
 <xsl:variable name="isSelfClosed" select="ends-with($pre-close,'/')" as="xs:boolean"/>
 <span class="{if ($isSelfClosed) then 'sc' else 'scx'}">
-<xsl:if test="$isSelfClosed">
-<!--
-<xsl:attribute name="id" select="js:stackPop()"/>
--->
-</xsl:if>
 <xsl:value-of select="if ($isSelfClosed) then '/' else ''"/>&gt;</span>
+
+<xsl:variable name="textNode" as="xs:string" select="substring($attToken, string-length($pre-close) + $offset + 2)"/>
+<xsl:choose>
+<xsl:when test="$expand-text">
+<xsl:sequence select="qf:show-xsl-tvt($textNode)"/>
+</xsl:when>
+<xsl:otherwise>
 <span class="txt">
-<xsl:if test="$isSelfClosed">
-<!--
-<xsl:attribute name="id" select="js:getStackIndex()"/>
--->
-</xsl:if>
-<xsl:value-of select="substring($attToken, string-length($pre-close) + $offset + 2)"/>
+<xsl:value-of select="$textNode"/>
 </span>
+</xsl:otherwise>
+</xsl:choose>
 </xsl:when>
 <xsl:when test="exists($part2)">
 <!-- attribute must exist and name occurs before value, so get this first -->
@@ -572,7 +639,7 @@ else 'z'"/>
 <xsl:sequence select="$attSpans"/>
 <xsl:variable name="isXPath" as="xs:boolean"
 select="if ($is-xsl-element)
-then $att-name = ('select','test', 'match')
+then $att-name = ('select','test', 'match', 'xpath','context-item','namespace-context')
 
 else if (exists($xsd-xpath-attributes)) then
 
@@ -614,11 +681,20 @@ select="f:get-av-class($is-xsl-element, $doctype, $is-xsd,
 </xsl:when>
 
 </xsl:choose>
+</xsl:variable>
+
+<xsl:variable name="newExpandText" as="xs:boolean" 
+select="if($is-xsl-element) then
+f:checkExpandSpans($spans, $expand-text)
+else
+$expand-text"/>
+
+<xsl:sequence select="$spans"/>
 
 <xsl:variable name="newOffset" select="string-length($part1) + string-length($part2) + $offset"/>
 
 <xsl:if test="not($isFinalPart)">
-<xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2, $doctype, $root-prefix, $elementName)"/>
+<xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2, $doctype, $root-prefix, $elementName, $newExpandText)"/>
 </xsl:if>
 
 </xsl:function>
@@ -663,7 +739,6 @@ then 'fname' else 'av'"/>
 <xsl:param name="attText" as="xs:string"/>
 <xsl:param name="class" as="xs:string"/>
 <xsl:variable name="regex1" select="'\{.*?\}'" as="xs:string"/>
-<xsl:variable name="regex2" select="part" as="xs:string"/>
 
 <xsl:variable name="t1" select="replace($attText, '\{\{', '&#x0300;')"/>
 <xsl:variable name="t2" select="replace($t1, '\}\}', '&#x0301;')"/>
@@ -721,6 +796,7 @@ params:
 <xsl:function name="loc:showXPath">
 <xsl:param name="chunk"/>
 
+<!--
 <xsl:variable name="chars" as="xs:string*"
 select="loc:stringToCharSequence($chunk)"/>
 
@@ -733,23 +809,17 @@ select="loc:createPairs($blocks[name() = 'block' and @type = ('[',']','(',')')])
 <xsl:variable name="omitPairs" as="element()*"
 select="($blocks[name() = ('literal','comment')])"/>
 
+-->
 <xsl:variable name="tokens" as="element()*">
-<xsl:sequence select="loc:getTokens($chunk, $omitPairs, $pbPairs)"/>
+<xsl:sequence select="qf:show-xquery($chunk)"/>
 </xsl:variable>
 
 <xsl:choose>
 <xsl:when test="$css-inline eq 'no'">
-<xsl:call-template name="plain">
-<xsl:with-param name="para" select="$tokens"/>
-</xsl:call-template>
+<xsl:sequence select="$tokens"/>
 </xsl:when>
 <xsl:otherwise>
-<xsl:variable name="spans" as="node()*">
-<xsl:call-template name="plain">
-<xsl:with-param name="para" select="$tokens"/>
-</xsl:call-template>
-</xsl:variable>
-<xsl:sequence select="f:style-spans($spans)"/>
+<xsl:sequence select="f:style-spans($tokens)"/>
 </xsl:otherwise>
 </xsl:choose>
 </xsl:function>

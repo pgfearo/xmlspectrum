@@ -1,0 +1,84 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>XMLSpectrum output</title><style type="text/css">
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+p.spectrum, pre.spectrum {
+
+    margin:0px;
+    font-family:'Source Code Pro', Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
+    font-size: 0.8em;
+    white-space: pre-wrap;
+    display: block;
+    border: none thin;
+    border-color: #405075;
+    background-color:#002b36;
+    padding: 2px;
+    margin-bottom:5px;
+
+}
+
+div.spectrum-toc {
+
+    font-family:'Source Code Pro', Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
+    font-size: 0.8em;
+    display: block;
+    border: none thin;
+    border-color: #405075;
+    background-color:#002b36;
+    padding: 2px;
+
+}
+
+ul.base1, ul.spectrum-toc {
+color:#93a1a1;
+}
+
+.spectrum span {
+    white-space: pre-wrap;
+}
+
+span.ww {background-color: #073642; } span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq {color: #586e75; } span.base03, span.ww:not(:hover), span.txt:not(:hover), span.cm:not(:hover), span.pi:not(:hover) {background-color: #002b36; } span.base0, span.txt, span.cd {color: #839496; } span.base1, span.literal {color: #93a1a1; } span.yellow, span.op, span.type-op, span.if, span.higher, span.step, span.whitespace, span.quantifier {color: #b58900; } span.orange, span.function, span.pname {color: #cb4b16; } span.red, span.fname, span.tname {color: #dc322f; } span.magenta, span.vname, span.variable, span.external {color: #d33682; } span.violet, span.qname, span.type-name, span.unclosed, span.en, span.cl, span.href, span.tcall {color: #6c71c4; } span.blue, span.enxsl, span.clxsl, span.enx, span.filter, span.parenthesis, span.node {color: #268bd2; } span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context, span.bracedq {color: #2aa198; } span.green, span.cm, span.comment, span.av, span.type, span.node-type {color: #859900; }
+
+a.solar {
+    text-decoration:none;
+}
+</style></head><body><div><pre class="spectrum"><span class="es">&lt;</span><span class="enxsl">xsl:stylesheet</span><span class="z"> </span><span class="atn">version</span><span class="atneq">=</span><span class="z">"</span><span class="av">2.0</span><span class="z">"</span><span class="z">
+                </span><span class="atn">xmlns:xsl</span><span class="atneq">=</span><span class="z">"</span><span class="av">http://www.w3.org/1999/XSL/Transform</span><span class="z">"</span><span class="z">
+                </span><span class="atn">xmlns:xs</span><span class="atneq">=</span><span class="z">"</span><span class="av">http://www.w3.org/2001/XMLSchema</span><span class="z">"</span><span class="z">
+                </span><span class="atn">xmlns:loc</span><span class="atneq">=</span><span class="z">"</span><span class="av">com.qutoric.sketchpath.functions</span><span class="z">"</span><span class="z">
+                </span><span class="atn">xmlns:css</span><span class="atneq">=</span><span class="z">"</span><span class="av">css-defs.com</span><span class="z">"</span><span class="z">
+                </span><span class="atn">exclude-result-prefixes</span><span class="atneq">=</span><span class="z">"</span><span class="av">loc f xs css</span><span class="z">"</span><span class="z">
+                </span><span class="atn">xmlns</span><span class="atneq">=</span><span class="z">"</span><span class="z">"</span><span class="z">
+                </span><span class="atn">xmlns:f</span><span class="atneq">=</span><span class="z">"</span><span class="av">internal</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+  
+  </span><span class="es">&lt;</span><span class="enxsl">xsl:variable</span><span class="z"> </span><span class="atn">name</span><span class="atneq">=</span><span class="z">"</span><span class="vname">testa</span><span class="z">"</span><span class="z"> </span><span class="atn">as</span><span class="atneq">=</span><span class="z">"</span><span class="av">xs:string</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+    othertest{here}
+  </span><span class="ez">&lt;/</span><span class="clxsl">xsl:variable</span><span class="ec">&gt;</span><span class="txt"> 
+  
+  </span><span class="es">&lt;</span><span class="enxsl">xsl:function</span><span class="z"> </span><span class="atn">name</span><span class="atneq">=</span><span class="z">"</span><span class="fname">f:sum</span><span class="z">"</span><span class="z"> </span><span class="atn">expand-text</span><span class="atneq">=</span><span class="z">"</span><span class="av">no</span><span class="z">"</span><span class="z"> </span><span class="atn">as</span><span class="atneq">=</span><span class="z">"</span><span class="av">xs:integer</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+    </span><span class="es">&lt;</span><span class="enxsl">xsl:param</span><span class="z"> </span><span class="atn">name</span><span class="atneq">=</span><span class="z">"</span><span class="pname">x</span><span class="z">"</span><span class="z"> </span><span class="atn">as</span><span class="atneq">=</span><span class="z">"</span><span class="av">xs:integer</span><span class="z">"</span><span class="sc">/&gt;</span><span class="txt">
+    </span><span class="es">&lt;</span><span class="enxsl">xsl:param</span><span class="z"> </span><span class="atn">name</span><span class="atneq">=</span><span class="z">"</span><span class="pname">y</span><span class="z">"</span><span class="z"> </span><span class="atn">as</span><span class="atneq">=</span><span class="z">"</span><span class="av">xs:integer</span><span class="z">"</span><span class="sc">/&gt;</span><span class="txt">
+    </span><span class="es">&lt;</span><span class="enxsl">xsl:variable</span><span class="z"> </span><span class="atn">name</span><span class="atneq">=</span><span class="z">"</span><span class="vname">test</span><span class="z">"</span><span class="z"> </span><span class="atn">select</span><span class="atneq">=</span><span class="z">"</span><span class="open"></span><span class="higher">let</span><span class="whitespace"> </span><span class="variable">$new</span><span class="whitespace"> </span><span class="op">:=</span><span class="whitespace"> </span><span class="op">'</span><span class="literal">myname</span><span class="op">'</span><span class="open"></span><span class="whitespace"> </span><span class="op">return</span><span class="whitespace">
+                                      </span><span class="if">if(</span><span class="variable">$x</span><span class="whitespace"> </span><span class="op">lt</span><span class="whitespace"> </span><span class="numeric">10</span><span class="parenthesis">)</span><span class="whitespace"> </span><span class="op">then</span><span class="whitespace"> </span><span class="op">'</span><span class="literal">ten</span><span class="op">'</span><span class="open"></span><span class="whitespace">
+                                      </span><span class="op">else</span><span class="whitespace"> </span><span class="if">if(</span><span class="variable">$y</span><span class="whitespace"> </span><span class="op">lt</span><span class="whitespace"> </span><span class="numeric">10</span><span class="parenthesis">)</span><span class="whitespace"> </span><span class="op">then</span><span class="whitespace"> </span><span class="op">'</span><span class="literal">twenty</span><span class="op">'</span><span class="whitespace">
+                                      </span><span class="op">else</span><span class="whitespace"> </span><span class="variable">$new</span><span class="z">"</span><span class="sc">/&gt;</span><span class="txt">
+    </span><span class="es">&lt;</span><span class="enxsl">xsl:variable</span><span class="z"> </span><span class="atn">name</span><span class="atneq">=</span><span class="z">"</span><span class="vname">id</span><span class="z">"</span><span class="z"> </span><span class="atn">select</span><span class="atneq">=</span><span class="z">"</span><span class="op">'</span><span class="literal">A123</span><span class="op">'</span><span class="z">"</span><span class="sc">/&gt;</span><span class="txt">
+    </span><span class="es">&lt;</span><span class="enxsl">xsl:variable</span><span class="z"> </span><span class="atn">name</span><span class="atneq">=</span><span class="z">"</span><span class="vname">step</span><span class="z">"</span><span class="z"> </span><span class="atn">select</span><span class="atneq">=</span><span class="z">"</span><span class="numeric">5</span><span class="z">"</span><span class="sc">/&gt;</span><span class="txt">
+    </span><span class="es">&lt;</span><span class="enxsl">xsl:message</span><span class="z">
+         </span><span class="atn">expand-text</span><span class="atneq">=</span><span class="z">"</span><span class="av">yes</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+      Processing id=</span><span class="op">{</span><span class="variable">$id</span><span class="op">}</span><span class="txt">, 
+      step=</span><span class="op">{</span><span class="whitespace">
+                           </span><span class="higher">let</span><span class="whitespace"> </span><span class="variable">$a</span><span class="whitespace"> </span><span class="op">:=</span><span class="whitespace"> </span><span class="type">function</span><span class="parenthesis">(</span><span class="parenthesis">)</span><span class="whitespace"> </span><span class="op">{</span><span class="whitespace">
+                           </span><span class="numeric">22</span><span class="whitespace"> </span><span class="op">+</span><span class="whitespace"> </span><span class="numeric">55</span><span class="whitespace">
+                           </span><span class="op">}</span><span class="whitespace"> </span><span class="op">return</span><span class="whitespace">
+                           </span><span class="variable">$a</span><span class="whitespace"> </span><span class="op">+</span><span class="whitespace"> </span><span class="numeric">89</span><span class="whitespace">
+                           </span><span class="variable">$step</span><span class="whitespace">
+                           </span><span class="op">}</span><span class="txt">
+     I can have {{any arrangement}}</span><span class="ez">&lt;/</span><span class="clxsl">xsl:message</span><span class="ec">&gt;</span><span class="txt">
+    </span><span class="es">&lt;</span><span class="enxsl">xsl:text</span><span class="scx">&gt;</span><span class="txt">my test</span><span class="ez">&lt;/</span><span class="clxsl">xsl:text</span><span class="ec">&gt;</span><span class="txt">
+  </span><span class="ez">&lt;/</span><span class="clxsl">xsl:function</span><span class="ec">&gt;</span><span class="txt">
+  
+  </span><span class="es">&lt;</span><span class="enxsl">xsl:variable</span><span class="z"> </span><span class="atn">name</span><span class="atneq">=</span><span class="z">"</span><span class="vname">test</span><span class="z">"</span><span class="z"> </span><span class="atn">as</span><span class="atneq">=</span><span class="z">"</span><span class="av">xs:string</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+    othertest{here}
+  </span><span class="ez">&lt;/</span><span class="clxsl">xsl:variable</span><span class="ec">&gt;</span><span class="txt"> 
+  
+</span><span class="ez">&lt;/</span><span class="clxsl">xsl:stylesheet</span><span class="ec">&gt;</span><span class="txt">
+</span></pre></div></body></html>
