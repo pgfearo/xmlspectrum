@@ -167,15 +167,16 @@ else 'qname'"/>
 </xsl:choose>
 </xsl:variable>
 
-<xsl:variable name="result1" as="element()+">       
+<xsl:variable name="result1" as="element()+">
+<xsl:variable name="splitif" as="xs:boolean" select="$token-type eq 'if' and $token-value eq 'if('"/>   
 <span class="{if ($class = ('typeswitch(','switch(')) then 
 'axis'
 else if ($class eq 'new-fn') then 'function'
 else $class}">
-<xsl:value-of select="if ($class = ('type', 'node-type','function','typeswitch(', 'switch(')) then
+<xsl:value-of select="if ($class = ('type', 'node-type','function','typeswitch(', 'switch(') or $splitif) then
     substring($token-value, 1, string-length($token-value) - 1) else $token-value"/>
 </span>
-<xsl:if test="$class = ('type', 'node-type','function','typeswitch(', 'switch(')">
+<xsl:if test="$splitif or $class = ('type', 'node-type','function','typeswitch(', 'switch(')">
 <span class="parenthesis">(</span>          
 </xsl:if>
 </xsl:variable>

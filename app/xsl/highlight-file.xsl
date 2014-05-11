@@ -69,7 +69,7 @@ xmlns:f="internal">
 <xsl:output indent="no" method="html"/>
 <xsl:param name="sourcepath" as="xs:string" select="''"/>
 <!--  by default - rely on original indentation -->
-<xsl:param name="indent" as="xs:string" select="'2'"/>
+<xsl:param name="indent" as="xs:string" select="'-1'"/>
 
 <xsl:param name="color-theme" select="'dark'"/>
 <xsl:param name="css-path" select="''"/>
@@ -133,6 +133,10 @@ else $root-prefix"/>
 <xsl:message>
 <xsl:value-of select="'processing', count($all-spans), 'tokens for', base-uri(), 'css-inline:', $css-inline"/>
 </xsl:message>
+<xsl:message>------------------------------------------------</xsl:message>
+<xsl:message select="'auto-trim: ', $auto-trim, ' indent: ', $indent"/>
+<xsl:message select="'output-path: ', $output-path, ' doctype: ', $doctype, ' root-prefix: ', $root-prefix"/>
+
 
 <xsl:if test="$output-method eq 'html'">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
@@ -223,7 +227,7 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 </xsl:for-each>
 </globals>
 </xsl:variable>
-
+<xsl:message>------------------------------------------------</xsl:message>
 <xsl:for-each select="$globals/file">
 
 <xsl:message><xsl:value-of select="'tokenizing', @path, '...'"/></xsl:message>

@@ -20,6 +20,12 @@ else if($y lt 10) then 'twenty'
 else $new"/>
 <xsl:variable name="id" select="'A123'"/>
 <xsl:variable name="step" select="5"/>
+<xsl:element name="abc{concat($a,$b)} - post">
+some test
+</xsl:element>
+<lre name="{$alpha}">
+this should also use xpath!
+</lre>
 <xsl:message
  expand-text="yes">
 Processing id={$id}, 
