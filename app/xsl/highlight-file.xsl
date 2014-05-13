@@ -172,7 +172,13 @@ else $root-prefix"/>
 <xsl:template name="main">
 <xsl:param name="sourceuri" select="$sourcepath"/>
 <!-- if windows OS, convert path to URI -->
-<xsl:variable name="corrected-uri" select="replace($sourceuri,'\\','/')"/>
+<xsl:variable name="corrected-uri1" select="replace($sourceuri,'\\','/')"/>
+<xsl:variable name="uri-tokens" select="tokenize($corrected-uri1, '/')" as="xs:string*"/>
+<xsl:variable name="filename" select="$uri-tokens[last()]"/>
+<xsl:variable name="encoded-filename" select="encode-for-uri($filename)"/>
+<xsl:variable name="directory" select="substring($corrected-uri1, 1, string-length($corrected-uri1) - string-length($filename))"/>
+<xsl:variable name="corrected-uri" select="concat($directory, $encoded-filename)"/>
+
 
 <xsl:variable name="is-xml" as="xs:boolean"
 select="doc-available($corrected-uri) and not($document-type = ('xquery','xpath'))"/>
