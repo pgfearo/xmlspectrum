@@ -234,6 +234,9 @@ select="f:get-all-files(resolve-uri($corrected-uri, static-base-uri()), () )"/>
 </globals>
 </xsl:variable>
 <xsl:message>------------------------------------------------</xsl:message>
+<!--
+<xsl:message select="$globals"/>
+-->
 <xsl:for-each select="$globals/file">
 
 <xsl:message><xsl:value-of select="'tokenizing', @path, '...'"/></xsl:message>
@@ -259,7 +262,9 @@ else uri"/>
 <xsl:variable name="ancestor-path" select="f:ancestor-path($ancestor-length)"/>
 
 <xsl:variable name="xmlns" as="element()" select="f:get-xmlns($all-spans)"/>
-
+<!--
+<xsl:message select="$xmlns"/>
+-->
 <!-- note: removed tunel on spans param as this caused 32% performance degrade -->
 <xsl:variable name="spans" as="element()*">
 <xsl:call-template name="wrap-spans">

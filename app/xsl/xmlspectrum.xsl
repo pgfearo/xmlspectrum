@@ -672,7 +672,14 @@ select="f:get-av-class($is-xsl-element, $doctype, $is-xsd,
 <!--
 <xsl:sequence select="f:processAVT($attValue, $metaXPathName)"/>
 -->
-<xsl:sequence select="qf:show-xsl-tvt($attValue)"/>
+<xsl:variable name="att-spans" as="element()*" select="qf:show-xsl-tvt($attValue)"/>
+<xsl:for-each select="$att-spans">
+<xsl:copy>
+<xsl:sequence select="@* except @class"/>
+<xsl:attribute name="class" select="if(@class eq 'txt') then 'av' else @class"/>
+<xsl:sequence select="node()"/>
+</xsl:copy>
+</xsl:for-each>
 </xsl:when>
 <xsl:otherwise>
 <span class="{$metaXPathName}">
