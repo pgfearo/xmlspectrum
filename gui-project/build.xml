@@ -83,6 +83,7 @@
                     <fileset dir="fonts" includes="**"/>  
              </copy>
              <copy file="xmlspectrum-icon.png" todir="${jfx.deployment.dir}"/>
+             <copy file="C:\Saxon\saxon9he.jar" todir="${jfx.deployment.dir}"/>
         </target>
     
 </project>

@@ -668,7 +668,7 @@ select="f:get-av-class($is-xsl-element, $doctype, $is-xsd,
 <xsl:when test="$isXPath">
 <xsl:sequence select="loc:showXPath($attValue)"/>
 </xsl:when>
-<xsl:when test="$is-xsl">
+<xsl:when test="$is-xsl and $metaXPathName eq 'av'">
 <!--
 <xsl:sequence select="f:processAVT($attValue, $metaXPathName)"/>
 -->

@@ -181,13 +181,13 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 <c:color name="orange">orange function pname
 </c:color>
 <!-- declared fn and template names -->
-<c:color name="red">red fname tname
+<c:color name="red">red fname tname tcall
 </c:color>
 <!-- variable names -->
 <c:color name="magenta">magenta vname variable external
 </c:color>
 <!-- qnames -->
-<c:color name="violet">violet qname type-name unclosed en cl href tcall
+<c:color name="violet">violet qname type-name unclosed en cl href
 </c:color>
 <!-- parenthesis and highlighted element names -->
 <c:color name="blue">blue enxsl clxsl enx filter parenthesis node
