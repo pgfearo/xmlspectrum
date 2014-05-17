@@ -130,7 +130,7 @@ attribute.)
 
 [demo output of DITA XSLT Project](http://qutoric.com/samples/dita-ot-175/)
 
-[XMLSpectrum (highlight-file.xsl entry-file) run on itself](http://qutoric.com/samples/xmlspectrum-code/)
+[XMLSpectrum Project - run on itself](http://qutoric.com/xmlspectrum/release-toc/)
 
 [Transformed web page with embedded code samples](http://qutoric.com/samples/inline/highlighted-inline.html)
 
