@@ -201,7 +201,7 @@ else if ($is-xml) then
 f:doctype-from-xmlns($root-namespace)
 else ''"/>
 
-<xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
+<xsl:variable name="is-xsl" as="xs:boolean" select="$doctype = ('xslt','xsl')"/>
 <xsl:message select="'auto-trim: ', $auto-trim, ' indent: ', $indent"/>
 <xsl:message select="'output-path: ', $output-path, ' doctype: ', $doctype, ' root-prefix: ', $root-prefix"/>
 

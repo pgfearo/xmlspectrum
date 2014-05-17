@@ -15,7 +15,7 @@
     <xsl:param name="x" as="xs:integer"/>
     <xsl:param name="y" as="xs:integer"/>
     <xsl:variable name="test" select="let $new := 'myname' return
-                                      if($x lt 10) then 'ten'
+                                      if($x lt 10) then 'tenty'
                                       else if($y lt 10) then 'twenty'
                                       else $new"/>
     <xsl:variable name="id" select="'A123'"/>
@@ -29,13 +29,13 @@
     <xsl:message
      expand-text="yes">
       Processing id={$id},
-      step={
-      let $a := function() {
-      22 + 55
-      } return
-      $a + 89
-      $step
-      }
+      sept=         {
+                    let $a := function() {
+                    22 + 55
+                    } return
+                    $a + 89
+                    $step
+                    }
       I can have {{any arrangement}}
     </xsl:message>
     <xsl:text>my test</xsl:text>

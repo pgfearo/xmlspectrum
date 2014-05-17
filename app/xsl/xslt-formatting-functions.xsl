@@ -392,13 +392,11 @@ select="$line-parts[1]"/>
 <xsl:variable name="nl-elements" as="element()*"
 select="$line-parts[name(.) eq 'nl']"/>
 
-
-
 <xsl:variable name="indented-lines" as="xs:string*">
 <xsl:sequence select="if ($nl-elements and $auto-trim) then
     if ($class = ('whitespace','av')) then
         f:autotrim($nl-elements, 1, $all-preserved)
-    else if ($class = ('txt','cd')) then
+    else if ($class = ('txt','cd') and $nextClass ne 'op') then
         f:autotrim-txt($nl-elements, 1, 0)
     else if ($class = ('cm','pi')) then
         f:autotrim-comment($nl-elements, 1, 0)
