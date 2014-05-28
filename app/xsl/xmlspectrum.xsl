@@ -600,7 +600,7 @@ as="xs:boolean"/>
 
 <xsl:variable name="textNode" as="xs:string" select="substring($attToken, string-length($pre-close) + $offset + 2)"/>
 <xsl:choose>
-<xsl:when test="$expand-text">
+<xsl:when test="$expand-text and not($is-xsl-element and ends-with($elementName,':text'))">
 <xsl:sequence select="qf:show-xsl-tvt($textNode)"/>
 </xsl:when>
 <xsl:otherwise>
