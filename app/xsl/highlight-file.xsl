@@ -106,7 +106,8 @@ then $c
 else concat($c, '/')
 "/>
 
-<!-- use only if file is know to be well-formed, otherwise use 'main' template -->
+<!-- limited functionality on this template.
+     use only if file is known to be well-formed, otherwise use 'main' template -->
 <xsl:template match="/">
 
 <xsl:variable name="root-qname" select="node-name(*)" as="xs:QName"/>
@@ -141,6 +142,13 @@ else $root-prefix"/>
 <xsl:if test="$output-method eq 'html'">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
 </xsl:if>
+<xsl:choose>
+<xsl:when test="$output-method eq 'text'">
+<xsl:result-document href="{concat(base-uri(), '.text')}" method="text">
+<xsl:sequence select="$all-spans"/>
+</xsl:result-document>
+</xsl:when>
+<xsl:otherwise>
 <html>
 <head>
 <title><xsl:value-of select="'XMLSpectrum output'"/></title>
@@ -166,6 +174,8 @@ else $root-prefix"/>
 </div>
 </body>
 </html>
+</xsl:otherwise>
+</xsl:choose>
 
 </xsl:template>
 
@@ -657,6 +667,11 @@ method="{$output-method}" indent="no">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
 </xsl:if>
 <xsl:message select="'output-method', $output-method"/>
+<xsl:choose>
+<xsl:when test="$output-method eq 'text'">
+<xsl:sequence select="$result-spans"/>
+</xsl:when>
+<xsl:otherwise>
 <html>
 <head>
 <title><xsl:value-of select="$file-only"/></title>
@@ -685,6 +700,8 @@ else $result-spans"/>
 </div>
 </body>
 </html>
+</xsl:otherwise>
+</xsl:choose>
 </xsl:result-document>
 
 </xsl:template>
