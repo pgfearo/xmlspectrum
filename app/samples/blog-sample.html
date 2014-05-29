@@ -36,52 +36,15 @@ else $text"/>
 </tt>
 </xsl:non-matching-substring>
 </xsl:analyze-string>
-</xsl:variable>
-
-<span class="{if ($isElementClose) then 'ez' else 'z'}">
-<xsl:value-of select="concat('&lt;',$tagStart)"/></span>
-
-<xsl:variable name="firstLine" as="element()?"
-select="$line-parts[1]"/>
-
-<xsl:variable name="indented-lines" as="xs:string*">
-<xsl:sequence select="for $a in $line-parts[name(.) eq 'nl'] return
-string($a)"/>
-</xsl:variable>
-
-<xsl:variable name="flat-part" as="element()?"
-select="$line-parts[name(.) eq 'tt']"/>
-
-<!-- should be max of 1 -->
-<xsl:variable name="flat-line" as="xs:string"
-select="if ($flat-part) then $flat-part else ''"/>
-
-<!-- constant indent when first attribute is on a new line -->
-<xsl:variable name="compact" select="4" as="xs:integer"/>
-
-<xsl:variable name="lineOffset" as="xs:integer"
-select="if (exists($firstLine))
-    then string-length($firstLine)
-else 0"/>
-
-<xsl:variable name="an-outOffset" as="xs:integer"
-select="if ($class = ('en','enxsl'))
-    then $lineOffset + 1
-else if ($prevClass = ('en','enxsl'))
-    then
-if (exists($indented-lines)) then 
-    $compact
-    else $an-offset + $lineOffset
-else $an-offset"/>]]>
+</xsl:variable>]]>
 </pre>
 <hr></hr>
 <p>I find the above XSLT quite hard to follow. The absence of syntax-highlighting is not the greatest issue here, its the lack of XML indentation - there's some XPath indentation, but it doesn't appear distinct from the XML.</p>
 <hr/>
 <h2>XSLT Code Sample - With Formatting</h2>
 <p>Now, lets use exactly the same content but add a <code>lang="xslt"</code> attribute to the <code>pre</code> element:</p>
-<pre lang="xslt">
-<![CDATA[
-<xsl:variable name="line-parts" as="element()*">
+<pre lang="xslt" data-indent="2">
+<![CDATA[<xsl:variable name="line-parts" as="element()*">
 <xsl:analyze-string select="$span" regex="\n.*">
 <xsl:matching-substring>
 <nl>
@@ -141,8 +104,7 @@ else $an-offset"/>]]>
 <h2>XSD Code Sample</h2>
 <p>And now I would like to show some XSD 1.1 code to show that this transform is easily extended for any XML vocabularies that contain XPath. This sample is from <a href="http://mukulgandhi.blogspot.co.uk/2010/03/playing-again-with-xsd-11-assertions.html">Mukul Ghandi's blog</a>:</p>
 <pre lang="xsd" data-indent="1">
-<![CDATA[
-<?xml version="1.0" encoding="UTF-8" ?>
+<![CDATA[<?xml version="1.0" encoding="UTF-8" ?>
 <!-- reproduced from Mukul Gandhi blog at:
      http://mukulgandhi.blogspot.co.uk/2010/03/playing-again-with-xsd-11-assertions.html
 -->
@@ -208,9 +170,7 @@ else true()" />
 <h2>XPath Code Sample</h2>
 <p>Time for one last sample, the follwing is just standalone XPath within a <code>pre</code> element with the <code>lang="xpath"</code> attribute setting:
 </p>
-<pre lang="xpath">
-<![CDATA[
-    if (substring(.,1, 3) eq '&amp;#x') then
+<pre lang="xpath"><![CDATA[   if (substring(.,1, 3) eq '&amp;#x') then
         codepoints-to-string(
             xs:integer(
                 js:hexToDecimal(
@@ -227,6 +187,30 @@ else true()" />
     else if (. eq '&amp;apos;') then '&apos;&apos;'
     else ''
 ]]>
+</pre>
+<h2>XQuery Code Sample</h2>
+<p><em>[Reproduced from W3C XQuery 3.0 specification at: <a href="http://www.w3.org/TR/2014/REC-xquery-30-20140408/">http://www.w3.org/TR/2014/REC-xquery-30-20140408/</a>]</em></p>
+<pre lang="xquery"><![CDATA[declare function local:swizzle($n as node()) as node() 
+  { 
+   typeswitch($n)
+     case $a as attribute(color)
+       return element color { fn:string($a) } 
+     case $es as element(size) 
+       return attribute size { fn:string($es) } 
+     case $e as element() 
+       return element 
+         { fn:local-name($e) } 
+         { for $c in 
+             ($e/@* except $e/@color,     (: attr -> attr :)
+              $e/size,                    (: elem -> attr :)
+              $e/@color,                  (: attr -> elem :)
+              $e/node() except $e/size )  (: elem -> elem :)
+           return local:swizzle($c) }
+     case $d as document-node() 
+       return document 
+         { for $c in $d/* return local:swizzle($c) } 
+     default return $n 
+  };]]>
 </pre>
 <h2>Using XMLSpectrum</h2>
 <p>Code, documentation and samples to produce output similar to that in this blow are all available from the GitHub <code><a href="https://github.com/pgfearo/xmlspectrum">xmlspectrum</a></code> project site. With Blogger, I needed to copy and paste the generated CSS into the <code>b:style</code> element of the blog template that will style all my subsequent blog. The HTML output form the transform was just copied and pasted into the <code>HTML edit</code> view - but I would like to automate this process if possible.</p>

@@ -5,12 +5,12 @@ A frontend for XMLSpectrum by Phil Fearon Qutoric Limited 2012 (c)
 http://qutoric.com
 License: Apache 2.0 http://www.apache.org/licenses/LICENSE-2.0.html
 
-Purpose: Syntax highlighter for XPath (text), XML, XSLT and XSD 1.1 file formats
+Purpose: Syntax highlighter for XPath (text), XML, XSLT, XQuery and XSD 1.1 file formats
 
 Description:
 
-Transforms the source XHTML file by converting <samp> elements to para elements
-with span child elements containing class attributes for color styles. Also
+Transforms the source XHTML file by converting <pre> elements text contents
+to span child elements containing class attributes for color styles. Also
 inserts a link to a generated CSS file output as a xsl:result-document. 
 
 Note that this interface stylesheet is a simple wrapper for xmlspectrum.xsl.
@@ -21,7 +21,7 @@ Dependencies:
 
 Usage:
 
-initial-template: 'main'
+initial-template: (not used)
 source-xml: (not used)
 xsl parameters:
     sourcepath:  (path or URI for source file)
@@ -30,8 +30,17 @@ xsl parameters:
 
 Sample transform using Saxon-HE/Java on command-line (unbroken line):
 
-java -cp "C:\Program Files (x86)\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
--xsl:xsl/highlight-file.xsl sourcepath=../samples/xpathcolorer-x.xsl
+java -cp "C:\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -xsl:xsl/highlight-inline.xsl -s:samples/blog-sample.html -o:output/blog-sample.html
+
+The pre element must have a 'lang' attribute to indicate the code language, for xml-hosted languages, 3
+further attributes can be used:
+
+ data-prefix: the prefix assigned to the namespace used by the language
+ data-indent: number of space chars applied for each xml nesting level
+              (-1 prevents any changes to existing indentation on attributes)
+ data-trim: (yes|no) whether to trim leading whitespace from xml elements
+            - normally required when data-indent is used
+
 
 -->
 
@@ -40,9 +49,10 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:loc="com.qutoric.sketchpath.functions"
 xmlns:css="css-defs.com"
-exclude-result-prefixes="loc f xs css"
+exclude-result-prefixes="loc f xs css qf"
 xmlns="http://www.w3.org/1999/xhtml"
 xpath-default-namespace="http://www.w3.org/1999/xhtml"
+xmlns:qf="urn:xq.internal-function"
 xmlns:f="internal">
 
 <xsl:import href="xmlspectrum.xsl"/>
@@ -65,7 +75,13 @@ xmlns:f="internal">
 <xsl:template match="html">
 <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
 <xsl:copy>
-<xsl:apply-templates select="node()|@*"/>
+<xsl:apply-templates select="@*"/>
+<xsl:if test="not(head)">
+<head><title>Highlighted Code</title>
+<link rel="stylesheet" type="text/css" href="theme.css"/>
+</head>
+</xsl:if>
+<xsl:apply-templates select="node()"/>
 </xsl:copy>
 </xsl:template>
 
@@ -82,7 +98,7 @@ xmlns:f="internal">
 </xsl:copy>
 </xsl:template>
 
-<xsl:template match="pre[exists(@lang) and @lang ne 'xpath']">
+<xsl:template match="pre[exists(@lang) and not(@lang = ('xpath','xquery'))]">
 <xsl:variable name="is-xsl" select="@lang eq 'xslt'" as="xs:boolean"/>
 <xsl:variable name="prefix" select="(@data-prefix, '')[1]" as="xs:string"/>
 <xsl:variable name="context-indent" select="if (exists(@data-indent))
@@ -108,11 +124,11 @@ as="element()*"/>
 </xsl:copy>
 </xsl:template>
 
-<xsl:template match="pre[@lang eq 'xpath']">
+<xsl:template match="pre[@lang = ('xpath','xquery')]">
 <xsl:copy>
 <xsl:attribute name="class" select="'spectrum'"/>
 <xsl:apply-templates select="@* except @class"/>
-<xsl:sequence select="loc:showXPath(.)"/>
+<xsl:sequence select="qf:show-xquery(.)"/>
 </xsl:copy>
 </xsl:template>
 
