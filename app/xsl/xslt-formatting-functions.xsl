@@ -47,6 +47,28 @@ parameters:
 </xsl:call-template>
 </xsl:function>
 
+<xsl:function name="f:indent">
+<xsl:param name="spans" as="element()*"/>
+<xsl:param name="char-width" as="xs:integer"/>
+<xsl:param name="auto-trim" as="xs:boolean"/>
+<xsl:param name="nest-level" as="xs:integer"/>
+<xsl:call-template name="indentSpans">
+<xsl:with-param name="spans" select="$spans" as="element()*" tunnel="yes"/>
+<xsl:with-param name="index" as="xs:integer" select="1"/>
+<xsl:with-param name="level" as="xs:integer" select="$nest-level"/>
+<xsl:with-param name="margin" as="xs:integer" select="$char-width"/>
+<xsl:with-param name="an-offset" as="xs:integer" select="0"/>
+<xsl:with-param name="av-offset" as="xs:integer" select="0"/>
+<xsl:with-param name="multi-line" as="xs:boolean" select="false()"/>
+<xsl:with-param name="auto-trim" as="xs:boolean" select="$auto-trim"/>
+<xsl:with-param name="mixed-level" as="xs:integer" select="0"/>
+<xsl:with-param name="preserved" as="xs:integer" select="0"/>
+<xsl:with-param name="nl-attribute" as="xs:boolean" select="false()"/>
+
+</xsl:call-template>
+</xsl:function>
+
+
 <xsl:template name="indentSpans">
 <xsl:param name="spans" as="element()*" tunnel="yes"/>
 <xsl:param name="index" as="xs:integer"/>
