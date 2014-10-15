@@ -29,7 +29,7 @@ xmlns:f="internal">
 <xsl:template name="main">
 <!-- for case where XPath is embedded in XML text and indentation required -->
 <xsl:variable name="code1" select="if($cmdline eq 'yes') then replace($source-code, '#nl;', '&#10;') else $source-code"/>
-<xsl:variable name="code" select="if($cmdline eq 'yes') then replace($code1, '#qt;', '&quot;') else $source-code"/>
+<xsl:variable name="code" select="if($cmdline eq 'yes') then replace($code1, '#qt;', '&quot;') else $code1"/>
 <xsl:variable name="spans" select="f:render($code, $doctype, $document-type-prefix)"/>
 <xsl:variable name="real-indent" select="xs:integer($indent)" as="xs:integer"/>
 <xsl:sequence select="f:indent($spans, $real-indent, $auto-trim eq 'yes'), xs:integer($nesting)"/>
