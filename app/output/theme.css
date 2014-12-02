@@ -1,24 +1,27 @@
 
-
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+body {
+    margin:0;
+}
 p.spectrum, pre.spectrum {
 
     margin:0px;
-    font-family:Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
-    
+    font-family:'Source Code Pro', Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
+    font-size: 0.8em;
     white-space: pre-wrap;
     display: block;
     border: none thin;
     border-color: #405075;
     background-color:#002b36;
-    padding: 2px;
+    padding: 2px 2px 2px 5px;
     margin-bottom:5px;
 
 }
 
 div.spectrum-toc {
 
-    font-family:Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
-    
+    font-family:'Source Code Pro', Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
+    font-size: 0.8em;
     display: block;
     border: none thin;
     border-color: #405075;

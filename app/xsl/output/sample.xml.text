@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tutorials [
+  <!ELEMENT tutorials (tutorial)+>
+  <!ELEMENT tutorial (name,url)>
+  <!ELEMENT name (#PCDATA)>
+  <!ELEMENT url (#PCDATA)>
+  <!ATTLIST tutorials type CDATA #REQUIRED>
+]>
+<BOOKLIST one="the quick"
+          _brown="fox jumped
+                  over the lazy dog"
+          and="what is> this">mixed
+  <BOOKS>
+    <closed one="the >quick"
+            brown="fox jumped
+                   over the lazy dog"
+            and="what is this"/>alsomixed
+    <ITEM CAT="CR" any="good" space = "with surrounding space"          lots="more">
+      <?name this could be interesting I guess?>
+      <TITLE place="this is ''working">Pride and >Prejudice</TITLE>
+      <p>the quick <b class="good">'brown' </b>'only' fox jumped over
+    </p>
+      <br/>following
+      <value-of select="test/>any"/>following2
+      <!--
+      <AUTHOR>Jane Austen</AUTHOR>
+      <PUBLISHER>Modern Library</PUBLISHER>
+      -->
+      <PUB-DATE>2002-12-31 <![CDATA[<this is difficult]]> tail</PUB-DATE>
+      <LANGUAGE>English</LANGUAGE>following3
+      <PRICE>8.95</PRICE>
+      <value-of
+                select="myt
+                        est"/>
+      <!--this is
+          plain
+      -->
+      <QUANTITY>187</QUANTITY>
+      <ISBN>0679601686</ISBN>
+      <![CDATA[this won't work]]> very well
+      <PAGES>352</PAGES>
+      <DIMENSIONS UNIT="in">8.3 5.7 1.1</DIMENSIONS>
+      <WEIGHT UNIT="oz">6.1</WEIGHT>
+    </ITEM>
+    <ITEM CAT="CR">
+      <TITLE>Wuthering &#65; Heights</TITLE>
+      <AUTHOR>Charlotte Brontë</AUTHOR>
+      <p>
+        There is some <b>mixed text</b> here
+        how will this be preserved?
+        
+               Table New Dance Final
+               20     32  57    89
+               27     63  73    21
+      </p>
+      <PUBLISHER>Penguin Classics</PUBLISHER>
+      <PUB-DATE>2002-12-31</PUB-DATE>
+      <LANGUAGE>English</LANGUAGE>
+      <PRICE>5.30</PRICE>
+      <QUANTITY>113</QUANTITY>
+      <ISBN>0141439556</ISBN>
+      <PAGES>430</PAGES>
+      <DIMENSIONS UNIT="in">1.0 5.2 7.8</DIMENSIONS>
+      <WEIGHT UNIT="oz">11.2</WEIGHT>
+    </ITEM>
+    <ITEM CAT="CR">
+      <TITLE>Tess of the d'Urbervilles</TITLE>
+      <AUTHOR>Thomas Hardy</AUTHOR>
+      <PUBLISHER>Bantam Classics</PUBLISHER>
+      <PUB-DATE>1984-05-01</PUB-DATE>
+      <LANGUAGE>English</LANGUAGE>
+      <PRICE>12.65</PRICE>
+      <QUANTITY>85</QUANTITY>
+      <ISBN>0553211684</ISBN>
+      <PAGES>480</PAGES>
+      <DIMENSIONS UNIT="in">6.8 4.2 0.8</DIMENSIONS>
+      <WEIGHT UNIT="oz">7.7</WEIGHT>
+    </ITEM>
+    <ITEM CAT="CR">
+      <TITLE>Jude the Obscure</TITLE>
+      <AUTHOR>Thomas Hardy</AUTHOR>
+      <PUBLISHER>Penguin Classics</PUBLISHER>
+      <PUB-DATE>1998-09-01</PUB-DATE>
+      <LANGUAGE>English</LANGUAGE>
+      <PRICE>15.99</PRICE>
+      <QUANTITY>129</QUANTITY>
+      <ISBN>0140435387</ISBN>
+      <PAGES>528</PAGES>
+      <DIMENSIONS UNIT="in">7.8 5.2 0.9</DIMENSIONS>
+      <WEIGHT UNIT="oz">10.9</WEIGHT>
+    </ITEM>
+    <ITEM CAT="F">
+      <TITLE>The Big Over Easy</TITLE>
+      <AUTHOR>Jasper Fforde</AUTHOR>
+      <PUBLISHER>Hodder &amp; Stoughton</PUBLISHER>
+      <PUB-DATE>2005-07-11</PUB-DATE>
+      <LANGUAGE>English</LANGUAGE>
+      <PRICE>7.50</PRICE>
+      <QUANTITY>129</QUANTITY>
+      <ISBN>0340835672</ISBN>
+      <PAGES>346</PAGES>
+      <DIMENSIONS UNIT="cm">22.5 18.0 3.5</DIMENSIONS>
+      <WEIGHT UNIT="g">390</WEIGHT>
+    </ITEM>
+    <ITEM CAT="F">
+      <TITLE>The Eyre Affair</TITLE>
+      <AUTHOR>Jasper Fforde</AUTHOR>
+      <PUBLISHER>Penguin</PUBLISHER>
+      <PUB-DATE>2003-02-25</PUB-DATE>
+      <LANGUAGE>English</LANGUAGE>
+      <PRICE>7.65</PRICE>
+      <QUANTITY>129</QUANTITY>
+      <ISBN>0142001805</ISBN>
+      <PAGES>384</PAGES>
+      <DIMENSIONS UNIT="in">7.8 5.0 0.9</DIMENSIONS>
+      <WEIGHT UNIT="oz">9.0</WEIGHT>
+    </ITEM>
+    <ITEM CAT="PT">
+      <TITLE>XSLT 2.0 Programmer's Reference</TITLE>
+      <AUTHOR>Michael Kay</AUTHOR>
+      <PUBLISHER>Wrox</PUBLISHER>
+      <PUB-DATE>2004-10-13</PUB-DATE>
+      <LANGUAGE>English</LANGUAGE>
+      <PRICE>41.99</PRICE>
+      <QUANTITY>129</QUANTITY>
+      <ISBN>0470192747</ISBN>
+      <PAGES>1330</PAGES>
+      <DIMENSIONS UNIT="in">9.4 7.6 2.1</DIMENSIONS>
+      <WEIGHT UNIT="lb">4.4</WEIGHT>
+    </ITEM>
+    <ITEM CAT="PT">
+      <TITLE>XSLT Cookbook</TITLE>
+      <AUTHOR>Sal Mangano</AUTHOR>
+      <PUBLISHER>O'Reilly</PUBLISHER>
+      <PUB-DATE>2005-12-14</PUB-DATE>
+      <LANGUAGE>English</LANGUAGE>
+      <PRICE>32.64</PRICE>
+      <QUANTITY>129</QUANTITY>
+      <ISBN>0596009747</ISBN>
+      <PAGES>784</PAGES>
+      <DIMENSIONS UNIT="in">9.2 7 1.4</DIMENSIONS>
+      <WEIGHT UNIT="lb">2.5</WEIGHT>
+    </ITEM>
+  </BOOKS>
+  <CATEGORIES DESC="Miscellaneous categories">
+    <CATEGORY CODE="F" DESC="Fantasy"/>
+    <CATEGORY CODE="CR" DESC="Classical Romance"/>
+    <CATEGORY CODE="PT" DESC="Professional Textbook"/>
+  </CATEGORIES>
+</BOOKLIST>

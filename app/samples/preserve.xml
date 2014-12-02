@@ -1,0 +1,14 @@
+<abcde version="2.5">
+    <the>testing things are ok</the>
+    <p>sometimes <b>mixed</b> doesn't show well</p>
+    <new xml:space="preserve">
+  the   quick   brown   fox
+  10    20      30      40
+  20    800     90      550
+    </new>
+    <level>
+        <newlevel>
+            test
+        </newlevel>
+    </level>
+</abcde>

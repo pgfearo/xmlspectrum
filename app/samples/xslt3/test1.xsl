@@ -29,7 +29,7 @@ this should also use xpath!
 <xsl:message
  expand-text="yes">
 Processing id={$id}, 
-step={
+step={let $x := 'test',
 let $a := function() {
 22 + 55
 } return

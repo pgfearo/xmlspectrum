@@ -201,6 +201,9 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 </c:color-map>
 <css:boiler-plate>
 <css:font scp="@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);"/>
+body {
+    margin:0;
+}
 p.spectrum, pre.spectrum {
 <css:main>
     margin:0px;
@@ -211,7 +214,7 @@ p.spectrum, pre.spectrum {
     border: none thin;
     border-color: #405075;
     background-color:<css:color name="base03"/>;
-    padding: 2px;
+    padding: 2px 2px 2px 5px;
     margin-bottom:5px;
 </css:main>
 }

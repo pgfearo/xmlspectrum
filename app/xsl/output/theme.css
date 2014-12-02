@@ -1,116 +1,45 @@
 
-
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+body {
+    margin:0;
+}
 p.spectrum, pre.spectrum {
+
     margin:0px;
-    font-family: monospace;
-    
+    font-family:'Source Code Pro', Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
+    font-size: 0.8em;
     white-space: pre-wrap;
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color:#002b36;
-padding: 2px;
-margin-bottom:5px;
+    background-color:#ffffff;
+    padding: 2px 2px 2px 5px;
+    margin-bottom:5px;
+
 }
 
 div.spectrum-toc {
-    font-family: monospace;
-    
+
+    font-family:'Source Code Pro', Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
+    font-size: 0.8em;
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color: #002b36;
+    background-color:#ffffff;
     padding: 2px;
+
 }
 
 ul.base1, ul.spectrum-toc {
-    color:#93a1a1;
+color:#dd1144;
 }
 
 .spectrum span {
     white-space: pre-wrap;
 }
-/*
-chosen theme background: dark;
 
-$base03:    #002b36; //background
-$base02:    #073642; //highlighted-background
-$base01:    #586e75;
-$base00:    #657b83;
-$base0:     #839496;
-$base1:     #93a1a1;
-$base2:     #eee8d5; //highlighted-background
-$base3:     #fdf6e3; //background
-$yellow:    #b58900;
-$orange:    #cb4b16;
-$red:       #dc322f;
-$magenta:   #d33682;
-$violet:    #6c71c4;
-$blue:      #268bd2;
-$cyan:      #2aa198;
-$green:     #859900;
-*/
+span.ww {background-color: #ececec; } span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq {color: #924F99; } span.base03, span.ww:not(:hover), span.txt:not(:hover), span.cm:not(:hover), span.pi:not(:hover) {background-color: #ffffff; } span.base0, span.txt, span.cd {color: #445588; } span.base1, span.literal {color: #dd1144; } span.yellow, span.op, span.type-op, span.if, span.higher, span.step, span.whitespace, span.quantifier {color: #1549b1; } span.orange, span.function, span.pname {color: #885d3b; } span.red, span.fname, span.tname, span.tcall {color: #DB7093; } span.magenta, span.vname, span.variable, span.external {color: #333333; } span.violet, span.qname, span.type-name, span.unclosed, span.en, span.cl, span.href {color: #990000; } span.blue, span.enxsl, span.clxsl, span.enx, span.filter, span.parenthesis, span.node {color: #445588; } span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context, span.bracedq {color: #008080; } span.green, span.cm, span.comment, span.av, span.type, span.node-type {color: #999988; }
 
-/* solorized colors */
-span.base03 {
-color: #002b36;
-}
-span.base02 {
-color: #073642;
-}
-
-/* hover-effect [start] */
-span.base03, span.ww:not(:hover), span.txt:not(:hover), span.cm:not(:hover), span.pi:not(:hover)  {
-background-color: #002b36;
-}
-span.ww {
-background-color: #00202e;
-}
-/* hover-effect [end] */
-
-span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq {
-color: #586e75;
-}
-span.base00 {
-color: #657b83;
-}
-span.base0, span.txt, span.cd {
-color: #839496;
-}
-span.base1, span.literal {
-color:#93a1a1;
-}
-span.base2 {
-    color: #eee8d5;
-}
-span.base3 {
-    color: #fdf6e3;
-}
-span.yellow, span.op, span.type-op, span.if, span.higher, span.step {
-    color: #b58900;
-}
-span.orange, span.function {
-    color: #cb4b16;
-}
-span.red, span.fname, span.tname {
-    color: #dc322f;
-}
-span.magenta, span.vname, span.variable, span.external {
-    color: #d33682;
-}
-span.violet, span.qname, span.type-name, span.unclosed, span.en, span.cl, span.href, span.tcall {
-    color: #6c71c4;
-}
-span.blue, span.enxsl, span.clxsl, span.enx, 
-span.filter, span.parenthesis, span.node{
-    color: #268bd2;
-}
-span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context, span.bracedq {
-    color: #2aa198;
-}
-span.green, span.cm, span.comment, span.av, span.type, span.node-type {
-    color: #859900;
-}
 a.solar {
     text-decoration:none;
 }

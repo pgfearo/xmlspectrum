@@ -1,0 +1,31 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>schematron.xml</title><link rel="stylesheet" type="text/css" href="theme.css"></link></head><body><div><pre class="spectrum"><span class="z">&lt;?</span><span class="pi">xml version="1.0"</span><span class="z">?&gt;</span><span class="txt">
+</span><span class="z">&lt;!--</span><span class="cm">from: sample extract from http://www.xml.com/lpt/a/2000/11/22/schematron.html </span><span class="z">--&gt;</span><span class="txt">
+</span><span class="ww" id="w9"><span class="es">&lt;</span><span class="en">schema</span><span class="z"> </span><span class="atn">xmlns</span><span class="atneq">=</span><span class="z">"</span><span class="av">http://www.ascc.net/xml/schematron</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+</span><span class="ww" id="w19"><span class="es">&lt;</span><span class="enxsl">pattern</span><span class="z"> </span><span class="atn">name</span><span class="atneq">=</span><span class="z">"</span><span class="fname">Structural Validation</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+</span><span class="ww" id="w29"><span class="es">&lt;</span><span class="en">rule</span><span class="z"> </span><span class="atn">context</span><span class="atneq">=</span><span class="z">"</span><span class="qname">rss</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+</span><span class="ww" id="w39"><span class="es">&lt;</span><span class="en">assert</span><span class="z"> </span><span class="atn">test</span><span class="atneq">=</span><span class="z">"</span><span class="axis">@</span><span class="qname">version</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+An RSS version identifier should be supplied
+</span><span class="ez">&lt;/</span><span class="cl">assert</span><span id="wx52" class="ec">&gt;</span></span><span class="txt">
+</span><span class="ww" id="w54"><span class="es">&lt;</span><span class="en">report</span><span class="z"> </span><span class="atn">test</span><span class="atneq">=</span><span class="z">"</span><span class="axis">@</span><span class="qname">version</span><span class="whitespace"> </span><span class="op">!=</span><span class="whitespace"> </span><span class="numeric">0.91</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+  This Schematron validator is for RSS 0.91 only
+</span><span class="ez">&lt;/</span><span class="cl">report</span><span id="wx71" class="ec">&gt;</span></span><span class="txt">
+</span><span class="ww" id="w73"><span class="es">&lt;</span><span class="en">assert</span><span class="z"> </span><span class="atn">test</span><span class="atneq">=</span><span class="z">"</span><span class="function">count</span><span class="parenthesis">(</span><span class="qname">channel</span><span class="parenthesis">)</span><span class="whitespace"> </span><span class="op">=</span><span class="whitespace"> </span><span class="numeric">1</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+  An RSS element can only contain a single channel element
+</span><span class="ez">&lt;/</span><span class="cl">assert</span><span id="wx92" class="ec">&gt;</span></span><span class="txt">
+</span><span class="ez">&lt;/</span><span class="cl">rule</span><span id="wx96" class="ec">&gt;</span></span><span class="txt">
+
+</span><span class="ww" id="w98"><span class="es">&lt;</span><span class="en">rule</span><span class="z"> </span><span class="atn">context</span><span class="atneq">=</span><span class="z">"</span><span class="qname">title</span><span class="op">|</span><span class="qname">description</span><span class="op">|</span><span class="qname">link</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+</span><span class="ww" id="w112"><span class="es">&lt;</span><span class="en">assert</span><span class="z"> </span><span class="atn">test</span><span class="atneq">=</span><span class="z">"</span><span class="axis">parent::</span><span class="qname">channel</span><span class="whitespace"> </span><span class="op">or</span><span class="whitespace"> </span><span class="axis">parent::</span><span class="qname">image</span><span class="whitespace"> 
+</span><span class="op">or</span><span class="whitespace"> </span><span class="axis">parent::</span><span class="qname">item</span><span class="whitespace"> </span><span class="op">or</span><span class="whitespace"> </span><span class="axis">parent::</span><span class="qname">textinput</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+A</span><span class="ww" id="w138"><span class="es">&lt;</span><span class="en">name</span><span id="wx140" class="sc">/&gt;</span></span><span class="txt"> element can only be contained with a
+ channel, image, item or textinput element.
+</span><span class="ez">&lt;/</span><span class="cl">assert</span><span id="wx144" class="ec">&gt;</span></span><span class="txt">
+</span><span class="ww" id="w146"><span class="es">&lt;</span><span class="en">report</span><span class="z"> </span><span class="atn">test</span><span class="atneq">=</span><span class="z">"</span><span class="axis">child::</span><span class="op">*</span><span class="z">"</span><span class="scx">&gt;</span><span class="txt">
+A</span><span class="ww" id="w157"><span class="es">&lt;</span><span class="en">name</span><span id="wx159" class="sc">/&gt;</span></span><span class="txt"> element cannot contain sub-elements,
+ remove any additional markup
+</span><span class="ez">&lt;/</span><span class="cl">report</span><span id="wx163" class="ec">&gt;</span></span><span class="txt">
+</span><span class="ez">&lt;/</span><span class="cl">rule</span><span id="wx167" class="ec">&gt;</span></span><span class="txt">
+</span><span class="ez">&lt;/</span><span class="clxsl">pattern</span><span id="wx171" class="ec">&gt;</span></span><span class="txt">
+</span><span class="ez">&lt;/</span><span class="cl">schema</span><span id="wx175" class="ec">&gt;</span></span><span class="txt">
+
+</span></pre></div></body></html>

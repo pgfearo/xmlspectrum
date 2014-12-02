@@ -1,0 +1,50 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>sample.xqy</title><link rel="stylesheet" type="text/css" href="theme.css"></link></head><body><div><pre class="spectrum"><span class="comment">(:
+: Module Name: Sample
+: Module Version: 1.0
+: Date: October 6, 2011
+: Copyright: None
+: Proprietary 
+: Extensions: None
+: 
+: XQuery 
+: Specification : XQuery v1.0
+: Module Overview: Example for xqdoc processing
+:)</span><span class="whitespace">
+</span><span class="op">xquery</span><span class="whitespace"> </span><span class="qname">version</span><span class="whitespace"> </span><span class="op">"</span><span class="literal">1.0</span><span class="op">"</span><span class="open"></span><span class="op">;</span><span class="whitespace">
+
+
+</span><span class="comment">(:~ This module provides a sample main module authored according 
+: to the proposed XQuery Style Guidelines 
+: @author John Snelson
+: @since January 17, 2006 
+: @version 1.0 :)</span><span class="open"></span><span class="whitespace">
+</span><span class="op">import</span><span class="whitespace"> </span><span class="op">module</span><span class="whitespace"> </span><span class="axis">namespace</span><span class="whitespace"> </span><span class="qname">math</span><span class="op">=</span><span class="op">"</span><span class="literal">http://xqdoc.org/sample-math-lib</span><span class="op">"</span><span class="open"></span><span class="whitespace"> </span><span class="op">at</span><span class="whitespace"> </span><span class="op">"</span><span class="literal">sample-math-lib.xqy</span><span class="op">"</span><span class="open"></span><span class="op">;</span><span class="whitespace">
+
+</span><span class="comment">(:~ so we have XPath 2.0 as default function namespace :)</span><span class="open"></span><span class="whitespace">
+</span><span class="whitespace">declare default function namespace</span><span class="whitespace"> </span><span class="op">"</span><span class="literal">http://www.w3.org/2005/xpath-functions</span><span class="op">"</span><span class="open"></span><span class="op">;</span><span class="whitespace"> 
+</span><span class="comment">(:~ this module outputs html  :)</span><span class="open"></span><span class="whitespace">
+</span><span class="whitespace">declare default element namespace</span><span class="whitespace"> </span><span class="op">"</span><span class="literal">http://www.w3.org/1999/xhtml</span><span class="op">"</span><span class="open"></span><span class="op">;</span><span class="whitespace">
+
+</span><span class="comment">(:~ This variable contains the first variable to process. :)</span><span class="open"></span><span class="whitespace">
+</span><span class="whitespace">declare variable</span><span class="whitespace"> </span><span class="variable">$operand-one</span><span class="whitespace"> </span><span class="op">as</span><span class="whitespace"> </span><span class="type-name">xs:integer</span><span class="whitespace"> </span><span class="op">external</span><span class="op">;</span><span class="whitespace">
+
+</span><span class="comment">(:~ This variable contains the second integer to process. :)</span><span class="open"></span><span class="whitespace">
+</span><span class="whitespace">declare variable</span><span class="whitespace"> </span><span class="variable">$operand-two</span><span class="whitespace"> </span><span class="op">as</span><span class="whitespace"> </span><span class="type-name">xs:integer</span><span class="whitespace"> </span><span class="op">external</span><span class="op">;</span><span class="whitespace">
+
+</span><span class="comment">(:~
+: Generates title for html page
+: @returns string value for title
+:)</span><span class="open"></span><span class="whitespace">
+</span><span class="whitespace">declare function</span><span class="whitespace"> </span><span class="function">local:title</span><span class="parenthesis">(</span><span class="parenthesis">)</span><span class="whitespace"> </span><span class="op">as</span><span class="whitespace"> </span><span class="type-name">xs:string</span><span class="op">{</span><span class="whitespace">
+</span><span class="op">'</span><span class="literal">A Sample XQuery File</span><span class="op">'</span><span class="open"></span><span class="whitespace">
+</span><span class="op">}</span><span class="op">;</span><span class="whitespace">
+
+</span><span class="es">&lt;</span><span class="en">html</span><span class="z">&gt;</span><span class="txt"> 
+</span><span class="es">&lt;</span><span class="en">head</span><span class="z">&gt;</span><span class="txt">
+  </span><span class="es">&lt;</span><span class="en">title</span><span class="z">&gt;</span><span class="op">{</span><span class="function">local:title</span><span class="parenthesis">(</span><span class="parenthesis">)</span><span class="op">}</span><span class="sc">&lt;/</span><span class="cl">title</span><span class="z">&gt;</span><span class="txt"> 
+</span><span class="sc">&lt;/</span><span class="cl">head</span><span class="z">&gt;</span><span class="txt">
+</span><span class="es">&lt;</span><span class="en">body</span><span class="z">&gt;</span><span class="txt"> 
+  </span><span class="es">&lt;</span><span class="en">p</span><span class="z">&gt;</span><span class="op">{</span><span class="variable">$operand1</span><span class="whitespace"> </span><span class="op">+</span><span class="whitespace"> </span><span class="variable">$operand2</span><span class="op">}</span><span class="sc">&lt;/</span><span class="cl">p</span><span class="z">&gt;</span><span class="txt"> 
+</span><span class="sc">&lt;/</span><span class="cl">body</span><span class="z">&gt;</span><span class="txt">
+</span><span class="sc">&lt;/</span><span class="cl">html</span><span class="z">&gt;</span><span class="whitespace">
+</span></pre></div></body></html>
