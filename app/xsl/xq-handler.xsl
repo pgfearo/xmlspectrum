@@ -6,7 +6,7 @@
                 xpath-default-namespace="http://www.w3.org/1999/xhtml"
                 xmlns:loc="com.qutoric.xq.functions"
                 exclude-result-prefixes="loc xs">
-  <xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; // := ! || { } ; ~ :'"/>
+  <xsl:variable name="ops" select="', / = &lt; &gt; + - * ? | != &lt;= &gt;= &lt;&lt; &gt;&gt; // := ! || { } ; ~ : # =>'"/>
   <xsl:variable name="aOps" select="'or and eq ne lt le gt ge is to div idiv mod union intersect except in return satisfies then else as map where start previous next when end at'"/>
   <xsl:variable name="hOps" select="'for some every let'"/>
   <xsl:variable name="nodes" select="'attribute comment document-node namespace-node element node processing-instruction text'"/>
