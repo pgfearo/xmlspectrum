@@ -164,12 +164,11 @@
             </xsl:when>
             <xsl:when test="$name = ('literal','comment')">
               <xsl:choose>
-                <xsl:when test="$name eq 'literal'">
+                <xsl:when test="$name = 'literal'">
                   <xsl:variable name="quote" select="codepoints-to-string($block/@type)"/>
-                  <xsl:variable name="is-map-property" select="matches($following-string, '^\s*:')"/>
                   <span class="op"><xsl:value-of select="$quote"/></span>
-                  <span class="{if($is-map-property) then 'property' else $name}">
-                    <xsl:sequence select="substring($text, 2, string-length($text) - 2)"/>                          
+                  <span class="{$name}">
+                    <xsl:sequence select="substring($text, 2, string-length($text) - 2)"/>                               
                   </span>
                   <span class="op"><xsl:value-of select="$quote"/></span>
                 </xsl:when>

@@ -193,7 +193,7 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 <c:color name="blue">blue enxsl clxsl enx filter parenthesis node
 </c:color>
 <!-- attribute names + axis -->
-<c:color name="cyan">cyan atn numeric pi dt axis context bracedq
+<c:color name="cyan">cyan atn numeric pi dt axis context bracedq property
 </c:color>
 <!-- xml and xpath comments -->
 <c:color name="green">green cm comment av type node-type

@@ -494,9 +494,9 @@
     <xsl:param name="expandStack" as="xs:boolean*"/>
     <!-- don't and empty tag value to stack -->
     <xsl:variable name="startXslTag" as="xs:boolean" 
-                  select="exists($parseStrings[@class eq 'enxsl']) and empty($parseStrings[@class eq 'sc'])"/>
+                  select="exists($parseStrings[@class = ('en','enxsl')]) and empty($parseStrings[@class eq 'sc'])"/>
     <xsl:variable name="closeXslTag" as="xs:boolean"
-                  select="exists($parseStrings[@class eq 'clxsl'])"/>
+                  select="exists($parseStrings[@class = ('cl','clxsl')])"/>
     <xsl:variable name="expandValue" as="xs:boolean?" 
                   select="f:getExpandTextValue($parseStrings)"/>
     
@@ -515,9 +515,9 @@
     <xsl:param name="parseStrings" as="element()*"/>
     
     <xsl:variable name="expandValue" as="xs:string?" 
-                  select="if($parseStrings[@class eq 'enxsl']) then
+                  select="if($parseStrings[@class = ('en','enxsl')]) then
                           (for $i in 1 to count($parseStrings) return
-                          if($parseStrings[$i][@class eq 'atn' and . eq 'expand-text'])
+                          if($parseStrings[$i][@class eq 'atn' and . = ('xsl:expand-text','expand-text')])
                           then $parseStrings[$i + 3]/text()
                           else ()
                           )
@@ -532,7 +532,7 @@
     <xsl:param name="existing-expand-state" as="xs:boolean*"/>
     <xsl:variable name="expandValue" as="xs:string?" 
                   select="for $i in 1 to count($spans) return
-                          if($spans[$i][@class eq 'atn' and . eq 'expand-text'])
+                          if($spans[$i][@class eq 'atn' and . = ('xsl:expand-text','expand-text')])
                           then $spans[$i + 3]/text()
                           else ()"/>
     <xsl:sequence select="if($expandValue) then
@@ -639,7 +639,7 @@
           <xsl:sequence select="$attSpans"/>
           <xsl:variable name="isXPath" as="xs:boolean"
                         select="if ($is-xsl-element)
-                                then $att-name = ('select','test', 'match', 'xpath','context-item','namespace-context','count')
+                                then $att-name = ('select','test', 'match', 'xpath','context-item','namespace-context','count','use-when')
                                 
                                 else if (exists($xsd-xpath-attributes)) then
                                 
@@ -694,10 +694,7 @@
     </xsl:variable>
     
     <xsl:variable name="newExpandText" as="xs:boolean" 
-                  select="if($is-xsl-element) then
-                          f:checkExpandSpans($spans, $expand-text)
-                          else
-                          $expand-text"/>
+                  select="f:checkExpandSpans($spans, $expand-text)"/>
     
     <xsl:sequence select="$spans"/>
     
