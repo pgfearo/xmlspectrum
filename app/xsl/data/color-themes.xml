@@ -175,7 +175,7 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 <!-- xpath literal text -->
 <c:color name="base1">base1 literal</c:color>
 <!-- xpath operators -->
-<c:color name="yellow">yellow op type-op if higher step whitespace quantifier
+<c:color name="yellow">yellow op type-op if higher step whitespace quantifier parenthesis
 </c:color>
 <!-- functions -->
 <c:color name="orange">orange function pname
@@ -190,13 +190,13 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 <c:color name="violet">violet qname type-name unclosed en cl href
 </c:color>
 <!-- parenthesis and highlighted element names -->
-<c:color name="blue">blue enxsl clxsl enx filter parenthesis node
+<c:color name="blue">blue enxsl clxsl enx filter node node-type
 </c:color>
 <!-- attribute names + axis -->
 <c:color name="cyan">cyan atn numeric pi dt axis context bracedq property
 </c:color>
 <!-- xml and xpath comments -->
-<c:color name="green">green cm comment av type node-type
+<c:color name="green">green cm comment av type
 </c:color>
 </c:color-map>
 <css:boiler-plate>

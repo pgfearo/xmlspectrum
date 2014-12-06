@@ -98,8 +98,8 @@
     
     <xsl:variable name="tokens-a" as="xs:string*" select="tokenize($xmlText, '&lt;')"/>
     <xsl:message>
-      <xsl:text>doctype: </xsl:text><xsl:value-of select="$doctype"/>
-      <xsl:text>rendering </xsl:text>
+      <xsl:text>document-type: </xsl:text><xsl:value-of select="$doctype"/>
+      <xsl:text> rendering </xsl:text>
       <xsl:value-of select="concat(string(count($tokens-a)),' ')"/>
       <xsl:value-of select="$doctype"/>
       <xsl:text> tokens ...</xsl:text>
@@ -639,7 +639,10 @@
           <xsl:sequence select="$attSpans"/>
           <xsl:variable name="isXPath" as="xs:boolean"
                         select="if ($is-xsl-element)
-                                then $att-name = ('select','test', 'match', 'xpath','context-item','namespace-context','count','use-when')
+                                then $att-name = ('select','test', 'match', 'xpath','context-item',
+                                'namespace-context','count','use-when','for-each-item','for-each-stream','key',
+                                'initial-value','value','applies-to','on-empty','xpath','with-params','context-item',
+                                'group-by','group-adjacent','group-starting-with','group-ending-with','use','use-when')
                                 
                                 else if (exists($xsd-xpath-attributes)) then
                                 
