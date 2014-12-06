@@ -105,7 +105,19 @@
       <xsl:text> tokens ...</xsl:text>
     </xsl:message>
     <xsl:variable name="tokens" select="if (normalize-space($tokens-a[1]) eq '') then subsequence($tokens-a, 2) else $tokens-a"/>
-    <xsl:variable name="spans" select="f:iterateTokens(0, $tokens,1,'n',0, 0, $doctype, $root-prefix, false())" as="element()*"/>
+    <xsl:variable name="spans" as="element()*">
+      <xsl:call-template name="iterateTokens">
+        <xsl:with-param name="counter" as="xs:integer" select="0"/>
+        <xsl:with-param name="tokens" as="xs:string*" select="$tokens"/>
+        <xsl:with-param name="index" as="xs:integer" select="1"/>
+        <xsl:with-param name="expected" as="xs:string" select="'n'"/>
+        <xsl:with-param name="beganAt" as="xs:integer" select="0"/>
+        <xsl:with-param name="level" as="xs:integer" select="0"/>
+        <xsl:with-param name="doctype" as="xs:string" select="$doctype"/>
+        <xsl:with-param name="root-prefix" as="xs:string" select="$root-prefix"/>
+        <xsl:with-param name="expand-text-stack" as="xs:boolean*" select="false()"/>
+      </xsl:call-template>
+    </xsl:variable>
     
     <xsl:choose>
       <xsl:when test="$css-inline eq 'no'">
@@ -256,8 +268,8 @@
                           else if ($in eq ']]>') then 9
                           else 1"/>
   </xsl:function>
-  
-  <xsl:function name="f:iterateTokens" as="element()*">
+
+  <xsl:template name="iterateTokens" as="element()*">
     <xsl:param name="counter" as="xs:integer"/>
     <xsl:param name="tokens" as="xs:string*"/>
     <xsl:param name="index" as="xs:integer"/>
@@ -287,7 +299,8 @@
     
     <xsl:variable name="expectedOutput" as="element()*">
       <xsl:if test="$awaiting">
-        <!--  looking to close an open tag -->
+        <!--  looking to close an open ta
+        g -->
         <!-- consider: <!DOCTYPE person [<!ELEMENT ... ]> as well as reference only -->
         <xsl:variable name="beforeFind" select="substring-before($token, $expected)"/>
         <xsl:variable name="found"
@@ -483,11 +496,20 @@
                   select="if ($stillAwaiting) then $beganAt else $index"/>
     
     <xsl:if test="$index le count($tokens)">
-      <xsl:sequence select="f:iterateTokens($newCounter, $tokens, $index + 1,
-                            $newExpected, $newBeganAt, $newLevel, $doctype, $new-root-prefix, 
-                            f:getNewExpandStack($parseStrings, $expand-text-stack) )"/>
+      <xsl:call-template name="iterateTokens">
+        <xsl:with-param name="counter" as="xs:integer" select="$newCounter"/>
+        <xsl:with-param name="tokens" as="xs:string*" select="$tokens"/>
+        <xsl:with-param name="index" as="xs:integer" select="$index + 1"/>
+        <xsl:with-param name="expected" as="xs:string" select="$newExpected"/>
+        <xsl:with-param name="beganAt" as="xs:integer" select="$newBeganAt"/>
+        <xsl:with-param name="level" as="xs:integer" select="$newLevel"/>
+        <xsl:with-param name="doctype" as="xs:string" select="$doctype"/>
+        <xsl:with-param name="root-prefix" as="xs:string" select="$new-root-prefix"/>
+        <xsl:with-param name="expand-text-stack" as="xs:boolean*" 
+                        select="f:getNewExpandStack($parseStrings, $expand-text-stack)"/>
+      </xsl:call-template>
     </xsl:if>
-  </xsl:function>
+  </xsl:template>
   
   <xsl:function name="f:getNewExpandStack" as="xs:boolean*">
     <xsl:param name="parseStrings" as="element()*"/>
