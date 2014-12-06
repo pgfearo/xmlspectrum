@@ -22,7 +22,10 @@ elif [[ $1 == /* ]]
     then
     relpath=$1
 else
-    relpath=$(pwd)/$1
+    tmppath=$(pwd)/$1
+    filename=$(basename $1)
+    dirpath=$(dirname $tmppath)
+    relpath="$(cd "$dirpath" && pwd)/$filename"
 fi
 
 if [[ $# -eq 0 || $1 == '-?' ]]
@@ -35,11 +38,12 @@ if [[ $# -eq 0 || $1 == '-?' ]]
         java -jar $SAXONJAR -xsl:$XMLSPECTRUM -it:main sourcepath=?
     elif [ -f $relpath ]
     then
-        filename=$(basename $1)
         newpath=$(dirname $relpath)/xmsxsl-out
         java -jar $SAXONJAR -xsl:$XMLSPECTRUM -it:main sourcepath=$relpath output-path=$newpath output-method=text $2 $3 $4 $5 $6 $7 $8 $9
         newfilepath=$newpath/$filename.text
-        open $newfilepath
+        cat $newfilepath
+        echo "---------------------------"
+        echo "output file is at: $newfilepath"
     else
-        echo "file not found: $(pwd)/$1"
+        echo "file not found: $relpath"
 fi
