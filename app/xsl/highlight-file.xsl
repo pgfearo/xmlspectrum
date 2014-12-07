@@ -216,7 +216,7 @@ java -cp "C:\Users\pgf\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
       <xsl:message select="'output-path: ', $output-path, ' document-type: ', $doctype, ' root-prefix: ', $root-prefix"/>
     </xsl:if>
     <xsl:variable name="params">
-<xsl:text>color-theme ................. [ solarized-dark | tomorrow-night | github | ... ]
+<xsl:text>
 indent ...................... [ number ] (-1 to 10)
 force-newline ............... [ yes | no ]
 auto-trim ....................[ yes | no ]
@@ -227,6 +227,7 @@ document-type ................[ xslt | xsd | xquery | ... ]
 document-type-prefix .........e.g. xsl | xsd
 format-mixed-content .........[ yes | no ]
 </xsl:text>
+      <xsl:value-of select="concat('color-theme..[ ', string-join(f:theme-names(), '|'),' ]')"/>
     </xsl:variable>
     <xsl:variable name="top-params">
 <xsl:text>

@@ -46,6 +46,22 @@ xmlns:css="css-defs.com">
 <c:color name="cyan" value="2aa198"/>
 <c:color name="green" value="859900"/>
 </c:theme>
+<c:theme name="dawn-light">
+<c:color name="base" value="ececec"/>
+<c:color name="base01" value="bab0ca"/>
+<c:color name="base03" value="ffffff"/>
+<c:color name="base0" value="839496"/>
+<c:color name="base1" value="93a1a1"/>
+
+<c:color name="yellow" value="403090"/>
+<c:color name="orange" value="00a0d0;"/>
+<c:color name="red" value="dc322f"/>
+<c:color name="magenta" value="d33682"/>
+<c:color name="violet" value="6c71c4"/>
+<c:color name="blue" value="268bd2"/>
+<c:color name="cyan" value="2aa198"/>
+<c:color name="green" value="cdcdcd"/>
+</c:theme>
 <c:theme name="roboticket-grey">
 <c:color name="base" value="bdd8f2"/>
 <c:color name="base01" value="afbfcf"/>

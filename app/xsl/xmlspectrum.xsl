@@ -165,6 +165,10 @@
     </xsl:variable>
     <xsl:sequence select="string-join($css-text, '')"/>
   </xsl:function>
+
+  <xsl:function name="f:theme-names" as="xs:string*">
+      <xsl:sequence select="$css-doc/c:themes/c:theme/@name/string()"/>
+  </xsl:function>
   
   <xsl:function name="f:inline-css-toc" as="xs:string">
     <xsl:variable name="css-text" as="xs:string*">
@@ -193,11 +197,11 @@
       
       <xsl:sequence select="concat(
                             $selector-string,
-                            ' {',
+                            '&#10; {',
                             $css-prop,
                             ': #',
                             $color-value,
-                            '; }'
+                            '; }&#10;'
                             )"/>
       
     </xsl:for-each>
@@ -281,7 +285,7 @@
     <xsl:param name="expand-text-stack" as="xs:boolean*"/>
     <xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
     <xsl:variable name="is-xsd" select="not($is-xsl)" as="xs:boolean"/>
-    
+    <xsl:variable name="xsl-expand-text" select="concat($root-prefix, 'expand-text')"/>
     <xsl:variable name="token" select="$tokens[$index]" as="xs:string?"/>
     <xsl:variable name="prevToken" select="$tokens[$index + 1]" as="xs:string?"/>
     <xsl:variable name="nextToken" select="$tokens[$index - 1]" as="xs:string?"/>
@@ -461,7 +465,7 @@
               </xsl:analyze-string>
             </xsl:variable>
             
-            <xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $doctype, $new-root-prefix, '', $expand-text-stack[last()])"/>
+            <xsl:sequence select="f:getAttributes($token, 0, $parts, 1, $doctype, $new-root-prefix, '', $expand-text-stack[last()], $xsl-expand-text)"/>
             
             <!-- must be an open tag, so check for attributes -->
             
@@ -506,7 +510,7 @@
         <xsl:with-param name="doctype" as="xs:string" select="$doctype"/>
         <xsl:with-param name="root-prefix" as="xs:string" select="$new-root-prefix"/>
         <xsl:with-param name="expand-text-stack" as="xs:boolean*" 
-                        select="f:getNewExpandStack($parseStrings, $expand-text-stack)"/>
+                        select="f:getNewExpandStack($parseStrings, $expand-text-stack, $xsl-expand-text)"/>
       </xsl:call-template>
     </xsl:if>
   </xsl:template>
@@ -514,13 +518,14 @@
   <xsl:function name="f:getNewExpandStack" as="xs:boolean*">
     <xsl:param name="parseStrings" as="element()*"/>
     <xsl:param name="expandStack" as="xs:boolean*"/>
+    <xsl:param name="xsl-expand-text" as="xs:string"/>
     <!-- don't and empty tag value to stack -->
     <xsl:variable name="startXslTag" as="xs:boolean" 
                   select="exists($parseStrings[@class = ('en','enxsl')]) and empty($parseStrings[@class eq 'sc'])"/>
     <xsl:variable name="closeXslTag" as="xs:boolean"
                   select="exists($parseStrings[@class = ('cl','clxsl')])"/>
     <xsl:variable name="expandValue" as="xs:boolean?" 
-                  select="f:getExpandTextValue($parseStrings)"/>
+                  select="f:getExpandTextValue($parseStrings, $xsl-expand-text)"/>
     
     <xsl:sequence select="if(exists($expandValue)) then
                           ($expandStack, ($expandValue))
@@ -535,11 +540,11 @@
   
   <xsl:function name="f:getExpandTextValue" as="xs:boolean?">
     <xsl:param name="parseStrings" as="element()*"/>
-    
+    <xsl:param name="xsl-expand-text" as="xs:string"/>
     <xsl:variable name="expandValue" as="xs:string?" 
                   select="if($parseStrings[@class = ('en','enxsl')]) then
                           (for $i in 1 to count($parseStrings) return
-                          if($parseStrings[$i][@class eq 'atn' and . = ('xsl:expand-text','expand-text')])
+                          if($parseStrings[$i][@class eq 'atn' and . = ($xsl-expand-text,'expand-text')])
                           then $parseStrings[$i + 3]/text()
                           else ()
                           )
@@ -552,9 +557,10 @@
   <xsl:function name="f:checkExpandSpans" as="xs:boolean">
     <xsl:param name="spans" as="element()*"/>
     <xsl:param name="existing-expand-state" as="xs:boolean*"/>
+    <xsl:param name="xsl-expand-text" as="xs:string"/>
     <xsl:variable name="expandValue" as="xs:string?" 
                   select="for $i in 1 to count($spans) return
-                          if($spans[$i][@class eq 'atn' and . = ('xsl:expand-text','expand-text')])
+                          if($spans[$i][@class eq 'atn' and . = ($xsl-expand-text,'expand-text')])
                           then $spans[$i + 3]/text()
                           else ()"/>
     <xsl:sequence select="if($expandValue) then
@@ -572,6 +578,7 @@
     <xsl:param name="root-prefix" as="xs:string"/>
     <xsl:param name="ename" as="xs:string"/>
     <xsl:param name="expand-text" as="xs:boolean"/>
+    <xsl:param name="xsl-expand-text" as="xs:string"/>
     <xsl:variable name="is-xsl" as="xs:boolean" select="$doctype eq 'xslt'"/>
     <xsl:variable name="is-xsd" select="not($is-xsl)" as="xs:boolean"/>
     
@@ -719,14 +726,15 @@
     </xsl:variable>
     
     <xsl:variable name="newExpandText" as="xs:boolean" 
-                  select="f:checkExpandSpans($spans, $expand-text)"/>
+                  select="f:checkExpandSpans($spans, $expand-text, $xsl-expand-text)"/>
     
     <xsl:sequence select="$spans"/>
     
     <xsl:variable name="newOffset" select="string-length($part1) + string-length($part2) + $offset"/>
     
     <xsl:if test="not($isFinalPart)">
-      <xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2, $doctype, $root-prefix, $elementName, $newExpandText)"/>
+      <xsl:sequence select="f:getAttributes($attToken, $newOffset, $parts, $index + 2, 
+        $doctype, $root-prefix, $elementName, $newExpandText, $xsl-expand-text)"/>
     </xsl:if>
     
   </xsl:function>
