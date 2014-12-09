@@ -2,15 +2,10 @@
 REM script for calling xmlspectrum with command line such as: xmlspec sample.xml auto-trim=yes indent=2
 REM loop is required to combine name/value pairs with an '=' as args are split as they are passed to CMD
 set source=%~f1
-echo source: %source%
 set xslpath=%~dp0\..\xsl\highlight-file.xsl
-echo xslpath %xslpath%
 set opath=%CD%\xms-out
-echo opath %opath%
 set ofpath=%~nx1.html
-echo ofpath %ofpath%
 set fullofpath=%opath%\%ofpath%
-echo fullofpath %fullofpath%
 shift
 set iter=0
 set prev=
