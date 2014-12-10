@@ -249,13 +249,36 @@ div.spectrum-toc {
 
 ul.base1, ul.spectrum-toc {
 color:<css:color name="base1"/>;
-}
+  }
 
-.spectrum span {
-    white-space: pre-wrap;
-}
+  ul.spectrum-toc > li {
+  border-width:1px;
+  border-top-style: solid;
+  padding-bottom: 8px;
+  }
+  ul.spectrum-toc li {
+  list-style: none;
+  }
+  ul.spectrum-toc span.blue {
+  display:block;
+  margin: 8px 0px 8px 0px;
+  }
+  ul.t-and-f {
 
-<css:map element="span"/>
+  border-color: blue;
+  float: left;
+  }
+  ul.v-and-p {
+
+  border-color: red;
+  float: left;
+  }
+
+  .spectrum span {
+  white-space: pre-wrap;
+  }
+
+  <css:map element="span"/>
 
 a.solar {
     text-decoration:none;

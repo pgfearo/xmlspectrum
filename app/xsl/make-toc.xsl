@@ -64,8 +64,7 @@
         <span class="blue">File: <xsl:value-of select="@path"/>
         </span>
       </a>
-    </li>
-    <ul class="spectrum-toc">
+    <ul class="t-and-f">
       <xsl:if test="exists(templates/item)">
         <li>
           <span class="en">Templates</span>
@@ -88,6 +87,8 @@
           </ul>
         </li>
       </xsl:if>
+    </ul>
+    <ul class="v-and-p">
       <xsl:if test="exists(variables/item)">
         <li>
           <span class="vname">Variables</span>
@@ -115,6 +116,8 @@
         <li><span>[None]</span></li>
       </xsl:if>
     </ul>
+    <div style="clear:both"></div>
+    </li>
     
   </xsl:template>
   

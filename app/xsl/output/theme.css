@@ -31,7 +31,16 @@ div.spectrum-toc {
 }
 
 ul.base1, ul.spectrum-toc {
-color:#dd1144;
+color:red;
+}
+ul.t-and-f {
+  background-color: blue;
+  border-style: solid;
+  border-width: 2px;
+  border-color: white;
+}
+.v-and-p {
+  background-color: red;
 }
 
 .spectrum span {
