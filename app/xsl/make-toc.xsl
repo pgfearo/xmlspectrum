@@ -17,6 +17,13 @@
     <xsl:param name="output-method"/>
     <xsl:param name="is-css-inline" as="xs:boolean"/>
     
+    <!-- for diagnostics only: -->
+    <!--
+    <xsl:result-document href="{concat($path, 'globals.xml')}" indent="yes">
+      <xsl:sequence select="$globals"/>
+    </xsl:result-document>
+    -->
+    
     <xsl:result-document href="{concat($path, 'index.html')}" method="{$output-method}" indent="no">
       
       <xsl:if test="$output-method eq 'html'">

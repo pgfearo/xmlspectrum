@@ -256,8 +256,7 @@ output-path ................. { directory path }
           </xsl:call-template>
         </xsl:variable>
         
-        <xsl:variable name="joined-path" select="string-join($root-path, '/')"/>
-        
+        <xsl:variable name="joined-path" select="string-join($root-path, '/')"/>       
         <xsl:variable name="root-length" select="string-length($joined-path) + 1"/>
         
         <xsl:variable name="globals" as="element()">
@@ -548,7 +547,15 @@ output-path ................. { directory path }
         </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:sequence select="$min-file"/>
+        <xsl:choose>
+          <xsl:when test="$index eq 1">
+            <xsl:sequence
+              select="subsequence($current-file, 1, count($current-file) - 1)"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:sequence select="$min-file"/>            
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
     
