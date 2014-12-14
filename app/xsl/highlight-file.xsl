@@ -71,6 +71,7 @@ java -cp "C:\Users\pgf\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
   <xsl:param name="css-path" select="''"/>
   <xsl:param name="auto-trim" select="'no'"/>
   <xsl:param name="link-names" select="'no'"/>
+  <xsl:param name="wrap-elements" select="'no'"/>
   <xsl:param name="output-path" select="'output/'"/>
   <xsl:param name="format-mixed-content" select="'no'"/>
   <!-- set value to 'scp' for source-code-pro font -->
@@ -96,6 +97,7 @@ java -cp "C:\Users\pgf\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
   
   <xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/>
   <xsl:variable name="do-link" select="$link-names eq 'yes'"/>
+  <xsl:variable name="do-wrap" select="$do-link or $wrap-elements eq 'yes'"/>
   <xsl:variable name="indent-size" select="xs:integer($indent)"/>
   <xsl:variable name="css-name" select="'theme.css'"/>
   <xsl:variable name="do-output-path"
@@ -349,7 +351,7 @@ output-path ................. { directory path }
         
         <xsl:variable name="spans" as="element()*">
           <xsl:choose>
-            <xsl:when test="$do-link">
+            <xsl:when test="$do-wrap">
               <xsl:call-template name="wrap-spans-only">
                 <xsl:with-param name="spans" as="node()*" select="$result-spans"/>
                 <xsl:with-param name="index" select="1" as="xs:integer"/>
@@ -423,13 +425,24 @@ output-path ................. { directory path }
       </xsl:otherwise>
     </xsl:choose>
   </xsl:function>
+
+  <xsl:template name="wrap-spans-only">
+      <xsl:param name="spans" as="node()*"/>
+      <xsl:param name="index" as="xs:integer"/>
+      <xsl:call-template name="wrap-spans">
+        <xsl:with-param name="spans" as="node()*" select="$spans"/>
+        <xsl:with-param name="index" as="xs:integer" select="$index"/>
+        <xsl:with-param name="with-meta" as="xs:boolean?" select="false()"/>      
+      </xsl:call-template>
+  </xsl:template>
   
   <xsl:template name="wrap-spans">
     <xsl:param name="spans" as="node()*"/>
-    <xsl:param name="globals" as="element()" tunnel="yes"/>
-    <xsl:param name="xmlns" as="element()" tunnel="yes"/>
+    <xsl:param name="globals" as="element()?" select="()" tunnel="yes"/>
+    <xsl:param name="xmlns" as="element()?" select="()" tunnel="yes"/>
+    <xsl:param name="with-meta" as="xs:boolean?" select="true()"/>
     <xsl:param name="index" as="xs:integer"/>
-    <xsl:param name="path-length" tunnel="yes" as="xs:string"/>
+    <xsl:param name="path-length" tunnel="yes" as="xs:string?" select="()"/>
     
     <xsl:variable name="span" select="$spans[$index]"/>
     
@@ -444,6 +457,7 @@ output-path ................. { directory path }
           <xsl:call-template name="wrap-spans">
             <xsl:with-param name="spans" select="$spans"/>
             <xsl:with-param name="index" select="$index + 1"/>
+            <xsl:with-param name="with-meta" as="xs:boolean" select="$with-meta"/>
           </xsl:call-template>
         </xsl:variable>
         <span class="ww" id="w{$index}">
@@ -458,6 +472,7 @@ output-path ................. { directory path }
         <xsl:call-template name="wrap-spans">
           <xsl:with-param name="spans" select="$spans"/>
           <xsl:with-param name="index" select="$prev-index + 1"/>
+          <xsl:with-param name="with-meta" as="xs:boolean" select="$with-meta"/>
         </xsl:call-template>
         
       </xsl:when>
@@ -467,66 +482,23 @@ output-path ................. { directory path }
         </span>
       </xsl:when>
       <xsl:otherwise>
-        
-        <xsl:apply-templates select="$span" mode="markup"/>
+        <xsl:choose>
+          <xsl:when test="$with-meta">
+            <xsl:apply-templates select="$span" mode="markup"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:sequence select="$span"/>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:call-template name="wrap-spans">
           <xsl:with-param name="spans" select="$spans"/>
           <xsl:with-param name="index" select="$index + 1"/>
+          <xsl:with-param name="with-meta" as="xs:boolean" select="$with-meta"/>
         </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
-  <xsl:template name="wrap-spans-only">
-    <xsl:param name="spans" as="node()*"/>
-    <xsl:param name="index" as="xs:integer"/>
-    
-    <xsl:variable name="span" select="$spans[$index]"/>
-    
-    <xsl:if test="$index mod 1500 eq 0">
-      <xsl:message><xsl:value-of select="'token: ', $index"/></xsl:message>
-    </xsl:if>
-    
-    <xsl:choose>
-      <xsl:when test="empty($span)"/>
-      <xsl:when test="$span/@class eq 'es'">
-        <xsl:variable name="span-children" as="node()*">
-          <xsl:call-template name="wrap-spans-only">
-            <xsl:with-param name="spans" select="$spans"/>
-            <xsl:with-param name="index" select="$index + 1"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <span class="ww" id="w{$index}">
-          <xsl:sequence select="$span"/>
-          <xsl:sequence select="$span-children"/>
-        </span>
-        
-        <xsl:variable name="prev-index"
-                      select="xs:integer(substring($span-children[last()]/@id, 3
-                              ))"/>
-        
-        <xsl:call-template name="wrap-spans-only">
-          <xsl:with-param name="spans" select="$spans"/>
-          <xsl:with-param name="index" select="$prev-index + 1"/>
-        </xsl:call-template>
-        
-      </xsl:when>
-      <xsl:when test="$span/@class = ('sc', 'ec')">
-        <span id="wx{$index}">
-          <xsl:copy-of select="$span/@*|$span/node()"/>
-        </span>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:sequence select="$span"/>
-        <xsl:call-template name="wrap-spans-only">
-          <xsl:with-param name="spans" select="$spans"/>
-          <xsl:with-param name="index" select="$index + 1"/>
-        </xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-  
-  
+
   <xsl:template name="get-common-root" as="xs:string*">
     <xsl:param name="all-files" as="xs:string*" tunnel="yes"/>
     <xsl:param name="index" as="xs:integer"/>
