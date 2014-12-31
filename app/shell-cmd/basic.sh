@@ -7,7 +7,7 @@
 
 SAXONJAR="/Users/philipfearon/Applications/SaxonHE9-6-0-2J/saxon9he.jar"
 # entry point is XMLSpectrum's highlight-file xsl stylesheet:
-XMLSPECTRUM=$(dirname $0)/../xsl/highlight-file.xsl
+XMLSPECTRUM=$(dirname $0)/../xsl/basic-wrap.xsl
 
 # this script resolves relative paths in the sourcepath based on the current directory
 # that the script is called from - not necessarily the script path
@@ -24,7 +24,6 @@ elif [[ $1 == '-?' ]]
 elif [[ $1 == /* ]]
     then
     relpath=$1
-    filename=$(basename $1)
 else
     tmppath=$(pwd)/$1
     filename=$(basename $1)
@@ -43,9 +42,11 @@ if [[ $# -eq 0 || $1 == '-?' ]]
     elif [ -f "$relpath" ]
     then
         newpath=$(dirname $relpath)/xms-out
-        java -jar $SAXONJAR -xsl:$XMLSPECTRUM -it:main sourcepath=$relpath output-path=$newpath $2 $3 $4 $5 $6 $7 $8 $9
-        newfilepath=$newpath/$filename.html
-        open $newfilepath
+        newfilepath=$newpath/$filename
+        java -jar $SAXONJAR -xsl:$XMLSPECTRUM -s:$relpath -o:$newfilepath $2 $3 $4 $5 $6 $7 $8 $9
+        #cat $newfilepath
+        xmlspec.sh $newfilepath force-newline=yes indent=2 color-theme=tomorrow-night
+        echo ""
         echo "---------------------------"
         echo "output file is at: $newfilepath"
     else

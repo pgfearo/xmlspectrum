@@ -1,0 +1,8 @@
+<pre class="spectrum"><span class="es">&lt;</span><span class="en">top</span><span class="scx">&gt;</span><span class="txt">
+  </span><span class="es">&lt;</span><span class="en">first</span><span class="scx">&gt;</span><span class="txt">one</span><span class="ez">&lt;/</span><span class="cl">first</span><span class="ec">&gt;</span><span class="txt">
+  </span><span class="es">&lt;</span><span class="en">first</span><span class="scx">&gt;</span><span class="txt">
+    </span><span class="es">&lt;</span><span class="en">second</span><span class="scx">&gt;</span><span class="txt">two</span><span class="ez">&lt;/</span><span class="cl">second</span><span class="ec">&gt;</span><span class="txt">
+    </span><span class="es">&lt;</span><span class="en">second</span><span class="scx">&gt;</span><span class="txt">three</span><span class="ez">&lt;/</span><span class="cl">second</span><span class="ec">&gt;</span><span class="txt">
+  </span><span class="ez">&lt;/</span><span class="cl">first</span><span class="ec">&gt;</span><span class="txt">
+  </span><span class="es">&lt;</span><span class="en">first</span><span class="scx">&gt;</span><span class="txt">four</span><span class="ez">&lt;/</span><span class="cl">first</span><span class="ec">&gt;</span><span class="txt">
+</span><span class="ez">&lt;/</span><span class="cl">top</span><span class="ec">&gt;</span><span class="txt"></span></pre>

@@ -21,6 +21,7 @@ elif [[ $1 == '-?' ]]
 elif [[ $1 == /* ]]
     then
     relpath=$1
+    filename=$(basename $1)
 else
     tmppath=$(pwd)/$1
     filename=$(basename $1)
