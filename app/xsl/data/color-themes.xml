@@ -110,6 +110,22 @@ xmlns:css="css-defs.com">
 <c:color name="cyan" value="8abeb7"/>
 <c:color name="green" value="b5bd68"/>
 </c:theme>
+<c:theme name="tomorrow-day">
+<c:color name="base" value="282a2e"/>
+<c:color name="base01" value="aabada"/>
+<c:color name="base03" value="edefff"/>
+<c:color name="base0" value="c5c8c6"/>
+<c:color name="base1" value="969896"/>
+
+<c:color name="yellow" value="0000c0"/>
+<c:color name="orange" value="de935f"/>
+<c:color name="red" value="ce94da"/>
+<c:color name="violet" value="ad95af"/>
+<c:color name="magenta" value="cc6666"/>
+<c:color name="blue" value="81a2be"/>
+<c:color name="cyan" value="8abeb7"/>
+<c:color name="green" value="919191"/>
+</c:theme>
 <c:theme name="xms">
 <c:color name="base" value="f0f0f0"/>
 <c:color name="base01" value="304050"/>
