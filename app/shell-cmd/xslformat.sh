@@ -6,7 +6,7 @@
 #
 # requires Saxon XSLT 2.0 processor (replace SAXONJAR below)
 
-SAXONJAR="/Users/philipfearon/Applications/SaxonHE9-6-0-2J/saxon9he.jar"
+SAXONJAR=$SAXON_HOME_JAR
 # entry point is XMLSpectrum's highlight-file xsl stylesheet:
 XMLSPECTRUM=$(dirname $0)/../xsl/highlight-file.xsl
 
