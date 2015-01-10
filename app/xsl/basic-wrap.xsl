@@ -4,20 +4,14 @@
                 exclude-result-prefixes="xsl xs f"
                 xmlns:f="internal">
 
+<xsl:output method="xml" omit-xml-declaration="yes"/>
+
 <xsl:variable name="globals" select="/*"/>
 <xsl:variable name="xmlns" select="/*"/>
 <xsl:variable name="ancestor-path" select="''"/>
 
   <xsl:template match="/*">
-    <result>
-      <xsl:for-each-group select="*" group-starting-with=".[@class = ('es')]">
-        <group current-key="{current-grouping-key()}">
-          <xsl:for-each select="current-group()">
-            <cg><xsl:sequence select="."/></cg>
-          </xsl:for-each>
-        </group>
-      </xsl:for-each-group>
-    </result>                  
+      <xsl:copy-of select="."/>                 
   </xsl:template>
 
 </xsl:stylesheet>

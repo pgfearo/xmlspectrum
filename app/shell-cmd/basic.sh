@@ -5,8 +5,8 @@
 #
 # requires Saxon XSLT 2.0 processor from http://saxonica.com (replace SAXONJAR below)
 
-SAXONJAR="/Users/philipfearon/Applications/SaxonHE9-6-0-2J/saxon9he.jar"
-# entry point is XMLSpectrum's highlight-file xsl stylesheet:
+SAXONJAR=$SAXON_HOME_JAR
+# entry point is basic-wrap.xsl
 XMLSPECTRUM=$(dirname $0)/../xsl/basic-wrap.xsl
 
 # this script resolves relative paths in the sourcepath based on the current directory
@@ -43,12 +43,14 @@ if [[ $# -eq 0 || $1 == '-?' ]]
     then
         newpath=$(dirname $relpath)/xms-out
         newfilepath=$newpath/$filename
-        java -jar $SAXONJAR -xsl:$XMLSPECTRUM -s:$relpath -o:$newfilepath $2 $3 $4 $5 $6 $7 $8 $9
+        java -jar $SAXONJAR -xsl:$XMLSPECTRUM -t -s:$relpath -o:$newfilepath $2 $3 $4 $5 $6 $7 $8 $9 &>javalog.log
+        echo "---- Saxon log ---------"
+        cat javalog.log
+        echo "---- Saxon log ends ----"
+        echo "output written to: $newfilepath"
         #cat $newfilepath
-        xmlspec.sh $newfilepath force-newline=yes indent=2 color-theme=tomorrow-night
-        echo ""
-        echo "---------------------------"
-        echo "output file is at: $newfilepath"
+        xmlspec.sh $newfilepath force-newline=yes auto-trim=yes document-type=xslt indent=2 color-theme=tomorrow-night &>xmlspec.log
+        cat xmlspec.log
     else
         echo "file not found: $relpath"
 fi
