@@ -1,0 +1,12 @@
+Saxon-PE 9.6.0.3J from Saxonica
+Java version 1.8.0_25
+Using license serial number V002689
+Stylesheet compilation time: 243.697252ms
+Processing file:/Users/philipfearon/Documents/github/xmlspectrum/app/samples/nolines.xml
+Using parser com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser
+Building tree for file:/Users/philipfearon/Documents/github/xmlspectrum/app/samples/nolines.xml using class net.sf.saxon.tree.tiny.TinyBuilder
+Tree built in 1.650801ms
+Tree size: 14 nodes, 61 characters, 1 attributes
+Execution time: 30.581732ms
+Memory used: 41467600
+NamePool contents: 8 entries in 8 chains. 6 URIs

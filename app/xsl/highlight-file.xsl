@@ -731,7 +731,7 @@ output-path ................. { directory path }
                           false()
                           else true()"/>
     <xsl:variable name="fixed-uri" select="f:path-to-uri($input-uri)"/>
-    <xsl:message><xsl:value-of select="'input-uri', $fixed-uri"/></xsl:message>
+    <xsl:message><xsl:value-of select="'input-uri', $fixed-uri, ' indent-size ', $indent-size"/></xsl:message>
     <xsl:variable name="file-content" as="xs:string?" select="if(unparsed-text-available($fixed-uri)) then 
                                                               unparsed-text($fixed-uri)
                                                               else ()"/>

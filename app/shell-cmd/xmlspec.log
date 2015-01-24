@@ -1,0 +1,9 @@
+auto-trim:  yes  indent:  2
+output-path:  /Users/philipfearon/Documents/github/xmlspectrum/app/samples/xms-out/xms-out  document-type:  xslt  root-prefix:  
+input-uri file:///Users/philipfearon/Documents/github/xmlspectrum/app/samples/xms-out/globals.xml
+document-type: xslt rendering 398 xslt tokens ...
+writing: file:///Users/philipfearon/Documents/github/xmlspectrum/app/samples/xms-out/xms-out/globals.xml.html
+file: globals.xml
+output-method html
+---------------------------
+output file is at: /Users/philipfearon/Documents/github/xmlspectrum/app/samples/xms-out/xms-out/globals.xml.html

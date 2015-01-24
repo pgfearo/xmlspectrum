@@ -7,7 +7,7 @@
 
 SAXONJAR=$SAXON_HOME_JAR
 # entry point is basic-wrap.xsl
-XMLSPECTRUM=$(dirname $0)/../xsl/basic-wrap.xsl
+XMLENTRY=$(dirname $0)/../xsl/basic-wrap.xsl
 
 # this script resolves relative paths in the sourcepath based on the current directory
 # that the script is called from - not necessarily the script path
@@ -33,23 +33,22 @@ fi
 
 if [[ $# -eq 0 || $1 == '-?' ]]
     then
-        echo "XMLSpectrum: code higlighter and formatter"
+        echo "XSLT runner - using $XMLENTRY"
         echo ""
         echo "Usage:"
-        echo "xmlspec.sh source_file_path [params]"
+        echo "basic.sh source_file_path [params]"
         echo "params: param=value"
-        java -jar $SAXONJAR -xsl:$XMLSPECTRUM -it:main sourcepath=?
     elif [ -f "$relpath" ]
     then
         newpath=$(dirname $relpath)/xms-out
         newfilepath=$newpath/$filename
-        java -jar $SAXONJAR -xsl:$XMLSPECTRUM -t -s:$relpath -o:$newfilepath $2 $3 $4 $5 $6 $7 $8 $9 &>javalog.log
+        java -jar $SAXONJAR -xsl:$XMLENTRY -t -s:$relpath -o:$newfilepath $2 $3 $4 $5 $6 $7 $8 $9 &>javalog.log
         echo "---- Saxon log ---------"
         cat javalog.log
         echo "---- Saxon log ends ----"
         echo "output written to: $newfilepath"
         #cat $newfilepath
-        xmlspec.sh $newfilepath force-newline=yes auto-trim=yes document-type=xslt indent=2 color-theme=tomorrow-night &>xmlspec.log
+        xmlspec.sh $newfilepath force-newline=yes indent=2 auto-trim=yes color-theme=tomorrow-night &>xmlspec.log
         cat xmlspec.log
     else
         echo "file not found: $relpath"
