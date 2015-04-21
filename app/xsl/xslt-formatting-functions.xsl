@@ -335,7 +335,7 @@
     
     
     <xsl:variable name="is-mixed" as="xs:boolean"
-                  select="$mixed-level gt 0 and not($ignore-mc)
+                  select="$mixed-level gt 0
                           or (
                               $class eq 'txt' and $nextClass = ('es','esx') and string-length($span) gt 0
                           )"/>
@@ -367,7 +367,7 @@
               <xsl:choose>
                 <!-- if next tag is open tag (es/esx) and it is preceded by text-content
                      don't add a new line, eg <p>my name<p> -->
-                <xsl:when test="$is-mixed">
+                <xsl:when test="$is-mixed and not($ignore-mc)">
                 </xsl:when>
                 <!-- add new line after text-content if:
                      1. next tag is not a close tag
