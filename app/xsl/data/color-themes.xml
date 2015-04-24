@@ -191,6 +191,23 @@ xmlns:css="css-defs.com">
 <c:color name="green" value="8a8a8a"/>
 </c:theme>
 
+<c:theme name="diff-light">
+<c:color name="base" value="FFFFFF"/>
+<c:color name="base01" value="006C51"/>
+<c:color name="base03" value="FFFFFF"/>
+<c:color name="base0" value="000000"/>
+<c:color name="base1" value="1049a9"/>
+
+<c:color name="yellow" value="d34ef9"/>
+<c:color name="orange" value="EC0033"/>
+<c:color name="red" value="a66b00"/>
+<c:color name="magenta" value="7608aa"/>
+<c:color name="violet" value="8c03ae"/>
+<c:color name="blue" value="aa7500"/>
+<c:color name="cyan" value="920031"/>
+<c:color name="green" value="4040df"/>
+</c:theme>
+
 
 <c:color-map name="main">
 <!-- highlighted background -->
