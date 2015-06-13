@@ -1,0 +1,30 @@
+<xsl:template match="/any[@test]" expand-text="yes">
+    <xsl:variable name="id" select="'A123'"/>
+    <xsl:variable name="step" select="5"/>
+    <xsl:message>Processing id={$id}, step={$step}</xsl:message>
+    <result id="a89xx1" expand-text="no">
+        First name: {@first-name}
+        Last name:  {@last-name}
+        Age:        {@age}        
+    </result>
+    <result id="a89xx1">
+        <xsl:text>
+            First name: {@first-name}
+            Last name:  {@last-name}
+            Age:        {@age}
+        </xsl:text>
+    </result>
+    <result id="a89xx1">
+            <br class="the {@first-name}"/>First name: {@first-name}
+            <br/>Last name:  {@last-name}
+            <br/>Age:        {@age}
+            <child>this {@name}</child>        
+    </result>
+    <result id="a89xx1" expand-text="no">
+            First name: {@first-name}
+            Last name:  {@last-name}
+            <child expand-text="yes">this {@name}</child> 
+            Age:        {@age}        
+    </result>
+</xsl:template>
+

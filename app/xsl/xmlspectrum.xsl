@@ -425,6 +425,7 @@
                     </span>
                   </xsl:otherwise>
                 </xsl:choose>
+                <xsl:variable name="current-expand-text" select="if($isElementClose) then $expand-text-stack[last() -1] else $expand-text"/>
                 <span class="{if ($isElementClose) then 'ec' else 'z'}">
                   <xsl:if test="$isElementClose">
                     <!--
@@ -435,7 +436,7 @@
                 
                 <xsl:variable name="textNode" as="xs:string" select="substring($token, string-length($beforeClose) + string-length($requiredClose) + 1)"/>
                 <xsl:choose>
-                  <xsl:when test="$expand-text">
+                  <xsl:when test="$current-expand-text">
                     <xsl:sequence select="qf:show-xsl-tvt($textNode)"/>
                   </xsl:when>
                   <xsl:otherwise>
@@ -519,7 +520,7 @@
     <xsl:param name="parseStrings" as="element()*"/>
     <xsl:param name="expandStack" as="xs:boolean*"/>
     <xsl:param name="xsl-expand-text" as="xs:string"/>
-    <!-- don't and empty tag value to stack -->
+    <!-- don't add empty tag value to stack -->
     <xsl:variable name="startXslTag" as="xs:boolean" 
                   select="exists($parseStrings[@class = ('en','enxsl')]) and empty($parseStrings[@class eq 'sc'])"/>
     <xsl:variable name="closeXslTag" as="xs:boolean"
@@ -629,7 +630,8 @@
           
           <xsl:variable name="textNode" as="xs:string" select="substring($attToken, string-length($pre-close) + $offset + 2)"/>
           <xsl:choose>
-            <xsl:when test="$expand-text and not($is-xsl-element and ends-with($elementName,':text'))">
+            <!-- removed  and not($is-xsl-element and ends-with($elementName,':text')) from following: -->
+            <xsl:when test="$expand-text">
               <xsl:sequence select="qf:show-xsl-tvt($textNode)"/>
             </xsl:when>
             <xsl:otherwise>
