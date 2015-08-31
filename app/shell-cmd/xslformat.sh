@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# syntax-highlight and color source code files for
-# xslt produces also an index html page with hyperlinks
-# for global templates, functions and params/variables
+# produces xml text file with any formatting supplied
+# as arguments: eg. indent, force-newline, auto-trim
+# and format-mixed-content
 #
 # requires Saxon XSLT 2.0 processor (replace SAXONJAR below)
 
