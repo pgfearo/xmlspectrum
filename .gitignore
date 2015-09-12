@@ -168,3 +168,7 @@ app/samples/xmsxsl-out/*.*
 app/shell-cmd/output/*.*
 
 *.xpr
+
+app/xsl/basic-xslver3.xsl
+
+app/shell-cmd/basic.sh
