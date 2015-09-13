@@ -224,7 +224,7 @@ indent ...................... [ number ] (-1 to 10)
 force-newline ............... [ yes | no ]
 auto-trim ....................[ yes | no ]
 css-path .....................{ for style link uri }
-inline-css ...................[ yes | no ]
+css-inline ...................[ yes | no ]
 link-names ...................[ yes | no ]
 document-type ................[ xslt | xsd | xquery | ... ]
 document-type-prefix .........e.g. xsl | xsd
