@@ -124,7 +124,7 @@ Sample bash and doc scripts are included as a convenience in the shell-cmd direc
 | ----------| ----------------------------------------------------------- |
 | xmlspec   |  syntax highlighting of XSLT/XML or XQuery                  |
 | xslprint  | syntax highlighting and TOC for multi-module XSLT project   |
-| xmlformat | reformatting of source for XSLT/XML                         |
+| xslformat | reformatting of source for XSLT/XML                         |
 
 ###GUI
 

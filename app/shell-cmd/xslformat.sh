@@ -31,10 +31,10 @@ fi
 
 if [[ $# -eq 0 || $1 == '-?' ]]
     then
-        echo "XMLSpectrum: code higlighter and formatter"
+        echo "XMLSpectrum: xml formatter script"
         echo ""
         echo "Usage:"
-        echo "xslprint.sh source_file_path [params]"
+        echo "xslformat.sh source_file_path [params]"
         echo "params: param=value"
         java -jar $SAXONJAR -xsl:$XMLSPECTRUM -it:main sourcepath=?
     elif [ -f $relpath ]
