@@ -1,10 +1,10 @@
 XMLSpectrum
 ===========================
 
-###Syntax-highlighter and formatter for XQuery 3.0 , XSLT 3.0 and XPath 3.0 and any hosting XML
+###Syntax-highlighter for XQuery 3.0 , XSLT 3.0 and XPath 3.0 and XML
 
 ###Why
-1. Many syntax-highlighters rely on generic processors that fail to accurately render XQuery or XPath 2.0, whether it is standalone or embedded in XML, such as XSLT, XSD, Schematron etc. 
+1. Many generic syntax-highlighters can't render XQuery or XPath 2.0/3.0 reliably, whether it is standalone or embedded in XML, such as XSLT, XSD, XProc, Schematron etc. 
 
 2. The 'pretty-print' options of many XML editors can not align XML attributes and their contents properly. This omission is especially critical for the readability of XPath 2.0/3.0.
 
@@ -118,13 +118,18 @@ Recursively processes all XSLT modules from a top-level stylesheet in a multi-fi
 
 ###Command Line
 
-Sample bash and doc scripts are included as a convenience in the shell-cmd directory. These scripts invoke the Saxon XSLT processor with the highlight-file.xsl stylesheet and perform basic file path resolving and checking on the input file (supplied as the first argument when calling the script) for the current directory - not the script or directory. 
+Sample bash and doc scripts are included as a convenience in the app/shell-cmd directory. These scripts invoke the Saxon XSLT processor with the highlight-file.xsl stylesheet and perform basic file path resolving and checking on the input file (supplied as the first argument when calling the script) for the current directory - not the script or directory. 
 
 | script    |  description                                                |
 | ----------| ----------------------------------------------------------- |
-| xmlspec   |  syntax highlighting of XSLT/XML or XQuery                  |
-| xslprint  | syntax highlighting and TOC for multi-module XSLT project   |
-| xslformat | reformatting of source for XSLT/XML                         |
+| xmlspec   |  HTML syntax highlighting of XSLT/XML or XQuery                  |
+| xslprint  | HTML syntax highlighting and TOC for multi-module XSLT project   |
+| xslformat | reformatting of source for XSLT/XML - output is formatted XML                         |
+
+Examples:
+
+    1. xslformat.sh nolines.xml force-newline=yes
+    2. xmlspec.sh nolines.xml force-newline=yes color-theme=pg-light indent=2
 
 ###GUI
 

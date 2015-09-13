@@ -12,7 +12,7 @@ p.spectrum, pre.spectrum {
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color:#002b36;
+    background-color:#FFFFFF;
     padding: 2px 2px 2px 5px;
     margin-bottom:5px;
 
@@ -25,13 +25,13 @@ div.spectrum-toc {
     display: block;
     border: none thin;
     border-color: #405075;
-    background-color:#002b36;
+    background-color:#FFFFFF;
     padding: 2px;
 
 }
 
 ul.base1, ul.spectrum-toc {
-color:#93a1a1;
+color:#1049a9;
   }
 
   ul.spectrum-toc > li {
@@ -62,31 +62,31 @@ color:#93a1a1;
   }
 
   span.ww
- {background-color: #073642; }
+ {background-color: #FFFFFF; }
  span.base01, span.eq-equ, span.z, span.sc, span.scx, span.ec, span.es, span.ez, span.atneq
- {color: #586e75; }
+ {color: #006C51; }
  span.base03, span.ww:not(:hover), span.txt:not(:hover), span.cm:not(:hover), span.pi:not(:hover)
- {background-color: #002b36; }
+ {background-color: #FFFFFF; }
  span.base0, span.txt, span.cd
- {color: #839496; }
+ {color: #00685A; }
  span.base1, span.literal
- {color: #93a1a1; }
+ {color: #1049a9; }
  span.yellow, span.op, span.type-op, span.if, span.higher, span.step, span.whitespace, span.quantifier, span.parenthesis
- {color: #b58900; }
+ {color: #534ed9; }
  span.orange, span.function, span.pname
- {color: #cb4b16; }
+ {color: #EC0033; }
  span.red, span.fname, span.tname, span.tcall
- {color: #dc322f; }
+ {color: #a66b00; }
  span.magenta, span.vname, span.variable, span.external
- {color: #d33682; }
+ {color: #7608aa; }
  span.violet, span.qname, span.type-name, span.unclosed, span.en, span.cl, span.href
- {color: #6c71c4; }
+ {color: #4c036e; }
  span.blue, span.enxsl, span.clxsl, span.enx, span.filter, span.node, span.node-type
- {color: #268bd2; }
+ {color: #052c6e; }
  span.cyan, span.atn, span.numeric, span.pi, span.dt, span.axis, span.context, span.bracedq, span.property
- {color: #2aa198; }
+ {color: #920031; }
  span.green, span.cm, span.comment, span.av, span.type
- {color: #859900; }
+ {color: #8a8a8a; }
 
 
 a.solar {

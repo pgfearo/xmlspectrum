@@ -42,6 +42,8 @@ if [[ $# -eq 0 || $1 == '-?' ]]
         newpath=$(dirname $relpath)/xmsxsl-out
         java -jar $SAXONJAR -xsl:$XMLSPECTRUM -it:main sourcepath=$relpath output-path=$newpath output-method=text $2 $3 $4 $5 $6 $7 $8 $9
         newfilepath=$newpath/$filename.text
+        echo
+        echo "---------------------------"
         cat $newfilepath
         echo "---------------------------"
         echo "output file is at: $newfilepath"
