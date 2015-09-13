@@ -74,6 +74,7 @@ java -cp "C:\Users\pgf\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
   <xsl:param name="wrap-elements" select="'no'"/>
   <xsl:param name="output-path" select="'output/'"/>
   <xsl:param name="format-mixed-content" select="'no'"/>
+  <xsl:param name="force-newline" select="'no'"/>
   <!-- set value to 'scp' for source-code-pro font -->
   <xsl:param name="font-name" select="'scp'"/>
   <!-- 
@@ -98,7 +99,7 @@ java -cp "C:\Users\pgf\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
   <xsl:variable name="do-trim" select="$auto-trim eq 'yes'"/>
   <xsl:variable name="do-link" select="$link-names eq 'yes'"/>
   <xsl:variable name="do-wrap" select="$do-link or $wrap-elements eq 'yes'"/>
-  <xsl:variable name="indent-size" select="xs:integer($indent)"/>
+  <xsl:variable name="indent-size" select="if ($force-newline eq 'yes' and $indent eq '-1') then 2 else xs:integer($indent)"/>
   <xsl:variable name="css-name" select="'theme.css'"/>
   <xsl:variable name="do-output-path"
                 select="for $c in f:path-to-uri($output-path) return

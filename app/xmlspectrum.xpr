@@ -4,12 +4,12 @@
         <filters directoryPatterns="" filePatterns="" positiveFilePatterns="" showHiddenFiles="false"/>
         <options>
             <serialized version="16.1" xml:space="preserve">
-                <map>
+                <serializableOrderedMap>
                     <entry>
                         <String>enable.project.master.files.support</String>
                         <Boolean>true</Boolean>
                     </entry>
-                </map>
+                </serializableOrderedMap>
             </serialized>
         </options>
     </meta>
