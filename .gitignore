@@ -172,3 +172,5 @@ app/shell-cmd/output/*.*
 app/xsl/basic-xslver3.xsl
 
 app/shell-cmd/basic.sh
+
+app/output/theme.css
