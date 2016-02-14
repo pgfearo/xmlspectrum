@@ -565,7 +565,7 @@
                           then $spans[$i + 3]/text()
                           else ()"/>
     <xsl:sequence select="if($expandValue) then
-                          $expandValue eq 'yes'
+                          $expandValue = ('yes','true','1')
                           else $existing-expand-state"/>
   </xsl:function>
   
