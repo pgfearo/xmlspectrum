@@ -279,6 +279,7 @@
     
     <xsl:variable name="char" as="xs:integer" select="$chars[$index]"/>
     <xsl:variable name="pChar" as="xs:integer?" select="$chars[$index - 1]"/>
+    <xsl:variable name="p2Char" as="xs:integer?" select="$chars[$index - 2]"/>
     <xsl:variable name="n1Char" as="xs:integer?" select="$chars[$index + 1]"/>
     <xsl:variable name="n2Char" as="xs:integer?" select="$chars[$index + 2]"/>
     
@@ -378,9 +379,12 @@
     <xsl:variable name="isEmptyTag" as="xs:boolean"
                   select="$awaiting = $xxAnyTagEnd and $char eq $xSlash and $n1Char eq $cTagEnd"/>       
     
-    <!-- must ignore {{ char sequence, but no need to ignore }} -->
+    <!-- must ignore {{ char sequence (but not {{{), but no need to ignore }} -->
     <xsl:variable name="isEmbeddedXQuery" as="xs:boolean"
-                  select="$char eq $cFnStart and ($n1Char ne $cFnStart and $pChar ne $cFnStart) and $awaiting = ($cApos, $cQuote, $cTagStart)"/>
+                  select="$char eq $cFnStart and (($n1Char ne $cFnStart and $pChar ne $cFnStart)
+                  or ($pChar eq $cFnStart and $p2Char eq $cFnStart)
+                  )
+                   and $awaiting = ($cApos, $cQuote, $cTagStart)"/>
     
     
     <xsl:variable name="poss-xml-end" as="xs:boolean"
@@ -486,7 +490,9 @@
     
     <xsl:variable name="char" as="xs:integer" select="$chars[$index]"/>
     <xsl:variable name="nChar" as="xs:integer?" select="$chars[$index + 1]"/>
+    <xsl:variable name="n2Char" as="xs:integer?" select="$chars[$index + 2]"/>
     <xsl:variable name="pChar" as="xs:integer?" select="$chars[$index - 1]"/>
+    <xsl:variable name="p2Char" as="xs:integer?" select="$chars[$index - 2]"/>
     
     <xsl:variable name="newLevel" as="xs:integer">
       <xsl:choose>
@@ -556,13 +562,16 @@
         </xsl:element>
       </xsl:if>            
     </xsl:variable>
-    
             
     <xsl:variable name="newFnLevel" as="xs:integer">
       <xsl:choose>
         <xsl:when test="empty($awaiting)">
-          <xsl:value-of select="if($char eq $cFnStart) then $fnLevel + 1
-                                else if ($char eq $cFnEnd) then $fnLevel -1
+          <xsl:value-of select="if($char eq $cFnStart and $nChar ne $cFnStart) then $fnLevel + 1
+                                else if (
+                                $char eq $cFnEnd and ($nChar ne $cFnEnd
+                                or ($nChar eq $cFnEnd and $n2Char eq $cFnEnd)
+                                )
+                                ) then $fnLevel -1
                                 else $fnLevel"/>
         </xsl:when>
         <xsl:otherwise>
