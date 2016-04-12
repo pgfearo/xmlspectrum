@@ -127,6 +127,48 @@
     </xsl:if>
   </xsl:template>
   
+  <xsl:function name="f:deltaSpans" as="element()*">
+    <xsl:param name="spans" as="element()*"/>
+    <xsl:call-template name="deltaSpans">
+      <xsl:with-param name="spans" select="$spans"/>
+      <xsl:with-param name="index" select="1"/>
+    </xsl:call-template>
+  </xsl:function>
+  
+  <xsl:template name="deltaSpans">
+    <xsl:param name="spans" as="element()*"/>
+    <xsl:param name="index" as="xs:integer"/>
+    
+    <xsl:variable name="span" select="$spans[$index]"/>
+    <xsl:variable name="class" select="$span/@class"/>
+    <xsl:variable name="attValue" select="$spans[$index + 3]" as="xs:string?"/>
+    
+    <xsl:choose>
+      <xsl:when test="$class eq 'atn' and $span eq 'deltaxml:deltaV2'">
+        <span>
+          <xsl:copy-of select="$span/@*"/>
+          <xsl:attribute name="data-change" 
+            select="if($attValue eq 'A') then 'delete'
+            else if($attValue eq 'B') then 'add'
+            else if($attValue eq 'A!=B') then 'change'
+            else 'none'"/>
+          <xsl:value-of select="$span"/>
+        </span>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="$span"/>
+      </xsl:otherwise>
+    </xsl:choose>   
+    
+    <xsl:if test="$index lt count($spans)">
+      <xsl:call-template name="deltaSpans">
+        <xsl:with-param name="spans" as="element()*" select="$spans"/>
+        <xsl:with-param name="index" as="xs:integer" select="$index + 1"/>        
+      </xsl:call-template>
+    </xsl:if>
+      
+  </xsl:template>
+  
   <xsl:function name="f:clark-name" as="xs:string">
     <xsl:param name="xmlns" as="element()"/>
     <xsl:param name="name" as="xs:string"/>

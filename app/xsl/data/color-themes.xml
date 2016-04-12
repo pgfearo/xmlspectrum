@@ -253,6 +253,15 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 body {
     margin:0;
 }
+span.atn[data-change=add] {
+    background-color: #dbffdb;
+}
+span.atn[data-change=delete] {
+    background-color: #ffdbdb;
+}
+span.atn[data-change=change] {
+    background-color: #dbdbff;
+}
 p.spectrum, pre.spectrum {
 <css:main>
     margin:0px;

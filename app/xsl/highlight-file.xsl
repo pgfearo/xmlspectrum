@@ -87,6 +87,7 @@ java -cp "C:\Users\pgf\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
   <!-- identifies xslt/schematron/xproc etc - not required if root namespace can be used -->
   <xsl:param name="document-type" select="''"/>
   <xsl:param name="document-type-prefix" select="''"/>
+  <xsl:param name="deltaV2" select="'no'"/>
   <!-- 
   w3c-xpath-functions-uri is use to add hyperlinks to built-in
   xpath functions when 'link-names' = 'yes'
@@ -755,7 +756,15 @@ output-path ................. { directory path }
         <xsl:variable name="spans" select="f:render($file-content, $doctype, $root-prefix)"/>
         <xsl:variable name="real-indent" select="if ($indent-size lt 0) then 0 else $indent-size"
                       as="xs:integer"/>
-        <xsl:sequence select="f:indent($spans, $real-indent, $do-trim)"/>
+        <xsl:choose>
+          <xsl:when test="$deltaV2 eq 'yes'">
+            <xsl:variable name="deltaSpans" select="f:deltaSpans($spans)" as="element()+"/>
+            <xsl:sequence select="f:indent($deltaSpans, $real-indent, $do-trim)"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:sequence select="f:indent($spans, $real-indent, $do-trim)"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
         <!-- for case where XPath is standalone -->
