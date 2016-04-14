@@ -120,11 +120,12 @@ java -cp "C:\Users\pgf\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
                   select="if ($document-type ne '') then
                           $document-type
                           else f:doctype-from-xmlns(*/namespace-uri())"/>
+    <xsl:variable name="input-uri" select="base-uri(/*)"/>
     
     
     <xsl:variable name="all-spans" as="node()*">
       <xsl:call-template name="get-result-spans">
-        <xsl:with-param name="input-uri" select="base-uri()"/>
+        <xsl:with-param name="input-uri" select="$input-uri"/>
         <xsl:with-param name="is-xml" select="true()" as="xs:boolean"/>
         <xsl:with-param name="doctype" select="$doctype" as="xs:string"/>
         <xsl:with-param name="indent-size" select="$indent-size" as="xs:integer"/>
@@ -135,7 +136,7 @@ java -cp "C:\Users\pgf\Saxon\saxon9he.jar" net.sf.saxon.Transform -t -it:main
     </xsl:variable>
     
     <xsl:message>
-      <xsl:value-of select="'processing', count($all-spans), 'tokens for', base-uri(), 'css-inline:', $css-inline"/>
+      <xsl:value-of select="'processing', count($all-spans), 'tokens for', $input-uri, 'css-inline:', $css-inline"/>
     </xsl:message>
     <xsl:message>------------------------------------------------</xsl:message>
     <xsl:message select="'auto-trim: ', $auto-trim, ' indent: ', $indent"/>
