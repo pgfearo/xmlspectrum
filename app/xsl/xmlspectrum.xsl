@@ -456,7 +456,7 @@
           <xsl:otherwise>
             
             <xsl:variable name="parts" as="xs:string*">
-              <xsl:analyze-string regex="&quot;.*?&quot;|'.*?'|[^'&quot;]+|['&quot;]" select="$token" flags="s">
+              <xsl:analyze-string regex="&quot;.*?&quot;|'.*?'" select="$token" flags="s">
                 <xsl:matching-substring>
                   <xsl:value-of select="."/>
                 </xsl:matching-substring>
