@@ -662,9 +662,17 @@
   
   <xsl:function name="f:tagStart" as="xs:boolean">
     <xsl:param as="xs:integer" name="char1"/>
-    <xsl:param as="xs:integer" name="char2"/>
+    <xsl:param as="xs:integer?" name="char2"/>
     
-    <xsl:sequence select="$char1 eq $cTagStart and ($char2 gt 64 or $char2 eq 33 or $char2 eq 63) 
-                          and not($char2 = (91,92,93,94,96,123,124,125,126,127))"/>
+    <xsl:choose>
+      <xsl:when test="exists($char2)">
+        <xsl:sequence select="$char1 eq $cTagStart and ($char2 gt 64 or $char2 eq 33 or $char2 eq 63) 
+          and not($char2 = (91,92,93,94,96,123,124,125,126,127))"/>        
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:sequence select="false()"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    
   </xsl:function>
 </xsl:stylesheet>
