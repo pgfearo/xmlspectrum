@@ -125,31 +125,71 @@ as="element()*"/>
 </xsl:copy>
 </xsl:template>
   
+  <xsl:template match="div[@class eq 'exampleInner']">
+    <xsl:copy>
+      <xsl:copy-of select="@* except @class"/>
+      <xsl:attribute name="class" select="'exampleInner xmlspectrum'"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
+  </xsl:template>
+  
   <xsl:template match="div[@class eq 'exampleInner']/pre">
-    <xsl:variable name="is-xsl" select="true()" as="xs:boolean"/>
-    <xsl:variable name="prefix" select="'xsl'" as="xs:string"/>
-    <xsl:variable name="context-indent" select="if (exists(@data-indent))
-      then xs:integer(@data-indent)
-      else $indent-size"/>
+    <xsl:variable name="trimmed" as="xs:string" select="normalize-space()"/>
+    <xsl:variable name="language" 
+      select="if(starts-with($trimmed, '&lt;xs:')) then 'xsd'
+      else if(starts-with($trimmed, '&lt;jsp:')) then 'jsp' 
+      else if(starts-with($trimmed, '&lt;')) then 'xslt' 
+      else 'xquery'"/>
+    <xsl:variable name="prefix" 
+                  select="if($language eq 'xslt') then 'xsl' else 'xs'" as="xs:string"/>
 
     <xsl:copy>
       <xsl:attribute name="class" select="'spectrum'"/>
       <xsl:apply-templates select="@* except @class"/>
-      <xsl:variable name="real-trim" as="xs:boolean"
-        select="if (exists(@data-trim))
-        then @data-trim='yes'
-        else $do-trim"/>
       <xsl:choose>
-        <xsl:when test="$real-trim or $context-indent gt 0">
-          <xsl:variable name="renderedXML" select="f:render(., 'xslt', $prefix)"
-            as="element()*"/>
-          <xsl:sequence select="f:indent($renderedXML, $context-indent, $real-trim)"/>
+        <!-- jsp is corrupted by xmlspectrum if processed as xml - so process as xquery element constructor -->
+        <xsl:when test="$language = ('xquery','jsp')">
+          <xsl:sequence select="if(contains(., '::=')) then . else qf:show-xquery(.)"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:sequence select="f:render(., 'xslt', $prefix)"/>
+          <xsl:variable name="renderedXML" select="f:render(., $language, $prefix)"
+            as="element()*"/>
+          <xsl:sequence select="if(starts-with(.,'&lt;'))
+            (: if no whitespace precedes angle-bracket char - don't indent :)
+            then $renderedXML 
+            else f:indent($renderedXML, $indent-size, $do-trim)"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template match="pre">
+    <xsl:choose>
+      <xsl:when test="starts-with(.,'&lt;?xml')">
+        <xsl:variable name="is-xslt" as="xs:boolean" select="contains(.,'&lt;xsl:')"/>
+        <xsl:variable name="is-xsd" as="xs:boolean" select="contains(.,'&lt;xs:')"/>
+        <xsl:choose>
+          <xsl:when test="$is-xsd or $is-xslt">
+            <xsl:copy>
+              <xsl:attribute name="class" select="'spectrum'"/>
+              <xsl:variable name="language" select="if($is-xslt) then 'xslt' else 'xsd'"/>
+              <xsl:variable name="prefix" 
+                select="if($language eq 'xslt') then 'xsl' else 'xs'" as="xs:string"/>
+              <xsl:variable name="renderedXML" select="f:render(., $language, $prefix)"
+                as="element()*"/>
+              <!-- output with unchanged formatting: -->
+              <xsl:sequence select="$renderedXML"/>              
+            </xsl:copy>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy-of select="."/>
+          </xsl:otherwise>
+        </xsl:choose>        
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="."/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
 <xsl:template match="pre[@lang = ('xpath','xquery')]">
