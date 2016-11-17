@@ -59,7 +59,7 @@
   <xsl:variable name="w3c-xpath-functions-uri"
                 select="'http://www.w3.org/TR/xpath-functions/'"/>
   <xsl:variable name="font-name" select="'std'"/>
-  <xsl:variable name="theme-doc-uri" select="'data/color-themes.xml'"/>
+  <xsl:param name="theme-doc-uri" select="'data/color-themes.xml'"/>
   <xsl:variable name="css-inline" select="'no'"/>
   <xsl:variable name="css-doc" select="doc(resolve-uri($theme-doc-uri, static-base-uri()))"/>
   <xsl:variable name="color-theme-data" as="element(c:theme)"
