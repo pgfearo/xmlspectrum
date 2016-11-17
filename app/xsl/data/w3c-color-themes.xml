@@ -236,13 +236,13 @@ base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)
 <c:color name="magenta">magenta vname variable external
 </c:color>
 <!-- qnames -->
-<c:color name="violet">violet qname type-name unclosed en cl href
+<c:color name="violet">violet qname numeric type-name unclosed en cl href
 </c:color>
 <!-- parenthesis and highlighted element names -->
 <c:color name="blue">blue enxsl clxsl enx filter node node-type
 </c:color>
 <!-- attribute names + axis -->
-<c:color name="cyan">cyan atn numeric pi dt axis context bracedq property
+<c:color name="cyan">cyan atn pi dt axis context bracedq property
 </c:color>
 <!-- xml and xpath comments -->
 <c:color name="green">green cm comment av type
