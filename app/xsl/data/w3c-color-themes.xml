@@ -1,0 +1,336 @@
+<c:themes xmlns:c="http://xmlspectrum.colors.org"
+xmlns:css="css-defs.com">
+<!--
+    File color-themes.xml - used by xmlspectrum.xsl
+    
+    Defines CSS color themes for syntax highlighting
+    To add a new theme, just create a new c:theme
+    element using an existing theme as a template
+
+    Usage of base colors:
+    highlighted-background: base
+    lowest-emphasis text:   base01
+    normal-background:      base03
+    low-emphasis text:      base0
+    normal text:            base1
+-->
+<c:theme name="solarized-light">
+<c:color name="base" value="eee8d5"/>
+<c:color name="base01" value="93a1a1"/>
+<c:color name="base03" value="fdf6e3"/>
+<c:color name="base0" value="839496"/>
+<c:color name="base1" value="586e75"/>
+
+<c:color name="yellow" value="b58900"/>
+<c:color name="orange" value="cb4b16"/>
+<c:color name="red" value="dc322f"/>
+<c:color name="magenta" value="d33682"/>
+<c:color name="violet" value="6c71c4"/>
+<c:color name="blue" value="268bd2"/>
+<c:color name="cyan" value="2aa198"/>
+<c:color name="green" value="859900"/>
+</c:theme>
+<c:theme name="solarized-dark">
+<c:color name="base" value="073642"/>
+<c:color name="base01" value="586e75"/>
+<c:color name="base03" value="002b36"/>
+<c:color name="base0" value="839496"/>
+<c:color name="base1" value="93a1a1"/>
+
+<c:color name="yellow" value="b58900"/>
+<c:color name="orange" value="cb4b16"/>
+<c:color name="red" value="dc322f"/>
+<c:color name="magenta" value="d33682"/>
+<c:color name="violet" value="6c71c4"/>
+<c:color name="blue" value="268bd2"/>
+<c:color name="cyan" value="2aa198"/>
+<c:color name="green" value="859900"/>
+</c:theme>
+<c:theme name="dawn-light">
+<c:color name="base" value="ececec"/>
+<c:color name="base01" value="bab0ca"/>
+<c:color name="base03" value="ffffff"/>
+<c:color name="base0" value="839496"/>
+<c:color name="base1" value="93a1a1"/>
+
+<c:color name="yellow" value="403090"/>
+<c:color name="orange" value="00a0d0;"/>
+<c:color name="red" value="dc322f"/>
+<c:color name="magenta" value="d33682"/>
+<c:color name="violet" value="6c71c4"/>
+<c:color name="blue" value="268bd2"/>
+<c:color name="cyan" value="2aa198"/>
+<c:color name="green" value="cdcdcd"/>
+</c:theme>
+<c:theme name="roboticket-grey">
+<c:color name="base" value="bdd8f2"/>
+<c:color name="base01" value="afbfcf"/>
+<c:color name="base03" value="f5f5f5"/>
+<c:color name="base0" value="ad95af"/>
+<c:color name="base1" value="585858"/>
+
+<c:color name="yellow" value="ddad60"/>
+<c:color name="orange" value="885d3b"/>
+<c:color name="red" value="ab2525"/>
+<c:color name="magenta" value="ad95af"/>
+<c:color name="violet" value="b05a65"/>
+<c:color name="blue" value="295f94"/>
+<c:color name="cyan" value="566874"/>
+<c:color name="green" value="55aa55"/>
+</c:theme>
+<c:theme name="roboticket-white">
+<c:color name="base" value="bdd8f2"/>
+<c:color name="base01" value="afbfcf"/>
+<c:color name="base03" value="ffffff"/>
+<c:color name="base0" value="ad95af"/>
+<c:color name="base1" value="585858"/>
+
+<c:color name="yellow" value="ddad60"/>
+<c:color name="orange" value="885d3b"/>
+<c:color name="red" value="ab2525"/>
+<c:color name="magenta" value="ad95af"/>
+<c:color name="violet" value="b05a65"/>
+<c:color name="blue" value="295f94"/>
+<c:color name="cyan" value="566874"/>
+<c:color name="green" value="55aa55"/>
+</c:theme>
+<c:theme name="tomorrow-night">
+<c:color name="base" value="282a2e"/>
+<c:color name="base01" value="616161"/>
+<c:color name="base03" value="1d1f21"/>
+<c:color name="base0" value="c5c8c6"/>
+<c:color name="base1" value="969896"/>
+
+<c:color name="yellow" value="f0c674"/>
+<c:color name="orange" value="de935f"/>
+<c:color name="red" value="ce94da"/>
+<c:color name="violet" value="ad95af"/>
+<c:color name="magenta" value="cc6666"/>
+<c:color name="blue" value="81a2be"/>
+<c:color name="cyan" value="8abeb7"/>
+<c:color name="green" value="b5bd68"/>
+</c:theme>
+<c:theme name="tomorrow-day">
+<c:color name="base" value="282a2e"/>
+<c:color name="base01" value="aabada"/>
+<c:color name="base03" value="edefff"/>
+<c:color name="base0" value="c5c8c6"/>
+<c:color name="base1" value="969896"/>
+
+<c:color name="yellow" value="0000c0"/>
+<c:color name="orange" value="de935f"/>
+<c:color name="red" value="ce94da"/>
+<c:color name="violet" value="ad95af"/>
+<c:color name="magenta" value="cc6666"/>
+<c:color name="blue" value="81a2be"/>
+<c:color name="cyan" value="8abeb7"/>
+<c:color name="green" value="919191"/>
+</c:theme>
+<c:theme name="xms">
+<c:color name="base" value="f0f0f0"/>
+<c:color name="base01" value="304050"/>
+<c:color name="base03" value="e0e3d8"/>
+<c:color name="base0" value="ad95af"/>
+<c:color name="base1" value="585858"/>
+
+<c:color name="yellow" value="082341"/>
+<c:color name="orange" value="12349a"/>
+<c:color name="red" value="15365B"/>
+<c:color name="violet" value="638C84"/>
+<c:color name="magenta" value="ea3E02"/>
+<c:color name="blue" value="5020ba"/>
+<c:color name="cyan" value="ca8080"/>
+<c:color name="green" value="509a70"/>
+</c:theme>
+<c:theme name="github">
+<c:color name="base" value="ececec"/>
+<c:color name="base01" value="924F99"/>
+<c:color name="base03" value="ffffff"/>
+<c:color name="base0" value="445588"/>
+<c:color name="base1" value="dd1144"/>
+
+<c:color name="yellow" value="1549b1"/>
+<c:color name="orange" value="885d3b"/>
+<c:color name="red" value="DB7093"/>
+<c:color name="magenta" value="333333"/>
+<c:color name="violet" value="990000"/>
+<c:color name="blue" value="445588"/>
+<c:color name="cyan" value="008080"/>
+<c:color name="green" value="999988"/>
+</c:theme>
+<c:theme name="github-blue">
+<c:color name="base" value="ececec"/>
+<c:color name="base01" value="668B8B"/>
+<c:color name="base03" value="d5dee3"/>
+<c:color name="base0" value="445588"/>
+<c:color name="base1" value="dd1144"/>
+
+<c:color name="yellow" value="1549b1"/>
+<c:color name="orange" value="6876FF"/>
+<c:color name="red" value="DB7093"/>
+<c:color name="magenta" value="333333"/>
+<c:color name="violet" value="990000"/>
+<c:color name="blue" value="445588"/>
+<c:color name="cyan" value="008080"/>
+<c:color name="green" value="804080"/>
+</c:theme>
+<c:theme name="pg-light">
+<c:color name="base" value="e8e8e8"/>
+<c:color name="base01" value="006C51"/>
+<c:color name="base03" value="FFFFFF"/>
+<c:color name="base0" value="00685A"/>
+<c:color name="base1" value="1049a9"/>
+
+<c:color name="yellow" value="534ed9"/>
+<c:color name="orange" value="EC0033"/>
+<c:color name="red" value="a66b00"/>
+<c:color name="magenta" value="7608aa"/>
+<c:color name="violet" value="4c036e"/>
+<c:color name="blue" value="052c6e"/>
+<c:color name="cyan" value="920031"/>
+<c:color name="green" value="8a8a8a"/>
+</c:theme>
+
+<c:theme name="diff-light">
+<c:color name="base" value="FFFFFF"/>
+<c:color name="base01" value="006C51"/>
+<c:color name="base03" value="FFFFFF"/>
+<c:color name="base0" value="000000"/>
+<c:color name="base1" value="1049a9"/>
+
+<c:color name="yellow" value="d34ef9"/>
+<c:color name="orange" value="EC0033"/>
+<c:color name="red" value="a66b00"/>
+<c:color name="magenta" value="7608aa"/>
+<c:color name="violet" value="8c03ae"/>
+<c:color name="blue" value="aa7500"/>
+<c:color name="cyan" value="920031"/>
+<c:color name="green" value="4040df"/>
+</c:theme>
+
+
+<c:color-map name="main">
+<!-- highlighted background -->
+<c:color name="base" property="background-color">ww</c:color>
+<!-- xml 'punctuation' marks tag start/end attribute = char etc -->
+<c:color name="base01">base01 eq-equ z sc scx ec es ez atneq
+</c:color>
+<!-- the normal background -->
+<c:color name="base03" property="background-color">
+base03 ww:not(:hover) txt:not(:hover) cm:not(:hover) pi:not(:hover)  
+</c:color>
+<!-- xml text and cdata text -->
+<c:color name="base0">base0 txt cd</c:color>
+<!-- xpath literal text -->
+<c:color name="base1">base1 literal</c:color>
+<!-- xpath operators -->
+<c:color name="yellow">yellow op type-op if higher step whitespace quantifier parenthesis
+</c:color>
+<!-- functions -->
+<c:color name="orange">orange function pname
+</c:color>
+<!-- declared fn and template names -->
+<c:color name="red">red fname tname tcall
+</c:color>
+<!-- variable names -->
+<c:color name="magenta">magenta vname variable external
+</c:color>
+<!-- qnames -->
+<c:color name="violet">violet qname type-name unclosed en cl href
+</c:color>
+<!-- parenthesis and highlighted element names -->
+<c:color name="blue">blue enxsl clxsl enx filter node node-type
+</c:color>
+<!-- attribute names + axis -->
+<c:color name="cyan">cyan atn numeric pi dt axis context bracedq property
+</c:color>
+<!-- xml and xpath comments -->
+<c:color name="green">green cm comment av type
+</c:color>
+</c:color-map>
+<css:boiler-plate>
+<css:font scp="@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);"/>
+body {
+    margin:0;
+}
+span.atn[data-change=add] {
+    background-color: #dbffdb;
+}
+span.atn[data-change=delete] {
+    background-color: #ffdbdb;
+}
+span.atn[data-change=change] {
+    background-color: #dbdbff;
+}
+p.spectrum, pre.spectrum {
+<css:main>
+    margin:0px;
+    font-family:<css:font scp="'Source Code Pro', "/>monospace;
+    <css:font scp="font-size: 0.8em;"/>
+    white-space: pre-wrap;
+    display: block;
+    border: none thin;
+    border-color: #405075;
+    background-color:<css:color name="base03"/>;
+    padding: 2px 2px 2px 5px;
+    margin-bottom:5px;
+</css:main>
+}
+
+div.exampleInner.xmlspectrum {
+    background-color:<css:color name="base03"/>; 
+    border-top-color: <css:color name="base"/>;
+    border-bottom-color: <css:color name="base"/>;
+}
+
+div.spectrum-toc {
+<css:toc>
+    font-family:<css:font scp="'Source Code Pro', "/>monospace;
+    <css:font scp="font-size: 0.8em;"/>
+    display: block;
+    border: none thin;
+    border-color: #405075;
+    background-color:<css:color name="base03"/>;
+    padding: 2px;
+</css:toc>
+}
+
+ul.base1, ul.spectrum-toc {
+color:<css:color name="base1"/>;
+  }
+
+  ul.spectrum-toc > li {
+  border-width:1px;
+  border-top-style: solid;
+  padding-bottom: 8px;
+  }
+  ul.spectrum-toc li {
+  list-style: none;
+  }
+  ul.spectrum-toc span.blue {
+  display:block;
+  margin: 8px 0px 8px 0px;
+  }
+  ul.t-and-f {
+
+  border-color: blue;
+  float: left;
+  }
+  ul.v-and-p {
+
+  border-color: red;
+  float: left;
+  }
+
+  .spectrum span {
+  white-space: pre-wrap;
+  }
+
+  <css:map element="span"/>
+
+a.solar {
+    text-decoration:none;
+}
+</css:boiler-plate>
+
+</c:themes>
