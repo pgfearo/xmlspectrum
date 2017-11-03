@@ -1,16 +1,16 @@
 XMLSpectrum
 ===========================
 
-***Syntax-highlighter for XQuery 3.0 , XSLT 3.0 and XPath 3.0 and XML
+**Syntax-highlighter for XQuery 3.0 , XSLT 3.0 and XPath 3.0 and XML**
 
-###Why
+**Why**
 1. Many generic syntax-highlighters can't render XQuery or XPath 2.0/3.0 reliably, whether it is standalone or embedded in XML, such as XSLT, XSD, XProc, Schematron etc. 
 
 2. The 'pretty-print' options of many XML editors can not align XML attributes and their contents properly. This omission is especially critical for the readability of XPath 2.0/3.0.
 
 XMLSpectrum aims to remedy these problems.
 
-###What
+**What**
 XMLSpectrum comprises a **principal XSLT 2.0 stylesheet** and supporting stylesheets designed specially to convert XQuery or XPath and any host XML code (such as XSLT) to HTML with syntax highlighting. There's also a simple **GUI application** XMLSpectrum-FX to provide a convenient front-end for the XSLT (designed for blogging editors).
 
 ***Main Roles***
