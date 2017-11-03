@@ -1,7 +1,7 @@
 XMLSpectrum
 ===========================
 
-###Syntax-highlighter for XQuery 3.0 , XSLT 3.0 and XPath 3.0 and XML
+***Syntax-highlighter for XQuery 3.0 , XSLT 3.0 and XPath 3.0 and XML
 
 ###Why
 1. Many generic syntax-highlighters can't render XQuery or XPath 2.0/3.0 reliably, whether it is standalone or embedded in XML, such as XSLT, XSD, XProc, Schematron etc. 
