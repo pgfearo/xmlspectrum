@@ -67,7 +67,7 @@ Parameter Syntax: [param-name]=[param-value]
    6. *css-path*    optional. string sets custom URL for external CSS link element in output HTML
    7. *output-path* optional. sets the directory path to send output files to (highlight-file.xsl only)
    8. *font-name*   [scp|*std*] abbreviated name for HTML font: scp = [Adobe Source Code Pro](http://blogs.adobe.com/typblography/2012/09/source-code-pro.html) std = monospace
-  9. *inline-css* [yes|*no*] embeds css color styles in each span element
+  9. *css-inline* [yes|*no*] embeds css color styles in each span element
   10. *link-names* [yes|*no*] processes all included/imported XSLT and adds hyperlinks and TOC
   11. *document-type*  optional. Identifies XML vocabulary when root element is different
   12. *document-type-prefix* optional. Associates an XML prefix with the *document-type*
